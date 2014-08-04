@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/osmLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:longClickable="true" >
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/openmapview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+         />
+
+    <ListView
+        android:id="@+id/listeOsm"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="#CC000000"
+        android:entries="@array/possetzen2"
+        android:gravity="center_horizontal" >
+    </ListView>
+
+    <ImageView
+        android:id="@+id/osmNadel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="50dp"
+        android:alpha="0.7"
+        android:onClick="compassNadelOsm"
+        android:src="@drawable/needle" />
+
+    <ProgressBar
+        android:id="@+id/progressBarOsm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:onClick="abortGPS"
+        android:visibility="gone" />
+
+    <!-- LongPressDialog -->
+    <!-- LongPressDialog -->
+    <!-- LongPressDialog -->
+
+    <RelativeLayout
+        android:id="@+id/longpPressDialogOsm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="120dp"
+        android:visibility="invisible" >
+
+        <RelativeLayout
+            android:id="@+id/longPressTitleLayoutOsm"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#333333" >
+
+            <TextView
+                android:id="@+id/longpPressTitleOsm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:paddingTop="10dp"
+                android:shadowColor="#000000"
+                android:shadowDx="0"
+                android:shadowDy="-2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_18"
+                android:textColor="#ffffff"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/longPressInhaltOsm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/longPressTitleLayoutOsm"
+            android:background="#e6e6e6" >
+
+            <ImageView
+                android:id="@+id/longPressImageOsm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:contentDescription="LongPress"
+                android:src="@drawable/longpress" />
+
+            <TextView
+                android:id="@+id/longpPressTextOsm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/longPressImageOsm"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_12"
+                android:textColor="#4d4d4d"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/longPressButtonOsm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="40dp"
+                android:layout_below="@+id/longpPressTextOsm"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="9dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_dark"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/tx_38"
+                android:textColor="#F5F5F5"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/longPressLine2Osm"
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:layout_below="@+id/longPressButtonOsm" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <!-- ENDE LongPressDialog -->
+    <!-- ENDE LongPressDialog -->
+    <!-- ENDE LongPressDialog -->
+    
+    
+     <!-- AppRateDialog -->
+    <!-- AppRateDialog -->
+    <!-- AppRateDialog -->
+
+    <RelativeLayout
+        android:id="@+id/appRateDialogOsm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="110dp"
+        android:background="#f54b4b4b"
+        android:visibility="invisible" >
+
+        <TextView
+            android:id="@+id/appRateTitleOsm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="10dp"
+            android:text="@string/tx_34"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#aee844" />
+
+        <View
+            android:id="@+id/appRateLineOsm"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_below="@+id/appRateTitleOsm"
+            android:layout_marginTop="10dp"
+            android:background="#aee844" />
+
+        <TextView
+            android:id="@+id/appRateTextOsm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/appRateLineOsm"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="@string/tx_31"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/starsOsm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/appRateTextOsm"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:clickable="true"
+            android:contentDescription="@string/tx_34"
+            android:onClick="clickOnStars"
+            android:src="@drawable/stars" />
+
+        <Button
+            android:id="@+id/rateButtonOsm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/starsOsm"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button_dark"
+            android:minWidth="170dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/tx_39" />
+
+        <Button
+            android:id="@+id/rateButton2Osm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rateButtonOsm"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="9dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/tx_40"
+            android:textColor="#F5F5F5"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/appRateLine2Osm"
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:layout_below="@+id/rateButton2Osm" />
+    </RelativeLayout>
+    
+  	<!-- Tutorial -->
+    <!-- Tutorial -->
+    <!-- Tutorial -->
+
+    <RelativeLayout
+        android:id="@+id/tutorialOverlayOsm"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="48dp"
+        android:background="#ffffff"
+        android:visibility="invisible" >
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <RelativeLayout
+                    android:id="@+id/tutorialTitleBar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="#333333" >
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true" >
+
+                        <TextView
+                            android:id="@+id/tutorialTitle1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            android:shadowColor="#000000"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_21"
+                            android:textColor="#ffffff"
+                            android:textSize="22sp"
+                            android:textStyle="bold" >
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/tutorialTitle2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@+id/tutorialTitle1"
+                            android:layout_toRightOf="@+id/tutorialTitle1"
+                            android:shadowColor="#000000"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_22"
+                            android:textColor="#a6e03c"
+                            android:textSize="22sp"
+                            android:textStyle="bold" >
+                        </TextView>
+                    </RelativeLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tutorialNumber1Bar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="120dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/tutorialTitleBar"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="1dp"
+                    android:background="#e6e6e6" >
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber1"
+                        android:layout_width="20dp"
+                        android:layout_height="fill_parent"
+                        android:background="#86b530" >
+
+                        <TextView
+                            android:id="@+id/tutorialNumber1Zahl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:shadowColor="#6b9126"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="1"
+                            android:textColor="#eeeeee"
+                            android:textSize="20sp"
+                            android:textStyle="bold" >
+                        </TextView>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber1TextBar"
+                        android:layout_width="170dp"
+                        android:layout_height="fill_parent"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="20dp"
+                        android:focusableInTouchMode="true"
+                        android:layout_toRightOf="@+id/tutorialNumber1" >
+
+                        <TextView
+                            android:id="@+id/tutorialNumber1Text"
+                            style="@style/AudioFileInfoOverlayText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:shadowColor="#FFFFFF"
+                            android:shadowDx="0"
+                            android:shadowDy="2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_13"
+                            android:textColor="#4d4d4d" >
+                        </TextView>
+
+                        <EditText
+                            android:id="@+id/tutorialEditTextOsm"
+                            android:layout_width="90dp"
+                            android:layout_height="45dp"
+                            android:layout_below="@+id/tutorialNumber1Text"
+                            android:layout_marginTop="5dp"
+                            android:background="@drawable/edittxt"
+                            android:ems="10"
+                            android:gravity="center"
+                            android:inputType="number"
+                            android:textCursorDrawable="@null"
+                            android:focusableInTouchMode="true"
+                            android:textColor="#86b530"
+                            android:textStyle="bold" >
+                        </EditText>
+
+                        <Spinner
+                            android:id="@+id/tutorialSpinnerOsm"
+                            style="@style/spinnerText"
+                            android:layout_width="60dp"
+                            android:layout_height="45dp"
+                            android:layout_alignBottom="@+id/tutorialEditTextOsm"
+                            android:layout_below="@+id/tutorialNumber1Text"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_toRightOf="@+id/tutorialEditTextOsm"
+                            android:background="@drawable/spinner" >
+                        </Spinner>
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/tutorialImage1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="25dp"
+                        android:layout_toRightOf="@+id/tutorialNumber1TextBar"
+                        android:src="@drawable/tutorial1" >
+                    </ImageView>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tutorialNumber2Bar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="120dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/tutorialNumber1Bar"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="1dp"
+                    android:background="#e6e6e6" >
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber2"
+                        android:layout_width="20dp"
+                        android:layout_height="fill_parent"
+                        android:background="#86b530" >
+
+                        <TextView
+                            android:id="@+id/tutorialNumber2Text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:shadowColor="#6b9126"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="2"
+                            android:textColor="#e6e6e6"
+                            android:textSize="20sp"
+                            android:textStyle="bold" >
+                        </TextView>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber2TextBar"
+                        android:layout_width="170dp"
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@+id/tutorialNumber2" >
+
+                        <TextView
+                            android:id="@+id/tutorialNumber2TextBarText"
+                            style="@style/AudioFileInfoOverlayText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:shadowColor="#FFFFFF"
+                            android:shadowDx="0"
+                            android:shadowDy="2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_05"
+                            android:textColor="#4d4d4d" >
+                        </TextView>
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/tutorialImage2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="25dp"
+                        android:layout_toRightOf="@+id/tutorialNumber2TextBar"
+                        android:src="@drawable/tutorial2" >
+                    </ImageView>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tutorialNumber3Bar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/tutorialNumber2Bar"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="1dp"
+                    android:background="#e6e6e6"
+                    android:paddingBottom="1dp" >
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber3"
+                        android:layout_width="20dp"
+                        android:layout_height="160dp"
+                        android:background="#86b530" >
+
+                        <TextView
+                            android:id="@+id/tutorialNumber3Text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:shadowColor="#6b9126"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="3"
+                            android:textColor="#e6e6e6"
+                            android:textSize="20sp"
+                            android:textStyle="bold" >
+                        </TextView>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber3TextBar"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@+id/tutorialNumber3" >
+
+                        <TextView
+                            android:id="@+id/tutorialNumber4Text"
+                            style="@style/AudioFileInfoOverlayText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:shadowColor="#FFFFFF"
+                            android:shadowDx="0"
+                            android:shadowDy="2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_01"
+                            android:textColor="#4d4d4d" >
+                        </TextView>
+
+                        <Button
+                            android:id="@+id/startbuttonOsm"
+                            style="@style/buttonText"
+                            android:layout_width="fill_parent"
+                            android:layout_height="45dp"
+                            android:layout_below="@+id/tutorialNumber4Text"
+                            android:layout_marginTop="5dp"
+                            android:background="@drawable/button"
+                            android:onClick="start"
+                            android:text="@string/tx_33" >
+                        </Button>
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/tutorialImage3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="120dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="25dp"
+                        android:layout_toRightOf="@+id/tutorialNumber3TextBar"
+                        android:src="@drawable/tutorial3" >
+                    </ImageView>
+                </RelativeLayout>
+            </RelativeLayout>
+        </ScrollView>
+    </RelativeLayout>
+
+</RelativeLayout>

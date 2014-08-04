@@ -1,0 +1,665 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5f5f5" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF" >
+
+        <RelativeLayout
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:background="#333333"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:padding="10dp" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:gravity="center_horizontal"
+                android:shadowColor="#000000"
+                android:shadowDx="0"
+                android:shadowDy="-2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_15"
+                android:textColor="#a6e03c"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/generalBar"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_below="@+id/title"
+            android:layout_marginTop="1dp"
+            android:background="#333333"
+            android:focusable="true"
+            android:focusableInTouchMode="true" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:paddingLeft="10dp"
+                android:paddingTop="4dp"
+                android:shadowColor="#000000"
+                android:shadowDx="0"
+                android:shadowDy="-2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_54"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- Koerpergroesse -->
+
+        <RelativeLayout
+            android:id="@+id/bodyheight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/generalBar"
+            android:layout_marginTop="1dp"
+            android:background="#f5f5f5"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_51"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#4d4d4d"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/textView1"
+                android:layout_marginLeft="10dp"
+                android:layout_toLeftOf="@+id/editText"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_52"
+                android:textColor="#4d4d4d"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_alignBottom="@+id/textView2"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/edittxt"
+                android:gravity="center"
+                android:inputType="number"
+                android:minWidth="60dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:textColor="#86b530"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- Map Settings -->
+
+        <RelativeLayout
+            android:id="@+id/mapSettingsBar"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_below="@+id/bodyheight"
+            android:layout_marginTop="1dp"
+            android:background="#333333"
+            android:focusable="true"
+            android:focusableInTouchMode="true" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:paddingLeft="10dp"
+                android:paddingTop="4dp"
+                android:shadowColor="#000000"
+                android:shadowDx="0"
+                android:shadowDy="-2"
+                android:shadowRadius="0.1"
+                android:text="Maps"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- Map Provider -->
+
+        <RelativeLayout
+            android:id="@+id/mapProviderLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mapSettingsBar"
+            android:layout_marginTop="1dp"
+            android:background="#f5f5f5"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp" >
+
+            <TextView
+                android:id="@+id/mapProviderText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_86"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#4d4d4d"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/mapProviderTextBelow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/mapProviderText"
+                android:layout_toLeftOf="@+id/spinnerMapProvider"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_87"
+                android:textColor="#4d4d4d"
+                android:textSize="12sp" />
+
+            <Spinner
+                android:id="@+id/spinnerMapProvider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/mapProviderTextBelow"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="5dp"
+                android:spinnerMode="dropdown" />
+        </RelativeLayout>
+        <!-- SatellitenAnsicht -->
+
+        <RelativeLayout
+            android:id="@+id/satellite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mapProviderLayout"
+            android:layout_marginTop="1dp"
+            android:background="#f5f5f5"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp" >
+
+            <TextView
+                android:id="@+id/sateliteText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_56"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#4d4d4d"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/sateliteTextBelow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/sateliteText"
+                android:layout_toLeftOf="@+id/checkBoxSatellite"
+                android:paddingLeft="10dp"
+                android:paddingBottom="5dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_83"
+                android:textColor="#4d4d4d"
+                android:textSize="12sp" />
+
+            <CheckBox
+                android:id="@+id/checkBoxSatellite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/sateliteTextBelow"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="10dp"
+                android:button="@drawable/custom_checkbox" />
+        </RelativeLayout>
+
+        <!-- GPS Korrektur -->
+
+        <RelativeLayout
+            android:id="@+id/gpsCorrection"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_below="@+id/satellite"
+            android:layout_marginTop="1dp"
+            android:background="#333333"
+            android:focusable="true"
+            android:focusableInTouchMode="true" >
+
+            <TextView
+                android:id="@+id/gpscorrect"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:paddingLeft="10dp"
+                android:paddingTop="4dp"
+                android:shadowColor="#000000"
+                android:shadowDx="0"
+                android:shadowDy="-2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_63"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- GPSEnable -->
+
+        <RelativeLayout
+            android:id="@+id/gpsEnable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/gpsCorrection"
+            android:layout_marginTop="1dp"
+            android:background="#f5f5f5"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp" >
+
+            <TextView
+                android:id="@+id/textGpsEnable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_66"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#4d4d4d"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textGpsEnableBelow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/textGpsEnable"
+                android:layout_toLeftOf="@+id/checkBoxGPS"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_85"
+                android:textColor="#4d4d4d"
+                android:textSize="12sp" />
+
+            <CheckBox
+                android:id="@+id/checkBoxGPS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textGpsEnableBelow"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="10dp"
+                android:button="@drawable/custom_checkbox" />
+        </RelativeLayout>
+
+        <!-- Timer -->
+
+        <RelativeLayout
+            android:id="@+id/timer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/gpsEnable"
+            android:layout_marginTop="1dp"
+            android:background="#f5f5f5"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp" >
+
+            <TextView
+                android:id="@+id/textTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text=""
+                android:textColor="#4d4d4d" />
+            <!-- android:layout_below="@+id/checkBoxGPS" -->
+
+            <SeekBar
+                android:id="@+id/seekBarTimer"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_below="@+id/textTimer"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:max="2"
+                android:progress="1"
+                android:progressDrawable="@drawable/stripe_bg"
+                android:thumb="@drawable/seek_thumb_normal" />
+        </RelativeLayout>
+
+        <!-- Miscellaneous -->
+
+        <RelativeLayout
+            android:id="@+id/miscellaneous"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_below="@+id/timer"
+            android:background="#333333"
+            android:focusable="true"
+            android:focusableInTouchMode="true" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:paddingLeft="10dp"
+                android:paddingTop="4dp"
+                android:shadowColor="#000000"
+                android:shadowDx="0"
+                android:shadowDy="-2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_71"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- Vibration -->
+
+        <RelativeLayout
+            android:id="@+id/vibration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/miscellaneous"
+            android:layout_marginTop="1dp"
+            android:background="#f5f5f5"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp" >
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_55"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#4d4d4d"
+                android:textStyle="bold" />
+            <!-- android:layout_below="@+id/textView2" -->
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/textView3"
+                android:layout_toLeftOf="@+id/checkBoxVibration"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_58"
+                android:textColor="#4d4d4d"
+                android:textSize="12sp" />
+
+            <CheckBox
+                android:id="@+id/checkBoxVibration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textView4"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="10dp"
+                android:button="@drawable/custom_checkbox" />
+        </RelativeLayout>
+
+        <!-- Sprachausgabe -->
+
+        <RelativeLayout
+            android:id="@+id/speech"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/vibration"
+            android:layout_marginTop="1dp"
+            android:background="#f5f5f5"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp" >
+
+            <TextView
+                android:id="@+id/speechText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_57"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#4d4d4d"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/speechTextBelow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/speechText"
+                android:layout_toLeftOf="@+id/checkBoxSpeech"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_84"
+                android:textColor="#4d4d4d"
+                android:textSize="12sp" />
+
+            <CheckBox
+                android:id="@+id/checkBoxSpeech"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/speechTextBelow"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="10dp"
+                android:button="@drawable/custom_checkbox" />
+        </RelativeLayout>
+
+        <!-- Export -->
+
+        <RelativeLayout
+            android:id="@+id/export"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/speech"
+            android:layout_marginTop="1dp"
+            android:background="#f5f5f5"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp" >
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_60"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#4d4d4d"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/textView7"
+                android:layout_toLeftOf="@+id/checkBoxExport"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_59"
+                android:textColor="#4d4d4d"
+                android:textSize="12sp" />
+
+            <CheckBox
+                android:id="@+id/checkBoxExport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textView8"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="10dp"
+                android:button="@drawable/custom_checkbox" />
+        </RelativeLayout>
+
+        <!-- Nutzdaten -->
+
+        <RelativeLayout
+            android:id="@+id/data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/export"
+            android:layout_marginTop="1dp"
+            android:background="#f5f5f5"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp" >
+
+            <TextView
+                android:id="@+id/textViewUsageData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_78"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#4d4d4d"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/textViewUsageData"
+                android:layout_toLeftOf="@+id/checkBoxUsageData"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_79"
+                android:textColor="#4d4d4d"
+                android:textSize="12sp" />
+
+            <CheckBox
+                android:id="@+id/checkBoxUsageData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textView10"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="10dp"
+                android:button="@drawable/custom_checkbox" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</ScrollView>

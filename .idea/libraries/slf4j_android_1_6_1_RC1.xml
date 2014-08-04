@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="slf4j-android-1.6.1-RC1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/oSMBonusPack/libs/slf4j-android-1.6.1-RC1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="wrap_content" android:layout_height="wrap_content">
+
+ <RelativeLayout android:id="@+id/rLayout2Mock"
+ android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerHorizontal="true"> 
+ 
+
+
+
+
+ 
+ <TextView android:text="@string/tx_14" android:id="@+id/dialog1textMock"
+    android:textSize="16dp" android:layout_below="@+id/rLayout2"  android:gravity="center" android:padding="10dp" android:layout_centerHorizontal="true"
+ 	android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingBottom="16dp"/>
+  </RelativeLayout>
+ 
+ 
+ <RelativeLayout 
+ android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerHorizontal="true" android:layout_below="@+id/rLayout2Mock">
+ 
+     
+ <Button android:id="@+id/dialogCancelMock" 
+ android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tx_35" android:minWidth="125dp"/>
+ 
+  <Button android:id="@+id/dialogSettingsMock" android:layout_toRightOf="@+id/dialogCancelMock" android:layout_alignBottom="@+id/dialogCancelMock"
+ android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tx_36" android:minWidth="125dp"/>
+  </RelativeLayout>
+</RelativeLayout>

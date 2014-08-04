@@ -1,0 +1,27 @@
+apply plugin: 'android-library'
+
+android {
+    compileSdkVersion 20
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        applicationId "org.osmdroid.bonuspack"
+        minSdkVersion 4
+        targetSdkVersion 4
+    }
+
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:20.0.0'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile files('libs/mapsforge-map-0.3.1-SNAPSHOT-jar-with-dependencies.jar')
+    compile files('libs/osmdroid-android-4.2.jar')
+    compile files('libs/slf4j-android-1.6.1-RC1.jar')
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout
+        android:id="@+id/rLayout2Loc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" >
+
+        <TextView
+            android:id="@+id/dialog1textLoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:padding="10dp"
+            android:paddingBottom="16dp"
+            android:text="@string/tx_29"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rLayout2Loc"
+        android:layout_centerHorizontal="true" >
+
+        <Button
+            android:id="@+id/dialogCancelLoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="125dp"
+            android:text="@string/tx_35" />
+
+        <Button
+            android:id="@+id/dialogSettingsLoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/dialogCancelLoc"
+            android:layout_toRightOf="@+id/dialogCancelLoc"
+            android:minWidth="125dp"
+            android:text="@string/tx_36" />
+    </RelativeLayout>
+
+</RelativeLayout>
