@@ -186,9 +186,9 @@ public class KmlDocument implements Parcelable {
 		*/
         return coordinates;
     }
-	
+
 	/*
-	protected static boolean parseKmlCoord2(String input, int tuple[]){
+    protected static boolean parseKmlCoord2(String input, int tuple[]){
 		int end1 = input.indexOf(',');
 		int end2 = input.indexOf(',', end1+1);
 		try {
