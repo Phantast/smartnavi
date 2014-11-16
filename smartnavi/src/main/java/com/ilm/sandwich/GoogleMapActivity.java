@@ -1068,9 +1068,7 @@ public class GoogleMapActivity extends SherlockFragmentActivity implements Senso
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
         if (status != ConnectionResult.SUCCESS) {
             try {
-                TextView mapText = (TextView) findViewById(R.id.mapText);
-                mapText.setVisibility(View.VISIBLE);
-                mapText.append("Google Play Services NOT installed.");
+                new changeSettings("MapSource", "MapQuestOSM").execute();
             } catch (Exception e) {
                 if (Config.debugMode)
                     e.printStackTrace();
@@ -1145,7 +1143,7 @@ public class GoogleMapActivity extends SherlockFragmentActivity implements Senso
             }
 
             // Speech Output
-            speechOutput = settings.getBoolean("language", true);
+            speechOutput = settings.getBoolean("language", false);
 
             // Vibration
             vibration = settings.getBoolean("vibration", true);

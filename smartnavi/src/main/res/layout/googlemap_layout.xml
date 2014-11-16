@@ -75,7 +75,8 @@
         android:layout_centerVertical="true"
         android:background="#CC000000"
         android:entries="@array/possetzen"
-        android:gravity="center_horizontal"></ListView>
+        android:gravity="center_horizontal"
+        android:visibility="invisible"></ListView>
 
     <!--OfflineMaps Dialog-->
 
@@ -287,14 +288,6 @@
                 android:layout_below="@+id/longPressButton" />
         </RelativeLayout>
     </RelativeLayout>
-    <!-- <ImageView -->
-    <!-- android:id="@+id/longPressImage2" -->
-    <!-- android:layout_width="wrap_content" -->
-    <!-- android:layout_height="wrap_content" -->
-    <!-- android:layout_below="@+id/longPressDialogBox" -->
-    <!-- android:layout_marginTop="50dp" -->
-    <!-- android:layout_centerHorizontal="true" -->
-    <!-- android:src="@drawable/longpress_big"/> -->
 
 
     <!-- AppRateDialog -->

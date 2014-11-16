@@ -114,6 +114,13 @@ public class Settings extends SherlockActivity implements OnEditorActionListener
         }
         oldMapSource = savedMapSource;
         setMapSource(savedMapSource);
+        if (savedMapSource.equalsIgnoreCase("GoogleMaps")) {
+            mapSpinner.setSelection(0);
+        } else if (savedMapSource.equalsIgnoreCase("MapQuestOSM")) {
+            mapSpinner.setSelection(1);
+        } else if (savedMapSource.equalsIgnoreCase("MapnikOSM")) {
+            mapSpinner.setSelection(2);
+        }
 
         boolean vibration = settings.getBoolean("vibration", true);
         checkBoxVibration.setChecked(vibration);
@@ -340,7 +347,11 @@ public class Settings extends SherlockActivity implements OnEditorActionListener
                     }
                 } else {
                     if (oldMapSource.equalsIgnoreCase("GoogleMaps")) {
-                        GoogleMapActivity.listHandler.sendEmptyMessageDelayed(3, 2000);
+                        try {
+                            GoogleMapActivity.listHandler.sendEmptyMessageDelayed(3, 2000);
+                        } catch (Exception e) {
+                            //may happen when user has no GooglePlayServices
+                        }
                         startActivity(new Intent(this, OsmMapActivity.class));
                     }
                 }

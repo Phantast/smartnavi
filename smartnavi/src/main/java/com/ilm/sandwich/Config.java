@@ -20,9 +20,9 @@ public class Config {
     public final static int LAUNCHES_UNTIL_PROMPT = 3; // 3
     // places and mapquest api
     public static final String PLACES_API_URL = "https://maps.googleapis.com/maps/api/place";
-    public static final String PLACES_API_KEY = "HERE_A_VALID_PLACES_API_KEY";
+    public static final String PLACES_API_KEY = "ADD_YOUR_OWN_VALID_API_KEY_HERE";
     public static final String[] COLUMNS = {BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1,};
-    public static final String MAPQUEST_API_KEY = "HERE_A_VALID_MAPQUEST_API_KEY";
+    public static final String MAPQUEST_API_KEY = "ADD_YOUR_OWN_VALID_API_KEY_HERE";
     // statistics
     public static final String API_URL = "http://5.39.91.189:3000/users";
     //debug
