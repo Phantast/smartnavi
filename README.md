@@ -23,7 +23,7 @@ Features
 Developed By
 ============
 
-* Christian Henke - <christian6767@gmail.com>
+* Christian Henke - <contact@smartnavi-app.com>
 
 
 
@@ -48,8 +48,8 @@ For more information, see the License file.
 
 Other
 ========
- Don't forget to insert your own GoogleMaps API Key (in AndroidManifest.xml)
- and GooglePlaces API Key (in Config.java).
+ Don't forget to insert your own GoogleMaps API Key (in AndroidManifest.xml),
+ as well as a valid GooglePlaces API Key and MapQuest API Key (in Config.java).
 
 
  [1]: http://smartnavi-app.com/img/smartnavi-teaser.jpg
