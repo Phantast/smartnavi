@@ -11,7 +11,7 @@
         <item name="android:shadowDy">1</item>
         <item name="android:shadowRadius">1</item>
     </style>
-    
+
     <style name="buttonText">
         <item name="android:paddingLeft">0px</item>
         <item name="android:paddingBottom">0px</item>
@@ -24,7 +24,7 @@
         <item name="android:shadowDy">1</item>
         <item name="android:shadowRadius">0.1</item>
     </style>
-    
+
     <style name="spinnerText">
         <item name="android:paddingLeft">0px</item>
         <item name="android:paddingBottom">0px</item>
@@ -37,5 +37,5 @@
         <item name="android:shadowDy">1</item>
         <item name="android:shadowRadius">0.1</item>
     </style>
-    
+
 </resources>

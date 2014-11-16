@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ilm.sandwich"
     android:installLocation="auto"
-    android:versionCode="20"
-    android:versionName="2.0-beta01">
+    android:versionCode="21"
+    android:versionName="2.0.0">
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -18,22 +18,23 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.dark" >
+        android:theme="@style/Theme.dark">
         <uses-library android:name="com.google.android.maps" />
 
         <activity
             android:name="StartChooser"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Black.NoTitleBar" >
+            android:theme="@android:style/Theme.Black.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,8 +43,8 @@
         </activity>
         <activity
             android:name="GoogleMapActivity"
-            android:screenOrientation="portrait" >
-            <intent-filter android:priority="1000" >
+            android:screenOrientation="portrait">
+            <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -61,23 +62,19 @@
         </activity>
         <activity
             android:name="Info"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
-            android:name="Smartgeo"
+            android:name=".BackgroundService"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name="Settings"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name="OsmMapActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
 
         <!-- AIzaSyBaOFDLgEmkEXaWtzQ6Q4mB9LTtIu7vAqo  DEBUG-KEY -->
         <!-- AIzaSyDZa_esegGL-6q8L8nMz6h1jMWpM4QD0X8  RELEASE-KEY -->

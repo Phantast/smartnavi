@@ -2,12 +2,12 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f5f5f5" >
+    android:background="#f5f5f5">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF" >
+        android:background="#FFFFFF">
 
         <RelativeLayout
             android:id="@+id/title"
@@ -16,7 +16,7 @@
             android:background="#333333"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:padding="10dp" >
+            android:padding="10dp">
 
             <TextView
                 android:layout_width="fill_parent"
@@ -42,7 +42,7 @@
             android:layout_marginTop="1dp"
             android:background="#333333"
             android:focusable="true"
-            android:focusableInTouchMode="true" >
+            android:focusableInTouchMode="true">
 
             <TextView
                 android:layout_width="fill_parent"
@@ -73,7 +73,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:paddingBottom="3dp"
-            android:paddingTop="3dp" >
+            android:paddingTop="3dp">
 
             <TextView
                 android:id="@+id/textView1"
@@ -137,7 +137,7 @@
             android:layout_marginTop="1dp"
             android:background="#333333"
             android:focusable="true"
-            android:focusableInTouchMode="true" >
+            android:focusableInTouchMode="true">
 
             <TextView
                 android:layout_width="fill_parent"
@@ -168,7 +168,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:paddingBottom="3dp"
-            android:paddingTop="3dp" >
+            android:paddingTop="3dp">
 
             <TextView
                 android:id="@+id/mapProviderText"
@@ -224,7 +224,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:paddingBottom="3dp"
-            android:paddingTop="3dp" >
+            android:paddingTop="3dp">
 
             <TextView
                 android:id="@+id/sateliteText"
@@ -249,8 +249,8 @@
                 android:layout_alignParentLeft="true"
                 android:layout_below="@+id/sateliteText"
                 android:layout_toLeftOf="@+id/checkBoxSatellite"
-                android:paddingLeft="10dp"
                 android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
                 android:shadowColor="#FFFFFF"
                 android:shadowDx="0"
                 android:shadowDy="2"
@@ -265,8 +265,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/sateliteTextBelow"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginRight="5dp"
                 android:button="@drawable/custom_checkbox" />
         </RelativeLayout>
 
@@ -280,7 +280,7 @@
             android:layout_marginTop="1dp"
             android:background="#333333"
             android:focusable="true"
-            android:focusableInTouchMode="true" >
+            android:focusableInTouchMode="true">
 
             <TextView
                 android:id="@+id/gpscorrect"
@@ -312,7 +312,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:paddingBottom="3dp"
-            android:paddingTop="3dp" >
+            android:paddingTop="3dp">
 
             <TextView
                 android:id="@+id/textGpsEnable"
@@ -353,8 +353,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/textGpsEnableBelow"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginRight="5dp"
                 android:button="@drawable/custom_checkbox" />
         </RelativeLayout>
 
@@ -370,7 +370,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:paddingBottom="3dp"
-            android:paddingTop="3dp" >
+            android:paddingTop="3dp">
 
             <TextView
                 android:id="@+id/textTimer"
@@ -409,7 +409,7 @@
             android:layout_below="@+id/timer"
             android:background="#333333"
             android:focusable="true"
-            android:focusableInTouchMode="true" >
+            android:focusableInTouchMode="true">
 
             <TextView
                 android:layout_width="fill_parent"
@@ -440,7 +440,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:paddingBottom="3dp"
-            android:paddingTop="3dp" >
+            android:paddingTop="3dp">
 
             <TextView
                 android:id="@+id/textView3"
@@ -482,8 +482,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/textView4"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginRight="5dp"
                 android:button="@drawable/custom_checkbox" />
         </RelativeLayout>
 
@@ -499,7 +499,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:paddingBottom="3dp"
-            android:paddingTop="3dp" >
+            android:paddingTop="3dp">
 
             <TextView
                 android:id="@+id/speechText"
@@ -540,8 +540,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/speechTextBelow"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginRight="5dp"
                 android:button="@drawable/custom_checkbox" />
         </RelativeLayout>
 
@@ -557,7 +557,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:paddingBottom="3dp"
-            android:paddingTop="3dp" >
+            android:paddingTop="3dp">
 
             <TextView
                 android:id="@+id/textView7"
@@ -598,8 +598,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/textView8"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginRight="5dp"
                 android:button="@drawable/custom_checkbox" />
         </RelativeLayout>
 
@@ -615,7 +615,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:paddingBottom="3dp"
-            android:paddingTop="3dp" >
+            android:paddingTop="3dp">
 
             <TextView
                 android:id="@+id/textViewUsageData"
@@ -656,8 +656,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/textView10"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginRight="5dp"
                 android:button="@drawable/custom_checkbox" />
         </RelativeLayout>
     </RelativeLayout>

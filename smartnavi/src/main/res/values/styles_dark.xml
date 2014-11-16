@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- File created by the Android Action Bar Style Generator
+<?xml version="1.0" encoding="utf-8"?><!-- File created by the Android Action Bar Style Generator
 
      Copyright (C) 2012 readyState Software Ltd
 
@@ -33,8 +32,8 @@
         <item name="android:actionDropDownStyle">@style/dark_DropDownNav</item>
         <item name="android:actionBarStyle">@style/dark_solid_ActionBar</item>
         <item name="android:panelBackground">@drawable/menu_hardkey_panel_dark</item>
-        
-        
+
+
     </style>
 
     <style name="dark_solid_ActionBar" parent="@style/Widget.Sherlock.ActionBar.Solid">
@@ -55,11 +54,11 @@
         <item name="android:background">@drawable/actionbartransparent</item>
         <item name="android:progressBarStyle">@style/dark_ProgressBar</item>
     </style>
-	
-    <style name="dark_PopupMenu" parent="@style/Widget.Sherlock.ListPopupWindow">	
-        <item name="android:popupBackground">@drawable/menu_dropdown_panel_dark</item>	
+
+    <style name="dark_PopupMenu" parent="@style/Widget.Sherlock.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_dark</item>
     </style>
-	
+
     <style name="dark_DropDownListView" parent="@style/Widget.Sherlock.ListView.DropDown">
         <item name="android:listSelector">@drawable/selectable_background_dark</item>
     </style>
@@ -69,18 +68,18 @@
 
         <item name="android:background">@drawable/tab_indicator_ab_dark</item>
     </style>
-	
+
     <style name="dark_DropDownNav" parent="@style/Widget.Sherlock.Spinner.DropDown.ActionBar">
         <item name="background">@drawable/spinner_background_ab_dark</item>
         <item name="android:background">@drawable/spinner_background_ab_dark</item>
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_dark</item>
         <item name="android:dropDownSelector">@drawable/selectable_background_dark</item>
     </style>
-    
+
     <style name="dark_ProgressBar" parent="@style/Widget.Sherlock.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@drawable/progress_horizontal_dark</item>
     </style>
-    
+
     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
     <style name="Theme.dark.widget" parent="@style/Theme.Sherlock">
         <item name="popupMenuStyle">@style/dark_PopupMenu</item>

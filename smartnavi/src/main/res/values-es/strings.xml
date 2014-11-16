@@ -6,121 +6,136 @@
 
     <string name="app_name">SmartNavi</string>
     <string name="tx_01">Comenzar la navegación <b>basada en pasos</b></string>
-	<string name="tx_02">Direcciones</string>
-	<string name="tx_03">Búsquedas</string>
-	<string name="tx_04">Cargando ruta. Por favor espere&#8230;</string>
-	<string name="tx_05">Mantenga el dispositivo frente su cuerpo</string>
-	<string name="tx_06">SmartNavi no pudo encontrar su posición inicial. Por favor active internet o el GPS y reinicie SmartNavi o contacte a nuestro servicio de atención: smartnavi@2imba.de</string>		
-	<string name="tx_07">SmartNavi es el primer programa o aplicación GPS de navegación basado en pasos para Android.</string>
-	<string name="tx_08"><u>Como funciona:</u></string>
-	<string name="tx_09">SmartNavi sigue en desarrollo.\nSiéntase libre de contactarnos:\nsmartnavi@2imba.de</string>
-	<string name="tx_10">Por favor Introduzca su altura. Para poder determinar la longitud de sus pasos.</string>
-	
-	
-	<string name="tx_11">Gracias a Madeliniz por el logo de SmartNavi:\nhttp://madeliniz.deviantart.com</string>	
-	<string name="tx_12">Toca y mantén presionado el mapa para obtener opciones extra. Así podrás determinar tu exacta poción de inicio.</string>	
-	<string name="tx_13">Ingrese su peso de\n<b>altura</b></string>
-	<string name="tx_14">Por favor active\n<i>Mock Locations</i> (locaciones falsas)\nunder:\> Settings\n> Development</string>	
-	<string name="tx_15">Ajustes</string>
-	<string name="tx_16">e.g. 180</string>	
-	<string name="tx_17">Establecer la posición</string>
-	<string name="tx_18">Mantén presionado</string>	
-	<string name="tx_19">Mas información en nuestra pagina:\nwww.smartnavi.mobi</string>
-	<string name="tx_20">El peso corporal tiene un valor invalido. Solo se permiten números.</string>
-	
-	
-	<string name="tx_21">COMO</string>
-	<string name="tx_22">&#160;FUNCIONA</string>
-	<string name="tx_23">e.g. 70</string>
-	<string name="tx_24">No hay resultados. Compruebe su conexión a internet e intente de nuevo.</string>
-	<string name="tx_25">Desactivado</string>
-	<string name="tx_26"><u>Información de uso anónimo.</u></string>
-	<string name="tx_27">Apoya a SmartNavi enviando información anónima sobre el uso de la aplicación. Enviando datos como el modelo de teléfono, sistema de sensores o el uso de ciertas características del programa nos ayudarás a mejorar SmartNavi. Toda esta información es anónima y no incluye ningún tipo de posicionamiento. Puedes desactivar esta característica cuando quieras desde los ajustes. Gracias por tu apoyo!</string>
-	<string name="tx_28">OK</string>
-	<string name="tx_29">Please enable location getting in settings.</string>
-	<string name="tx_30">No se pudo obtener información de la ruta deseada. Por favor intente de nuevo mas tarde.</string>
-	
-	
-	
-	<string name="tx_31">Parece que te gusta SmartNavi. Su clasificación nos será de gran apoyo para nosotros! :)</string>
-	<string name="tx_32">Numero invalido.</string>
-	<string name="tx_33">Empezar</string>
-	<string name="tx_34">Clasifica SmartNavi</string>
-	<string name="tx_35">Cancelar</string>
-	<string name="tx_36">Abrir ajustes.</string>
-	<string name="tx_37">Después</string>
-	<string name="tx_38">OK</string>
-	<string name="tx_39">No clasificar</string>
-	<string name="tx_40">Clasifica ahora en Playstore</string>
-	
-	
-	<string name="tx_41">SmartNavi reconoce los pasos usando el acelerómetro y la información de los sensores magnéticos. Cada paso cambia la posición y dirección. La corrección interna de errores garantiza una precisión durable. Una vez se haya realizado el posicionamiento inicial via GPS o UMTS/WiFi/GSM, el programa usará los sensores internos del teléfono para ahorrar más de un 70% de energia y vida de la batería.</string>	    
-	<string name="tx_42">No gracias</string>
+    <string name="tx_02">Direcciones</string>
+    <string name="tx_03">Búsquedas</string>
+    <string name="tx_04">Cargando ruta. Por favor espere&#8230;</string>
+    <string name="tx_05">Mantenga el dispositivo frente su cuerpo</string>
+    <string name="tx_06">SmartNavi no pudo encontrar su posición inicial. Por favor active internet o el GPS y reinicie SmartNavi o contacte a nuestro servicio de atención: smartnavi@2imba.de</string>
+    <string name="tx_07">SmartNavi es el primer programa o aplicación GPS de navegación basado en pasos para Android.</string>
+    <string name="tx_08"><u>Como funciona:</u></string>
+    <string name="tx_09">SmartNavi sigue en desarrollo.\nSiéntase libre de contactarnos:\ncontact@smartnavi-app.com</string>
+    <string name="tx_10">Por favor Introduzca su altura. Para poder determinar la longitud de sus pasos.</string>
+
+
+    <string name="tx_11">Gracias a Madeliniz por el logo de SmartNavi:\nhttp://madeliniz.deviantart.com</string>
+    <string name="tx_12">Toca y mantén presionado el mapa para obtener opciones extra. Así podrás determinar tu exacta poción de inicio.</string>
+    <string name="tx_13">Ingrese su peso de\n<b>altura</b></string>
+    <string name="tx_14">Por favor active\n<i>Mock Locations</i> (locaciones falsas)\nunder:\> Settings\n> Development</string>
+    <string name="tx_15">Ajustes</string>
+    <string name="tx_16">e.g. 180</string>
+    <string name="tx_17">Establecer la posición</string>
+    <string name="tx_18">Mantén presionado</string>
+    <string name="tx_19">Mas información en nuestra pagina:\nwww.smartnavi-app.com</string>
+    <string name="tx_20">El peso corporal tiene un valor invalido. Solo se permiten números.</string>
+
+
+    <string name="tx_21">COMO</string>
+    <string name="tx_22">&#160;FUNCIONA</string>
+    <string name="tx_23">e.g. 70</string>
+    <string name="tx_24">No hay resultados. Compruebe su conexión a internet e intente de nuevo.</string>
+    <string name="tx_25">Desactivado</string>
+    <string name="tx_26"><u>Información de uso anónimo.</u></string>
+    <string name="tx_27">Apoya a SmartNavi enviando información anónima sobre el uso de la aplicación. Enviando datos como el modelo de teléfono, sistema de sensores o el uso de ciertas características del programa nos ayudarás a mejorar SmartNavi. Toda esta información es anónima y no incluye ningún tipo de posicionamiento. Puedes desactivar esta característica cuando quieras desde los ajustes. Gracias por tu apoyo!</string>
+    <string name="tx_28">OK</string>
+    <string name="tx_29">Please enable location getting in settings.</string>
+    <string name="tx_30">No se pudo obtener información de la ruta deseada. Por favor intente de nuevo mas tarde.</string>
+
+
+    <string name="tx_31">Parece que te gusta SmartNavi. Su clasificación nos será de gran apoyo para nosotros! :)</string>
+    <string name="tx_32">Numero invalido.</string>
+    <string name="tx_33">Empezar</string>
+    <string name="tx_34">Clasifica SmartNavi</string>
+    <string name="tx_35">Cancelar</string>
+    <string name="tx_36">Abrir ajustes.</string>
+    <string name="tx_37">Después</string>
+    <string name="tx_38">OK</string>
+    <string name="tx_39">No clasificar</string>
+    <string name="tx_40">Clasifica ahora en Playstore</string>
+
+
+    <string name="tx_41">SmartNavi reconoce los pasos usando el acelerómetro y la información de los sensores magnéticos. Cada paso cambia la posición y dirección. La corrección interna de errores garantiza una precisión durable. Una vez se haya realizado el posicionamiento inicial via GPS o UMTS/WiFi/GSM, el programa usará los sensores internos del teléfono para ahorrar más de un 80% de energia y vida de la batería.</string>
+    <string name="tx_42">No gracias</string>
     <string name="tx_43">Desafortunadamente su aparato no tiene sensores de campo magnéticos (brújula). SmartNavi no puede funcionar sin eso.\npara mas información visita nuestro sitio web:\nwww.smartnavi.mobi\n</string>
     <string name="tx_44">Por favor adapte los ajustes del sistema:</string>
     <string name="tx_45"><u>Como funciona:</u></string>
     <string name="tx_46"><u>Ajustes:</u></string>
     <string name="tx_47">Por favor confirme su conexión a internet.</string>
     <string name="tx_48">Desafortunadamente SmartNavi no puede inicializar su acelerometro. \nPara apoyo técnico comuníquese con nosotros a nuestro correo::\nwww.smartnavi.mobi\n</string>
-    <string name="tx_49">Atención! Por favor active su GPS!</string>    
+    <string name="tx_49">Atención! Por favor active su GPS!</string>
     <string name="tx_50">Tutorial</string>
-    
-    
-	<string name="tx_51">Altura</string>
-	<string name="tx_52">La longitud de tus pasos es calculada con tu altura</string>
-	<string name="tx_53">Ingresa tu pero altura</string>
-	<string name="tx_54">General</string>
-	<string name="tx_55">Vibración</string>
-	<string name="tx_56">Vista desde Satélite </string>
-	<string name="tx_57">Sonido</string>
-	<string name="tx_58">Vibrar al siguiente paso de navegación.</string>
-	<string name="tx_59">Exportar la ruta en formato GPX a tu tarjeta de memoria</string>
-	<string name="tx_60">Exporta ruta</string>
-	
-	
-	<string name="tx_61">Initial positioning stopped.</string>
-	<string name="tx_62">Posición</string>
-	<string name="tx_63">Autocorrección</string>
-	<string name="tx_64">Servicio en segundo plano</string>
-	<string name="tx_65">Acerca de</string>
-	<string name="tx_66">Autocorregir via GPS</string>
-	<string name="tx_67">SmartNavi puede proveer datos de localización para otras aplicaciones.</string>
-	<string name="tx_68">Usa esta característica para navegar con otras aplicaciones basándose en la tecnología de pasos y ahorro de energía</string>
-	<string name="tx_69">Detener servicio en segundo plano</string>
-	<string name="tx_70">El servicio en segundo plano se detuvo.</string>
-	
-	
-	<string name="tx_71">Misceláneos</string>
-	<string name="tx_72">SmartNavi ahora corre en segundo plano</string>
-	<string name="tx_73">Proveyendo datos de localización</string>
-	<string name="tx_74">Iniciar servicio en segundo plano</string>
-	<string name="tx_75">Prolonga la vida de la batería</string>
-	<string name="tx_76">Balanceado</string>
-	<string name="tx_77">No se encontraron los resultados de tu búsqueda.</string>
-	<string name="tx_78">Datos de usuario anónimos</string>
-	<string name="tx_79">Más información acerca de <i>datos de usuario anónimos</i> puede ser encontrada en la sección <i>acerca de</i></string>
-	<string name="tx_80">Alta precisión </string>
-	
-	<string name="tx_81">Enable GPS to get a better initial position.\nAfter getting your initial position SmartNavi works independent from GPS! :)</string>
-	<string name="tx_82">Initial positioning stopped.</string>
-	<string name="tx_83">Only for GoogleMaps</string>
-	<string name="tx_84">For navigation instructions</string>
-	<string name="tx_85">Corrects your position regularly with GPS</string>
-	<string name="tx_86">Map Provider</string>
-	<string name="tx_87">Change map tile provider</string>
-	<string name="tx_88">GPX-File will be created in Folder \"smartnavi\"</string>
-	<string name="tx_89">Join the Beta-Test Community &lt;br&gt; &lt;a href="https://plus.google.com/communities/105614123040262375968"&gt;Beta-Test Community&lt;/a&gt;</string>
-	<string name="tx_90"></string>
-	
-	<string-array name="dimension">
+
+
+    <string name="tx_51">Altura</string>
+    <string name="tx_52">La longitud de tus pasos es calculada con tu altura</string>
+    <string name="tx_53">Ingresa tu pero altura</string>
+    <string name="tx_54">General</string>
+    <string name="tx_55">Vibración</string>
+    <string name="tx_56">Vista desde Satélite </string>
+    <string name="tx_57">Sonido</string>
+    <string name="tx_58">Vibrar al siguiente paso de navegación.</string>
+    <string name="tx_59">Exportar la ruta en formato GPX a tu tarjeta de memoria</string>
+    <string name="tx_60">Exporta ruta</string>
+
+
+    <string name="tx_61">Initial positioning stopped.</string>
+    <string name="tx_62">Posición</string>
+    <string name="tx_63">Autocorrección</string>
+    <string name="tx_64">Servicio en segundo plano</string>
+    <string name="tx_65">Acerca de</string>
+    <string name="tx_66">Autocorregir via GPS</string>
+    <string name="tx_67">SmartNavi puede proveer datos de localización para otras aplicaciones.</string>
+    <string name="tx_68">Usa esta característica para navegar con otras aplicaciones basándose en la tecnología de pasos y ahorro de energía</string>
+    <string name="tx_69">Detener servicio en segundo plano</string>
+    <string name="tx_70">El servicio en segundo plano se detuvo.</string>
+
+
+    <string name="tx_71">Misceláneos</string>
+    <string name="tx_72">SmartNavi ahora corre en segundo plano</string>
+    <string name="tx_73">Proveyendo datos de localización</string>
+    <string name="tx_74">Iniciar servicio en segundo plano</string>
+    <string name="tx_75">Prolonga la vida de la batería</string>
+    <string name="tx_76">Balanceado</string>
+    <string name="tx_77">No se encontraron los resultados de tu búsqueda.</string>
+    <string name="tx_78">Datos de usuario anónimos</string>
+    <string name="tx_79">Más información acerca de <i>datos de usuario anónimos</i> puede ser encontrada en la sección <i>acerca de</i></string>
+    <string name="tx_80">Alta precisión </string>
+
+    <string name="tx_81">Enable GPS to get a better initial position.\nAfter getting your initial position SmartNavi works independent from GPS! :)</string>
+    <string name="tx_82">Initial positioning stopped.</string>
+    <string name="tx_83">Only for GoogleMaps</string>
+    <string name="tx_84">For navigation instructions</string>
+    <string name="tx_85">Corrects your position regularly with GPS</string>
+    <string name="tx_86">Map Provider</string>
+    <string name="tx_87">Change map tile provider</string>
+    <string name="tx_88">GPX-File will be created in Folder \"smartnavi\"</string>
+    <string name="tx_89">Join the Beta-Test Community &lt;br&gt; &lt;a href="https://plus.google.com/communities/105614123040262375968"&gt;Beta-Test Community&lt;/a&gt;</string>
+    <string name="tx_90">Offline Maps</string>
+
+    <string name="tx_91">Follow our tutorial to store offline maps on your device. Visit our website for more information.</string>
+    <string name="tx_92">smartnavi-app.com/offline</string>
+    <string name="tx_93">Open Website</string>
+
+
+    <string-array name="dimension">
         <item>cm</item>
         <item>Pulgadas</item>
     </string-array>
-    
-	<string-array name="possetzen">
+
+    <string-array name="possetzen">
         <item>Ajustar la posición</item>
         <item>Ajustar el destino</item>
     </string-array>
-	
+
+    <string-array name="possetzen2">
+        <item>Ajustar la posición</item>
+        <item>Ajustar el destino</item>
+    </string-array>
+
+    <string-array name="mapProvider">
+        <item>Google Maps</item>
+        <item>MapQuest OSM</item>
+        <item>Mapnik OSM</item>
+    </string-array>
+
 
 </resources>

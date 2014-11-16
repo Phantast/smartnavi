@@ -1,131 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/splashscreenImg"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:contentDescription="splash"
         android:scaleType="centerCrop"
         android:src="@drawable/splashscreen" />
-
-    <ScrollView
-        android:id="@+id/betaDialogFrame"
-        android:layout_width="match_parent"
-        android:minWidth="380dp"
-        android:layout_height="wrap_content"
-        android:visibility="invisible" >
-
-        <RelativeLayout
-            android:id="@+id/betaDialog"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="25dp"
-            android:layout_marginRight="25dp"
-            android:layout_marginTop="50dp">
-
-            <RelativeLayout
-                android:id="@+id/betaDialogTitleLayout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="#333333" >
-
-                <TextView
-                    android:id="@+id/betaDialogTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="center_horizontal"
-                    android:paddingTop="10dp"
-                    android:shadowColor="#000000"
-                    android:shadowDx="0"
-                    android:shadowDy="-2"
-                    android:shadowRadius="0.1"
-                    android:text="@string/tx_beta_title"
-                    android:textColor="#ffffff"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/betaDialogInhalt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/betaDialogTitleLayout"
-                android:background="#e6e6e6" >
-
-                <ImageView
-                    android:id="@+id/betaDialogImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="10dp"
-                    android:contentDescription="Survey"
-                    android:src="@drawable/survey_smartnavi03" />
-
-                <TextView
-                    android:id="@+id/betaDialogText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/betaDialogImage"
-                    android:layout_marginTop="10dp"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:shadowColor="#FFFFFF"
-                    android:shadowDx="0"
-                    android:shadowDy="2"
-                    android:shadowRadius="0.1"
-                    android:text="@string/tx_beta_text"
-                    android:textColor="#4d4d4d"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/betaDialogButton1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/betaDialogText"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="9dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/button_dark"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:minWidth="150dp"
-                    android:minHeight="40dp"
-                    android:text="@string/tx_beta_button1"
-                    android:textColor="#F5F5F5"
-                    android:textStyle="bold" />
-                
-                <Button
-                    android:id="@+id/betaDialogButton2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/betaDialogText"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginBottom="9dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:background="@drawable/button_dark"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:minHeight="40dp"
-                    android:text="@string/tx_beta_button2"
-                    android:textColor="#F5F5F5"
-                    android:textStyle="bold" />
-
-                <View
-                    android:id="@+id/betaDialogLine2"
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dip"
-                    android:layout_below="@+id/betaDialogButton1" />
-            </RelativeLayout>
-        </RelativeLayout>
-    </ScrollView>
 
 </RelativeLayout>

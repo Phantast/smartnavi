@@ -2,27 +2,26 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/feld"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-    </RelativeLayout>
+        android:layout_height="wrap_content"></RelativeLayout>
 
     <FrameLayout
         android:id="@+id/frameLayout"
         android:name="com.google.android.gms.maps.SupportMapFragment"
+        class="com.ilm.sandwich.TouchableWrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.ilm.sandwich.TouchableWrapper" >
+        android:layout_height="match_parent">
 
         <fragment
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
+            class="com.ilm.sandwich.MySupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            class="com.ilm.sandwich.MySupportMapFragment" />
+            android:layout_height="match_parent" />
     </FrameLayout>
 
     <ImageView
@@ -65,8 +64,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:visibility="gone"
-        android:onClick="abortGPS" />
+        android:onClick="abortGPS"
+        android:visibility="gone" />
 
     <ListView
         android:id="@+id/liste"
@@ -76,8 +75,124 @@
         android:layout_centerVertical="true"
         android:background="#CC000000"
         android:entries="@array/possetzen"
-        android:gravity="center_horizontal" >
-    </ListView>
+        android:gravity="center_horizontal"></ListView>
+
+    <!--OfflineMaps Dialog-->
+
+    <RelativeLayout
+        android:id="@+id/offlineMapsGoogle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="150dp"
+        android:visibility="invisible">
+
+        <RelativeLayout
+            android:id="@+id/offlineMapsTitleLayoutGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#333333">
+
+            <TextView
+                android:id="@+id/offlineMapsTitleGoogle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:paddingTop="10dp"
+                android:shadowColor="#000000"
+                android:shadowDx="0"
+                android:shadowDy="-2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_90"
+                android:textColor="#ffffff"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/offlineMapsInhaltGoogle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/offlineMapsTitleLayoutGoogle"
+            android:background="#e6e6e6">
+
+            <TextView
+                android:id="@+id/offlineMapsTextGoogle1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_91"
+                android:textColor="#4d4d4d"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/offlineMapsTextGoogle2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/offlineMapsTextGoogle1"
+                android:layout_marginTop="10dp"
+                android:linksClickable="true"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_92"
+                android:textColor="#4d4d4d"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/offlineMapsButtonGoogleOk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/offlineMapsTextGoogle2"
+                android:layout_marginBottom="9dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_dark"
+                android:minHeight="40dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/tx_28"
+                android:textColor="#F5F5F5"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/offlineMapsButtonGoogleWebsite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/offlineMapsTextGoogle2"
+                android:layout_marginBottom="9dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_dark"
+                android:minHeight="40dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/tx_93"
+                android:textColor="#F5F5F5"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/sensorWarningLine2Google"
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:layout_below="@+id/offlineMapsButtonGoogleOk" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <!--  Offline Maps Dialog-->
 
     <!-- LongPressDialog -->
     <!-- LongPressDialog -->
@@ -90,13 +205,13 @@
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:layout_marginTop="120dp"
-        android:visibility="gone" >
+        android:visibility="gone">
 
         <RelativeLayout
             android:id="@+id/longPressTitleLayout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="#333333" >
+            android:background="#333333">
 
             <TextView
                 android:id="@+id/longpPressTitle"
@@ -120,7 +235,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/longPressTitleLayout"
-            android:background="#e6e6e6" >
+            android:background="#e6e6e6">
 
             <ImageView
                 android:id="@+id/longPressImage"
@@ -153,12 +268,12 @@
                 android:id="@+id/longPressButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minHeight="40dp"
                 android:layout_below="@+id/longpPressText"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="9dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/button_dark"
+                android:minHeight="40dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:text="@string/tx_38"
@@ -194,7 +309,7 @@
         android:layout_marginRight="25dp"
         android:layout_marginTop="110dp"
         android:background="#f54b4b4b"
-        android:visibility="invisible" >
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/appRateTitle"
@@ -291,29 +406,29 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="48dp"
         android:background="#ffffff"
-        android:visibility="invisible" >
+        android:visibility="invisible">
 
         <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content">
 
                 <RelativeLayout
                     android:id="@+id/tutorialTitleBar"
                     android:layout_width="fill_parent"
                     android:layout_height="50dp"
                     android:layout_centerHorizontal="true"
-                    android:background="#333333" >
+                    android:background="#333333">
 
                     <RelativeLayout
                         android:id="@+id/tutorialTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerInParent="true" >
+                        android:layout_centerInParent="true">
 
                         <TextView
                             android:id="@+id/tutorialTitle1"
@@ -328,8 +443,7 @@
                             android:text="@string/tx_21"
                             android:textColor="#ffffff"
                             android:textSize="22sp"
-                            android:textStyle="bold" >
-                        </TextView>
+                            android:textStyle="bold"></TextView>
 
                         <TextView
                             android:id="@+id/tutorialTitle2"
@@ -344,8 +458,7 @@
                             android:text="@string/tx_22"
                             android:textColor="#a6e03c"
                             android:textSize="22sp"
-                            android:textStyle="bold" >
-                        </TextView>
+                            android:textStyle="bold"></TextView>
                     </RelativeLayout>
                 </RelativeLayout>
 
@@ -357,13 +470,13 @@
                     android:layout_below="@+id/tutorialTitleBar"
                     android:layout_marginLeft="1dp"
                     android:layout_marginTop="1dp"
-                    android:background="#e6e6e6" >
+                    android:background="#e6e6e6">
 
                     <RelativeLayout
                         android:id="@+id/tutorialNumber1"
                         android:layout_width="20dp"
                         android:layout_height="fill_parent"
-                        android:background="#86b530" >
+                        android:background="#86b530">
 
                         <TextView
                             android:id="@+id/tutorialNumber1Zahl"
@@ -377,8 +490,7 @@
                             android:text="1"
                             android:textColor="#eeeeee"
                             android:textSize="20sp"
-                            android:textStyle="bold" >
-                        </TextView>
+                            android:textStyle="bold"></TextView>
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -387,8 +499,8 @@
                         android:layout_height="fill_parent"
                         android:layout_centerInParent="true"
                         android:layout_marginLeft="20dp"
-                        android:focusableInTouchMode="true"
-                        android:layout_toRightOf="@+id/tutorialNumber1" >
+                        android:layout_toRightOf="@+id/tutorialNumber1"
+                        android:focusableInTouchMode="true">
 
                         <TextView
                             android:id="@+id/tutorialNumber1Text"
@@ -401,8 +513,7 @@
                             android:shadowDy="2"
                             android:shadowRadius="0.1"
                             android:text="@string/tx_13"
-                            android:textColor="#4d4d4d" >
-                        </TextView>
+                            android:textColor="#4d4d4d"></TextView>
 
                         <EditText
                             android:id="@+id/tutorialEditText"
@@ -416,8 +527,7 @@
                             android:inputType="number"
                             android:textColor="#86b530"
                             android:textCursorDrawable="@null"
-                            android:textStyle="bold" >
-                        </EditText>
+                            android:textStyle="bold"></EditText>
 
                         <Spinner
                             android:id="@+id/tutorialSpinner"
@@ -429,8 +539,7 @@
                             android:layout_marginLeft="10dp"
                             android:layout_marginTop="5dp"
                             android:layout_toRightOf="@+id/tutorialEditText"
-                            android:background="@drawable/spinner" >
-                        </Spinner>
+                            android:background="@drawable/spinner"></Spinner>
                     </RelativeLayout>
 
                     <ImageView
@@ -443,8 +552,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="25dp"
                         android:layout_toRightOf="@+id/tutorialNumber1TextBar"
-                        android:src="@drawable/tutorial1" >
-                    </ImageView>
+                        android:src="@drawable/tutorial1"></ImageView>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -455,13 +563,13 @@
                     android:layout_below="@+id/tutorialNumber1Bar"
                     android:layout_marginLeft="1dp"
                     android:layout_marginTop="1dp"
-                    android:background="#e6e6e6" >
+                    android:background="#e6e6e6">
 
                     <RelativeLayout
                         android:id="@+id/tutorialNumber2"
                         android:layout_width="20dp"
                         android:layout_height="fill_parent"
-                        android:background="#86b530" >
+                        android:background="#86b530">
 
                         <TextView
                             android:id="@+id/tutorialNumber2Text"
@@ -475,8 +583,7 @@
                             android:text="2"
                             android:textColor="#e6e6e6"
                             android:textSize="20sp"
-                            android:textStyle="bold" >
-                        </TextView>
+                            android:textStyle="bold"></TextView>
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -484,7 +591,7 @@
                         android:layout_width="170dp"
                         android:layout_height="fill_parent"
                         android:layout_marginLeft="20dp"
-                        android:layout_toRightOf="@+id/tutorialNumber2" >
+                        android:layout_toRightOf="@+id/tutorialNumber2">
 
                         <TextView
                             android:id="@+id/tutorialNumber2TextBarText"
@@ -497,8 +604,7 @@
                             android:shadowDy="2"
                             android:shadowRadius="0.1"
                             android:text="@string/tx_05"
-                            android:textColor="#4d4d4d" >
-                        </TextView>
+                            android:textColor="#4d4d4d"></TextView>
                     </RelativeLayout>
 
                     <ImageView
@@ -511,8 +617,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="25dp"
                         android:layout_toRightOf="@+id/tutorialNumber2TextBar"
-                        android:src="@drawable/tutorial2" >
-                    </ImageView>
+                        android:src="@drawable/tutorial2"></ImageView>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -524,13 +629,13 @@
                     android:layout_marginLeft="1dp"
                     android:layout_marginTop="1dp"
                     android:background="#e6e6e6"
-                    android:paddingBottom="1dp" >
+                    android:paddingBottom="1dp">
 
                     <RelativeLayout
                         android:id="@+id/tutorialNumber3"
                         android:layout_width="20dp"
                         android:layout_height="160dp"
-                        android:background="#86b530" >
+                        android:background="#86b530">
 
                         <TextView
                             android:id="@+id/tutorialNumber3Text"
@@ -544,8 +649,7 @@
                             android:text="3"
                             android:textColor="#e6e6e6"
                             android:textSize="20sp"
-                            android:textStyle="bold" >
-                        </TextView>
+                            android:textStyle="bold"></TextView>
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -554,7 +658,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:layout_marginLeft="20dp"
-                        android:layout_toRightOf="@+id/tutorialNumber3" >
+                        android:layout_toRightOf="@+id/tutorialNumber3">
 
                         <TextView
                             android:id="@+id/tutorialNumber4Text"
@@ -567,8 +671,7 @@
                             android:shadowDy="2"
                             android:shadowRadius="0.1"
                             android:text="@string/tx_01"
-                            android:textColor="#4d4d4d" >
-                        </TextView>
+                            android:textColor="#4d4d4d"></TextView>
 
                         <Button
                             android:id="@+id/startbutton"
@@ -579,8 +682,7 @@
                             android:layout_marginTop="5dp"
                             android:background="@drawable/button"
                             android:onClick="start"
-                            android:text="@string/tx_33" >
-                        </Button>
+                            android:text="@string/tx_33"></Button>
                     </RelativeLayout>
 
                     <ImageView
@@ -593,8 +695,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="25dp"
                         android:layout_toRightOf="@+id/tutorialNumber3TextBar"
-                        android:src="@drawable/tutorial3" >
-                    </ImageView>
+                        android:src="@drawable/tutorial3"></ImageView>
                 </RelativeLayout>
             </RelativeLayout>
         </ScrollView>

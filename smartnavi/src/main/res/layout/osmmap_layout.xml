@@ -3,14 +3,39 @@
     android:id="@+id/osmLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:longClickable="true" >
+    android:longClickable="true"
+    android:orientation="vertical">
 
     <org.osmdroid.views.MapView
         android:id="@+id/openmapview"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-         />
+        android:layout_height="fill_parent" />
+
+    <TextView
+        android:id="@+id/mapTextOsm"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#bb272c32"
+        android:drawableTop="@drawable/back"
+        android:gravity="center"
+        android:maxLines="5"
+        android:padding="3dp"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="1"
+        android:shadowRadius="0.1"
+        android:textColor="#f3f3f3"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+    <View
+        android:id="@+id/viewLineOsm"
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:layout_above="@+id/mapTextOsm"
+        android:background="#bb8dbd25"
+        android:visibility="gone" />
 
     <ListView
         android:id="@+id/listeOsm"
@@ -20,8 +45,7 @@
         android:layout_centerVertical="true"
         android:background="#CC000000"
         android:entries="@array/possetzen2"
-        android:gravity="center_horizontal" >
-    </ListView>
+        android:gravity="center_horizontal"></ListView>
 
     <ImageView
         android:id="@+id/osmNadel"
@@ -30,7 +54,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginTop="50dp"
         android:alpha="0.7"
-        android:onClick="compassNadelOsm"
+        android:onClick="compassNeedleOsm"
         android:src="@drawable/needle" />
 
     <ProgressBar
@@ -41,6 +65,123 @@
         android:layout_alignParentTop="true"
         android:onClick="abortGPS"
         android:visibility="gone" />
+
+    <!--OfflineMaps Dialog-->
+
+    <RelativeLayout
+        android:id="@+id/offlineMapsOsm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="150dp"
+        android:visibility="invisible">
+
+        <RelativeLayout
+            android:id="@+id/offlineMapsTitleLayoutOsm"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#333333">
+
+            <TextView
+                android:id="@+id/offlineMapsTitleOsm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:paddingTop="10dp"
+                android:shadowColor="#000000"
+                android:shadowDx="0"
+                android:shadowDy="-2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_90"
+                android:textColor="#ffffff"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/offlineMapsInhaltOsm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/offlineMapsTitleLayoutOsm"
+            android:background="#e6e6e6">
+
+            <TextView
+                android:id="@+id/offlineMapsTextOsm1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_91"
+                android:textColor="#4d4d4d"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/offlineMapsTextOsm2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/offlineMapsTextOsm1"
+                android:layout_marginTop="10dp"
+                android:linksClickable="true"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_92"
+                android:textColor="#4d4d4d"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/offlineMapsButtonOsmOk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/offlineMapsTextOsm2"
+                android:layout_marginBottom="9dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_dark"
+                android:minHeight="40dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/tx_28"
+                android:textColor="#F5F5F5"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/offlineMapsButtonOsmWebsite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/offlineMapsTextOsm2"
+                android:layout_marginBottom="9dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_dark"
+                android:minHeight="40dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/tx_93"
+                android:textColor="#F5F5F5"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/sensorWarningLine2Osm"
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:layout_below="@+id/offlineMapsButtonOsmOk" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <!--  Offline Maps Dialog-->
 
     <!-- LongPressDialog -->
     <!-- LongPressDialog -->
@@ -53,13 +194,13 @@
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:layout_marginTop="120dp"
-        android:visibility="invisible" >
+        android:visibility="invisible">
 
         <RelativeLayout
             android:id="@+id/longPressTitleLayoutOsm"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="#333333" >
+            android:background="#333333">
 
             <TextView
                 android:id="@+id/longpPressTitleOsm"
@@ -83,7 +224,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/longPressTitleLayoutOsm"
-            android:background="#e6e6e6" >
+            android:background="#e6e6e6">
 
             <ImageView
                 android:id="@+id/longPressImageOsm"
@@ -116,12 +257,12 @@
                 android:id="@+id/longPressButtonOsm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minHeight="40dp"
                 android:layout_below="@+id/longpPressTextOsm"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="9dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/button_dark"
+                android:minHeight="40dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:text="@string/tx_38"
@@ -139,9 +280,9 @@
     <!-- ENDE LongPressDialog -->
     <!-- ENDE LongPressDialog -->
     <!-- ENDE LongPressDialog -->
-    
-    
-     <!-- AppRateDialog -->
+
+
+    <!-- AppRateDialog -->
     <!-- AppRateDialog -->
     <!-- AppRateDialog -->
 
@@ -153,7 +294,7 @@
         android:layout_marginRight="25dp"
         android:layout_marginTop="110dp"
         android:background="#f54b4b4b"
-        android:visibility="invisible" >
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/appRateTitleOsm"
@@ -236,8 +377,8 @@
             android:layout_height="1dip"
             android:layout_below="@+id/rateButton2Osm" />
     </RelativeLayout>
-    
-  	<!-- Tutorial -->
+
+    <!-- Tutorial -->
     <!-- Tutorial -->
     <!-- Tutorial -->
 
@@ -250,29 +391,29 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="48dp"
         android:background="#ffffff"
-        android:visibility="invisible" >
+        android:visibility="invisible">
 
         <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content">
 
                 <RelativeLayout
                     android:id="@+id/tutorialTitleBar"
                     android:layout_width="fill_parent"
                     android:layout_height="50dp"
                     android:layout_centerHorizontal="true"
-                    android:background="#333333" >
+                    android:background="#333333">
 
                     <RelativeLayout
                         android:id="@+id/tutorialTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerInParent="true" >
+                        android:layout_centerInParent="true">
 
                         <TextView
                             android:id="@+id/tutorialTitle1"
@@ -287,8 +428,7 @@
                             android:text="@string/tx_21"
                             android:textColor="#ffffff"
                             android:textSize="22sp"
-                            android:textStyle="bold" >
-                        </TextView>
+                            android:textStyle="bold"></TextView>
 
                         <TextView
                             android:id="@+id/tutorialTitle2"
@@ -303,8 +443,7 @@
                             android:text="@string/tx_22"
                             android:textColor="#a6e03c"
                             android:textSize="22sp"
-                            android:textStyle="bold" >
-                        </TextView>
+                            android:textStyle="bold"></TextView>
                     </RelativeLayout>
                 </RelativeLayout>
 
@@ -316,13 +455,13 @@
                     android:layout_below="@+id/tutorialTitleBar"
                     android:layout_marginLeft="1dp"
                     android:layout_marginTop="1dp"
-                    android:background="#e6e6e6" >
+                    android:background="#e6e6e6">
 
                     <RelativeLayout
                         android:id="@+id/tutorialNumber1"
                         android:layout_width="20dp"
                         android:layout_height="fill_parent"
-                        android:background="#86b530" >
+                        android:background="#86b530">
 
                         <TextView
                             android:id="@+id/tutorialNumber1Zahl"
@@ -336,8 +475,7 @@
                             android:text="1"
                             android:textColor="#eeeeee"
                             android:textSize="20sp"
-                            android:textStyle="bold" >
-                        </TextView>
+                            android:textStyle="bold"></TextView>
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -346,8 +484,8 @@
                         android:layout_height="fill_parent"
                         android:layout_centerInParent="true"
                         android:layout_marginLeft="20dp"
-                        android:focusableInTouchMode="true"
-                        android:layout_toRightOf="@+id/tutorialNumber1" >
+                        android:layout_toRightOf="@+id/tutorialNumber1"
+                        android:focusableInTouchMode="true">
 
                         <TextView
                             android:id="@+id/tutorialNumber1Text"
@@ -360,8 +498,7 @@
                             android:shadowDy="2"
                             android:shadowRadius="0.1"
                             android:text="@string/tx_13"
-                            android:textColor="#4d4d4d" >
-                        </TextView>
+                            android:textColor="#4d4d4d"></TextView>
 
                         <EditText
                             android:id="@+id/tutorialEditTextOsm"
@@ -371,13 +508,12 @@
                             android:layout_marginTop="5dp"
                             android:background="@drawable/edittxt"
                             android:ems="10"
+                            android:focusableInTouchMode="true"
                             android:gravity="center"
                             android:inputType="number"
-                            android:textCursorDrawable="@null"
-                            android:focusableInTouchMode="true"
                             android:textColor="#86b530"
-                            android:textStyle="bold" >
-                        </EditText>
+                            android:textCursorDrawable="@null"
+                            android:textStyle="bold"></EditText>
 
                         <Spinner
                             android:id="@+id/tutorialSpinnerOsm"
@@ -389,8 +525,7 @@
                             android:layout_marginLeft="10dp"
                             android:layout_marginTop="5dp"
                             android:layout_toRightOf="@+id/tutorialEditTextOsm"
-                            android:background="@drawable/spinner" >
-                        </Spinner>
+                            android:background="@drawable/spinner"></Spinner>
                     </RelativeLayout>
 
                     <ImageView
@@ -403,8 +538,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="25dp"
                         android:layout_toRightOf="@+id/tutorialNumber1TextBar"
-                        android:src="@drawable/tutorial1" >
-                    </ImageView>
+                        android:src="@drawable/tutorial1"></ImageView>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -415,13 +549,13 @@
                     android:layout_below="@+id/tutorialNumber1Bar"
                     android:layout_marginLeft="1dp"
                     android:layout_marginTop="1dp"
-                    android:background="#e6e6e6" >
+                    android:background="#e6e6e6">
 
                     <RelativeLayout
                         android:id="@+id/tutorialNumber2"
                         android:layout_width="20dp"
                         android:layout_height="fill_parent"
-                        android:background="#86b530" >
+                        android:background="#86b530">
 
                         <TextView
                             android:id="@+id/tutorialNumber2Text"
@@ -435,8 +569,7 @@
                             android:text="2"
                             android:textColor="#e6e6e6"
                             android:textSize="20sp"
-                            android:textStyle="bold" >
-                        </TextView>
+                            android:textStyle="bold"></TextView>
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -444,7 +577,7 @@
                         android:layout_width="170dp"
                         android:layout_height="fill_parent"
                         android:layout_marginLeft="20dp"
-                        android:layout_toRightOf="@+id/tutorialNumber2" >
+                        android:layout_toRightOf="@+id/tutorialNumber2">
 
                         <TextView
                             android:id="@+id/tutorialNumber2TextBarText"
@@ -457,8 +590,7 @@
                             android:shadowDy="2"
                             android:shadowRadius="0.1"
                             android:text="@string/tx_05"
-                            android:textColor="#4d4d4d" >
-                        </TextView>
+                            android:textColor="#4d4d4d"></TextView>
                     </RelativeLayout>
 
                     <ImageView
@@ -471,8 +603,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="25dp"
                         android:layout_toRightOf="@+id/tutorialNumber2TextBar"
-                        android:src="@drawable/tutorial2" >
-                    </ImageView>
+                        android:src="@drawable/tutorial2"></ImageView>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -484,13 +615,13 @@
                     android:layout_marginLeft="1dp"
                     android:layout_marginTop="1dp"
                     android:background="#e6e6e6"
-                    android:paddingBottom="1dp" >
+                    android:paddingBottom="1dp">
 
                     <RelativeLayout
                         android:id="@+id/tutorialNumber3"
                         android:layout_width="20dp"
                         android:layout_height="160dp"
-                        android:background="#86b530" >
+                        android:background="#86b530">
 
                         <TextView
                             android:id="@+id/tutorialNumber3Text"
@@ -504,8 +635,7 @@
                             android:text="3"
                             android:textColor="#e6e6e6"
                             android:textSize="20sp"
-                            android:textStyle="bold" >
-                        </TextView>
+                            android:textStyle="bold"></TextView>
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -514,7 +644,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:layout_marginLeft="20dp"
-                        android:layout_toRightOf="@+id/tutorialNumber3" >
+                        android:layout_toRightOf="@+id/tutorialNumber3">
 
                         <TextView
                             android:id="@+id/tutorialNumber4Text"
@@ -527,8 +657,7 @@
                             android:shadowDy="2"
                             android:shadowRadius="0.1"
                             android:text="@string/tx_01"
-                            android:textColor="#4d4d4d" >
-                        </TextView>
+                            android:textColor="#4d4d4d"></TextView>
 
                         <Button
                             android:id="@+id/startbuttonOsm"
@@ -539,8 +668,7 @@
                             android:layout_marginTop="5dp"
                             android:background="@drawable/button"
                             android:onClick="start"
-                            android:text="@string/tx_33" >
-                        </Button>
+                            android:text="@string/tx_33"></Button>
                     </RelativeLayout>
 
                     <ImageView
@@ -553,8 +681,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="25dp"
                         android:layout_toRightOf="@+id/tutorialNumber3TextBar"
-                        android:src="@drawable/tutorial3" >
-                    </ImageView>
+                        android:src="@drawable/tutorial3"></ImageView>
                 </RelativeLayout>
             </RelativeLayout>
         </ScrollView>
