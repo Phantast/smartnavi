@@ -78,7 +78,7 @@
                 android:shadowDx="0"
                 android:shadowDy="-2"
                 android:shadowRadius="0.1"
-                android:text="v2.0.0"
+                android:text="v2.0.1"
                 android:textColor="#FFFFFF"
                 android:textSize="10sp" />
 
