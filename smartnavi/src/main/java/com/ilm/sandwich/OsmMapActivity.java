@@ -194,11 +194,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
         try {
             mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD).getName();
         } catch (Exception e) {
-            View viewLine = findViewById(R.id.view156);
-            viewLine.setVisibility(View.VISIBLE);
-            TextView mapText = (TextView) findViewById(R.id.mapText);
-            mapText.setVisibility(View.VISIBLE);
-            mapText.setText(getResources().getString(R.string.tx_43));
+            Toast.makeText(this, getResources().getString(R.string.tx_43), Toast.LENGTH_LONG).show();
         }
 
         //Core of SmartNavi

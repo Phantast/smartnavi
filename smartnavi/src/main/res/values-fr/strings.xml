@@ -94,7 +94,7 @@ Chaque pas change votre position dans la direction correspondante. Des correctio
     <string name="tx_90">Carte hors-ligne</string>
     <string name="tx_91">Suivez notre tutoriel pour enregistrer des cartes hors-lignes sur votre appareil. Visitez notre site web pour plus d\'informations.</string>
     <string name="tx_92">smartnavi-app.com/offline</string>
-    <string name="tx_93">Site ouvert</string>
+    <string name="tx_93">Ouvrir le site web</string>
     <string-array name="dimension">
         <item>cm</item>
         <item>inch</item>
