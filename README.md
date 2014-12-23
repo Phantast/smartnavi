@@ -25,7 +25,7 @@ Developed By
 
 * Christian Henke - <contact@smartnavi-app.com>
 
-
+Special thanks to: Markus Kniep & Michael Lückgen - You are awesome! 
 
 License
 =======
