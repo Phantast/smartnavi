@@ -4,17 +4,19 @@ android {
     compileSdkVersion 20
     buildToolsVersion '20.0.0'
     defaultConfig {
-        applicationId 'com.ilm.sandwich'
         minSdkVersion 9
         targetSdkVersion 20
     }
     buildTypes {
         release {
-            runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
     productFlavors {
+        playstore {
+        }
+        free {
+        }
     }
     lintOptions {
         abortOnError false
@@ -25,7 +27,7 @@ dependencies {
     compile project(':oSMBonusPack')
     compile 'com.android.support:support-v4:20.0.0'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
-    compile 'com.google.android.gms:play-services:+'
+    playstoreCompile 'com.google.android.gms:play-services:+'
     compile files('libs/osmdroid-android-4.2.jar')
     compile files('libs/slf4j-android-1.6.1-RC1.jar')
 }

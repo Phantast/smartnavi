@@ -5,9 +5,9 @@
     android:versionCode="24"
     android:versionName="2.0.3">
 
-<uses-sdk
+    <uses-sdk
         android:minSdkVersion="9"
-    android:targetSdkVersion="22" />
+        android:targetSdkVersion="22" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -76,6 +76,14 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"></activity>
 
+        <!-- AIzaSyBaOFDLgEmkEXaWtzQ6Q4mB9LTtIu7vAqo  DEBUG-KEY -->
+        <!-- AIzaSyDZa_esegGL-6q8L8nMz6h1jMWpM4QD0X8  RELEASE-KEY -->
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyBaOFDLgEmkEXaWtzQ6Q4mB9LTtIu7vAqo" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

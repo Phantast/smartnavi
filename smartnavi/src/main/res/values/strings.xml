@@ -117,6 +117,11 @@
     <string name="tx_91">Follow our tutorial to store offline maps on your device. Visit our website for more information.</string>
     <string name="tx_92">smartnavi-app.com/offline</string>
     <string name="tx_93">Open Website</string>
+    <string name="tx_94">Welcome!</string>
+    <string name="tx_95">SmartNavi recognizes your <b>steps</b> by using internal sensors</string>
+    <string name="tx_96">Be <b>independent</b> from <b>GPS</b> and save up to 80% battery</string>
+    <string name="tx_97">SmartNavi is open source and respects your privacy</string>
+    <string name="tx_98">Next</string>
 
 
     <string-array name="dimension">

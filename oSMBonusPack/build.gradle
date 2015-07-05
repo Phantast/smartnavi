@@ -5,14 +5,13 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "org.osmdroid.bonuspack"
         minSdkVersion 4
         targetSdkVersion 4
     }
 
     buildTypes {
         release {
-            runProguard false
+            apply plugin: 'maven'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }

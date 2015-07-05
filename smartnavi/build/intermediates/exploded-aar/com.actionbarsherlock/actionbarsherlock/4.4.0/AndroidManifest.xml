@@ -4,8 +4,8 @@
     android:versionCode="440"
     android:versionName="4.4.0">
 
-    <uses-sdk
-        android:minSdkVersion="7"
-        android:targetSdkVersion="17" />
-    <application />
+  <uses-sdk
+      android:minSdkVersion="7"
+      android:targetSdkVersion="17" />
+  <application />
 </manifest>

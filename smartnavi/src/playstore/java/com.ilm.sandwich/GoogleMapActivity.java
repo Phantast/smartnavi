@@ -162,6 +162,7 @@ public class GoogleMapActivity extends SherlockFragmentActivity implements Senso
     int phases;
     int segmentCounter;
     View tutorialOverlay;
+    View welcomeView;
     private String[] html_instructions = new String[31];
     private String[] polylineArray = new String[31];
     private int iteration = 1;
@@ -1470,8 +1471,19 @@ public class GoogleMapActivity extends SherlockFragmentActivity implements Senso
     public void tutorialStuff() {
         //show Tutorial, and decativate touching the Map and LongPress
         map.getUiSettings().setAllGesturesEnabled(false);
-        tutorialOverlay = findViewById(R.id.tutorialOverlay);
-        tutorialOverlay.setVisibility(View.VISIBLE);
+
+        welcomeView = findViewById(R.id.welcomeView);
+        welcomeView.setVisibility(View.VISIBLE);
+
+        Button welcomeButton = (Button) findViewById(R.id.welcomeButton);
+        welcomeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                welcomeView.setVisibility(View.INVISIBLE);
+                tutorialOverlay = findViewById(R.id.tutorialOverlay);
+                tutorialOverlay.setVisibility(View.VISIBLE);
+            }
+        });
 
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         String stepLengthString = settings.getString("step_length", null);

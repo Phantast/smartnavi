@@ -13,11 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationRequest;
 import com.ilm.sandwich.BackgroundService;
 import com.ilm.sandwich.Config;
 import com.ilm.sandwich.GoogleMapActivity;
@@ -32,29 +27,18 @@ import java.util.Iterator;
  * @author Christian Henke
  *         www.smartnavi-app.com
  */
-public class Locationer implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, com.google.android.gms.location.LocationListener {
+public class Locationer implements LocationListener {
 
     public static double startLat;
     public static double startLon;
     public static double errorGPS;
     public static float lastErrorGPS = 9999999999.0f;
     private int satellitesInRange = 0;
-    private Runnable satelitesInRangeTest = new Runnable() {
-        public void run() {
-            if (satellitesInRange < 5) {
-                stopAutocorrect();
-                // Log.d("Location-Status", "Not enough satelites in range: " +
-                // satellitesInRange);
-            }
-        }
-    };
     private Handler mHandler = new Handler();
     private int erlaubterErrorGPS = 10;
     private boolean autoCorrectSuccess = true;
     private int additionalSecondsAutocorrect = 0;
     private boolean giveGpsMoreTime = true;
-    private LocationClient mLocationClient;
-    private LocationRequest highRequest;
     private long lastLocationTime = 0L;
     private LocationManager mLocationManager;
     private Context mContext;
@@ -71,11 +55,6 @@ public class Locationer implements GooglePlayServicesClient.ConnectionCallbacks,
     private Runnable deaktivateTask = new Runnable() {
         public void run() {
             deactivateLocationer();
-        }
-    };
-    private Runnable autoStopTask = new Runnable() {
-        public void run() {
-            stopAutocorrect();
         }
     };
     private LocationListener gpsAutocorrectLocationListener = new LocationListener() {
@@ -126,6 +105,20 @@ public class Locationer implements GooglePlayServicesClient.ConnectionCallbacks,
         }
 
     };
+    private Runnable autoStopTask = new Runnable() {
+        public void run() {
+            stopAutocorrect();
+        }
+    };
+    private Runnable satelitesInRangeTest = new Runnable() {
+        public void run() {
+            if (satellitesInRange < 5) {
+                stopAutocorrect();
+                // Log.d("Location-Status", "Not enough satelites in range: " +
+                // satellitesInRange);
+            }
+        }
+    };
 
 
     // LocationClient
@@ -151,36 +144,18 @@ public class Locationer implements GooglePlayServicesClient.ConnectionCallbacks,
             //nothing, may happen sometimes if the views of the activity are already destroyed
         }
 
-
-        try {
-            if (mLocationClient.isConnected()) {
-                mLocationClient.removeLocationUpdates(this);
-                mLocationClient.disconnect();
-            }
-        } catch (Exception e) {
-            //nothing
-        }
         mLocationManager.removeUpdates(this);
 
     }
 
     public void startLocationUpdates() {
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mContext);
-        if (status != ConnectionResult.SUCCESS) {
-            try {
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 0, this);
-                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10, 0, this);
-                mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 10, 0, this);
-            } catch (Exception e) {
-                if (Config.debugMode)
-                    e.printStackTrace();
-            }
-        } else {
-            // get first position
-            mLocationClient = new LocationClient(mContext, this, this);
-            if (mLocationClient.isConnected() == false && mLocationClient.isConnecting() == false) {
-                mLocationClient.connect();
-            }
+        try {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 0, this);
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10, 0, this);
+            mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 10, 0, this);
+        } catch (Exception e) {
+            if (Config.debugMode)
+                e.printStackTrace();
         }
     }
 
@@ -196,85 +171,6 @@ public class Locationer implements GooglePlayServicesClient.ConnectionCallbacks,
         satellitesInRange = i;
     }
 
-    @Override
-    public void onConnectionFailed(ConnectionResult arg0) {
-        if (Config.debugMode) {
-            Log.i("Location-Status", "LocationClient: Connection FAILED" + arg0.getErrorCode());
-        }
-    }
-
-    @Override
-    public void onConnected(Bundle arg0) {
-        if (Config.debugMode) {
-            Log.i("Location-Status", "onConnected");
-        }
-        try {
-            Location lastLocation = mLocationClient.getLastLocation();
-            double startLat = lastLocation.getLatitude();
-            double startLon = lastLocation.getLongitude();
-            lastErrorGPS = lastLocation.getAccuracy();
-            double altitude = lastLocation.getAltitude();
-            lastLocationTime = lastLocation.getTime();
-            double middleLat = startLat * 0.01745329252;
-            double distanceLongitude = 111.3D * Math.cos(middleLat);
-
-            Core.initialize(startLat, startLon, distanceLongitude, altitude, lastErrorGPS);
-            highRequest = new LocationRequest();
-            highRequest.setExpirationDuration(40000).setInterval(10).setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-            mLocationClient.requestLocationUpdates(highRequest, this);
-            if (Config.usingGoogleMaps) {
-                GoogleMapActivity.listHandler.sendEmptyMessage(0);
-            } else {
-                OsmMapActivity.listHandler.sendEmptyMessage(0);
-            }
-            // remove location updates after 40s automatically
-            mHandler.postDelayed(deaktivateTask, 40000);
-
-        } catch (Exception e) {
-            LocationManager locManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-            boolean locationEnabled = locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            if (locationEnabled == false) {
-                //no position has ever been requested or Location Services are deactivated, so tell the user to activate them
-                if (Config.usingGoogleMaps) {
-                    GoogleMapActivity.listHandler.sendEmptyMessage(5);
-                } else {
-                    OsmMapActivity.listHandler.sendEmptyMessage(5);
-                }
-            } else {
-                // location services are activated but no location has ever been requested
-                // so, start with 0,0 and hope the best
-                double startLat = 0;
-                double startLon = 0;
-                lastErrorGPS = 1000000;
-                double altitude = 0;
-                lastLocationTime = System.currentTimeMillis() - 1000000;
-                double middleLat = startLat * 0.01745329252;
-                double distanceLongitude = 111.3 * Math.cos(middleLat);
-                Core.initialize(startLat, startLon, distanceLongitude, altitude, lastErrorGPS);
-
-                if (Config.usingGoogleMaps) {
-                    GoogleMapActivity.listHandler.sendEmptyMessage(0);
-                } else {
-                    OsmMapActivity.listHandler.sendEmptyMessage(0);
-                }
-                // nach 40sek automatisch location updates removen
-                mHandler.postDelayed(deaktivateTask, 40000);
-            }
-
-        }
-
-    }
-
-    @Override
-    public void onDisconnected() {
-        // only when Problem occurs
-        if (Config.debugMode) {
-            Log.i("Location-Status", "onDisconnected");
-        }
-        //TextView mapText = (TextView) findViewById(R.id.mapText);
-        //mapText.setVisibility(0);
-        //mapText.append("Connection Problem with Google Play Services. \nPlease make sure you have Google Play Services installed.");
-    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -296,7 +192,7 @@ public class Locationer implements GooglePlayServicesClient.ConnectionCallbacks,
             Core.initialize(startLat, startLon, distanceLongitude, altitude, lastErrorGPS);
 
             if (Config.usingGoogleMaps) {
-                GoogleMapActivity.setPosition(true);
+                //not in free version: GoogleMapActivity.setPosition(true);
             } else {
                 OsmMapActivity.listHandler.sendEmptyMessage(14);
             }

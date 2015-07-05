@@ -7,12 +7,7 @@ public class Config {
 
     //Things to do before building the app:
     // - insert valid GoogleMapsAPI-Key in AndroidManifest.xml
-    // - insert valid Places_API_Key and MAPQUEST_API_KEY in Config.java
     // - set debugMode = false in Config.java
-
-    //Things to do before committing to github:
-    // - replace PLACES_API_KEY
-    // - replace MAPQUEST_API_KEY
 
     //app-Rate Dialog
     public final static String APP_PNAME = "com.ilm.sandwich";
@@ -20,9 +15,9 @@ public class Config {
     public final static int LAUNCHES_UNTIL_PROMPT = 3; // 3
     // places and mapquest api
     public static final String PLACES_API_URL = "https://maps.googleapis.com/maps/api/place";
-    public static final String PLACES_API_KEY = "PLACE_YOUR_VALID_API_KEY_HERE";
+    public static final String PLACES_API_KEY = "AIzaSyAT3ahsjBZZtWZMzcMy-AJffVfVGLZPdMw";
     public static final String[] COLUMNS = {BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1,};
-    public static final String MAPQUEST_API_KEY = "PLACE_YOUR_VALID_API_KEY_HERE";
+    public static final String MAPQUEST_API_KEY = "Fmjtd%7Cluurn962nq%2Caw%3Do5-9w85qf";
     // statistics
     public static final String API_URL = "http://5.39.91.189:3000/users";
     //debug

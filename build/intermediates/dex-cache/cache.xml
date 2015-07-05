@@ -1,45 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<pre-dex-items>
+<items version="2">
 
     <item
-        dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\release\classes-714567238af6e172df13858d7dc12f899866f045.jar"
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.actionbarsherlock\actionbarsherlock\4.4.0\classes.jar"
-        jumboMode="false" revision="20.0.0" sha1="af64527b748983a75de9c0756e9768b56b240a49" />
-    <item
-        dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\release\classes-f2095e837216ca2eca3a89bc465b56b306cd5ae0.jar"
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.google.android.gms\play-services\6.1.71\classes.jar"
-        jumboMode="false" revision="20.0.0" sha1="0f6d5c1ef2e982c3b7858408e3df389cf5d202da" />
-    <item
-        dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\release\classes-7afff54d8cd88cb7f30d501f25f055c5f59fcb06.jar"
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\classes.jar"
-        jumboMode="false" revision="20.0.0" sha1="8694693636ab36910c8100ce527c258ff3ebece0" />
-    <item
-        dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\release\gson-2.2.4-79747df3da28cf1f404cef0b7beeea3da8cd353c.jar"
-        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.2.4\a60a5e993c98c864010053cb901b7eab25306568\gson-2.2.4.jar"
-        jumboMode="false" revision="20.0.0" sha1="a60a5e993c98c864010053cb901b7eab25306568" />
-    <item
-        dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\release\internal_impl-20.0.0-393e1f19ca65bcd8eed8a40c4830426555cd8235.jar"
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\libs\internal_impl-20.0.0.jar"
-        jumboMode="false" revision="20.0.0" sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d" />
-    <item
-        dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\release\mapsforge-map-0.3.1-SNAPSHOT-jar-with-dependencies-e883557cc0bd61d1ccadd6956917eafbad6db568.jar"
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\Smartnavi\oSMBonusPack\unspecified\libs\mapsforge-map-0.3.1-SNAPSHOT-jar-with-dependencies.jar"
-        jumboMode="false" revision="20.0.0" sha1="50ef12571d2b65c986c9217911ddf786d82ba9b4" />
-    <item
-        dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\release\osmdroid-android-4.2-07441111d1baae69e8b06869afb57fda563a13b8.jar"
-        jar="D:\Development\Smartnavi\smartnavi\libs\osmdroid-android-4.2.jar" jumboMode="false"
-        revision="20.0.0" sha1="f3a0c73a9ed04a5d0959789c53da9f08462bfcc2" />
-    <item
-        dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\release\slf4j-android-1.6.1-RC1-04bf6f1f3954a6b9ac749c059da5d9de2bea6e7f.jar"
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\Smartnavi\oSMBonusPack\unspecified\libs\slf4j-android-1.6.1-RC1.jar"
-        jumboMode="false" revision="20.0.0" sha1="a0b527e8aabcc1f1e97d1674dc3f4f0794ec5df1" />
-    <item
-        dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\release\support-annotations-20.0.0-9b68fa5de2de23d0abf5d20ba3e0a64d64a35d82.jar"
-        jar="D:\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\20.0.0\support-annotations-20.0.0.jar"
-        jumboMode="false" revision="20.0.0" sha1="9d9013e9ff35fc3756411e62873c363c70c638fa" />
-    <item
-        dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\release\classes-31f9820c052b98976788738fa2f32d1566d3b1f9.jar"
         jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\Smartnavi\oSMBonusPack\unspecified\classes.jar"
-        jumboMode="false" revision="20.0.0" sha1="b85c003310be43e4ba82b35013fd7ed4459f2f5a" />
+        jumboMode="false" revision="20.0.0" sha1="a15614b7b56bd9ae591a3fab719d6cca375dfe5d">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\playstore\debug\classes-31f9820c052b98976788738fa2f32d1566d3b1f9.jar" />
+    </item>
+    <item
+        jar="D:\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\20.0.0\support-annotations-20.0.0.jar"
+        jumboMode="false" revision="20.0.0" sha1="9d9013e9ff35fc3756411e62873c363c70c638fa">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\support-annotations-20.0.0-9b68fa5de2de23d0abf5d20ba3e0a64d64a35d82.jar" />
+    </item>
+    <item
+        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.0\classes.jar"
+        jumboMode="false" revision="20.0.0" sha1="686344a780033e4ba22b926cd225f8d4941247e6">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\playstore\debug\classes-934c3d23607cf987bb355e0883a4e74defbc3ddf.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.2.4\a60a5e993c98c864010053cb901b7eab25306568\gson-2.2.4.jar"
+        jumboMode="false" revision="20.0.0" sha1="a60a5e993c98c864010053cb901b7eab25306568">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\playstore\debug\gson-2.2.4-79747df3da28cf1f404cef0b7beeea3da8cd353c.jar" />
+    </item>
+    <item
+        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\classes.jar"
+        jumboMode="false" revision="20.0.0" sha1="8694693636ab36910c8100ce527c258ff3ebece0">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\classes-7afff54d8cd88cb7f30d501f25f055c5f59fcb06.jar" />
+    </item>
+    <item jar="D:\Development\Smartnavi\smartnavi\libs\osmdroid-android-4.2.jar" jumboMode="false"
+        revision="20.0.0" sha1="f3a0c73a9ed04a5d0959789c53da9f08462bfcc2">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\playstore\debug\osmdroid-android-4.2-07441111d1baae69e8b06869afb57fda563a13b8.jar" />
+    </item>
+    <item
+        jar="D:\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.0\support-annotations-21.0.0.jar"
+        jumboMode="false" revision="20.0.0" sha1="1a578b9607b36266c63d43a4fa0ab5664dbe911e">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\playstore\debug\support-annotations-21.0.0-942a00eae9e94bbf9436a50907fead2fcde562a3.jar" />
+    </item>
+    <item
+        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.0\libs\internal_impl-21.0.0.jar"
+        jumboMode="false" revision="20.0.0" sha1="1609e6d42d0480b0f4188e2c29f75388fa12a8f0">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\playstore\debug\internal_impl-21.0.0-2f7cb6e6f0ada18eb3508c7a74a99355786dff15.jar" />
+    </item>
+    <item
+        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.actionbarsherlock\actionbarsherlock\4.4.0\classes.jar"
+        jumboMode="false" revision="20.0.0" sha1="af64527b748983a75de9c0756e9768b56b240a49">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\playstore\debug\classes-714567238af6e172df13858d7dc12f899866f045.jar" />
+    </item>
+    <item
+        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\libs\internal_impl-20.0.0.jar"
+        jumboMode="false" revision="20.0.0" sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\internal_impl-20.0.0-393e1f19ca65bcd8eed8a40c4830426555cd8235.jar" />
+    </item>
+    <item jar="D:\Development\Smartnavi\smartnavi\libs\slf4j-android-1.6.1-RC1.jar"
+        jumboMode="false" revision="20.0.0" sha1="a0b527e8aabcc1f1e97d1674dc3f4f0794ec5df1">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\playstore\debug\slf4j-android-1.6.1-RC1-7c8b13fd480c09e5b545d3f26964826230ebae2b.jar" />
+    </item>
+    <item
+        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\Smartnavi\oSMBonusPack\unspecified\libs\mapsforge-map-0.3.1-SNAPSHOT-jar-with-dependencies.jar"
+        jumboMode="false" revision="20.0.0" sha1="50ef12571d2b65c986c9217911ddf786d82ba9b4">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\playstore\debug\mapsforge-map-0.3.1-SNAPSHOT-jar-with-dependencies-e883557cc0bd61d1ccadd6956917eafbad6db568.jar" />
+    </item>
+    <item
+        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.google.android.gms\play-services\6.5.87\classes.jar"
+        jumboMode="false" revision="20.0.0" sha1="dd9247ea0fabe8ee479638c4b4a23e93752be256">
+        <dex
+            dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\playstore\debug\classes-881876be93cdf59c6f452390e943e6cbea0d7df0.jar" />
+    </item>
 
-</pre-dex-items>
+</items>
