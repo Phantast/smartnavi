@@ -20,7 +20,7 @@ android {
 dependencies {
     compile 'com.android.support:support-v4:20.0.0'
     compile 'com.google.code.gson:gson:2.2.4'
-    compile files('libs/mapsforge-map-0.3.1-SNAPSHOT-jar-with-dependencies.jar')
-    compile files('libs/osmdroid-android-4.2.jar')
-    compile files('libs/slf4j-android-1.6.1-RC1.jar')
+    compile 'org.osmdroid:osmdroid-android:4.2'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'org.slf4j:slf4j-android:1.6.1-RC1'
 }

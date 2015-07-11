@@ -1,9 +1,11 @@
 <component name="libraryTable">
   <library name="slf4j-android-1.6.1-RC1">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/oSMBonusPack/libs/slf4j-android-1.6.1-RC1.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-android/1.6.1-RC1/fe76e182946faad493a50968f3344e848b467b42/slf4j-android-1.6.1-RC1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-android/1.6.1-RC1/6e2b4b7e142b73009cd88c2abdcb8c2fd5a2d044/slf4j-android-1.6.1-RC1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
