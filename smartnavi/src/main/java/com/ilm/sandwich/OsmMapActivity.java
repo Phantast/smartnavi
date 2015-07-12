@@ -109,6 +109,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
     public Context sbContext;
     protected DirectedLocationOverlay myLocationOverlay;
     View tutorialOverlay;
+    View welcomeView;
     private MapView map;
     private IMapController mapController;
     private MyItemizedOverlay[] myItemizedOverlay = new MyItemizedOverlay[10];
@@ -247,7 +248,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
         // Rate App show for debugging
         // showRateDialog();
         // Rate App live
-        appRateDialog();
+        //appRateDialog(); should be specific for F-droid
 
         positionUpdate();
 
@@ -275,7 +276,6 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
             }
         });
     }
-
 
     private void setOwnLocationMarker() {
         // Set Marker
@@ -311,7 +311,6 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
             firstPositionFound = true;
         }
     }
-
 
     public void setPosition(boolean zoom) {
         int latE6 = (int) (Core.startLat * 1E6);
@@ -913,8 +912,19 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
     public void tutorialStuff() {
         // show Tutorial and deactivate Clicks on Map and Longpresses
         map.setClickable(false);
-        tutorialOverlay = findViewById(R.id.tutorialOverlayOsm);
-        tutorialOverlay.setVisibility(View.VISIBLE);
+
+        welcomeView = findViewById(R.id.welcomeViewOSM);
+        welcomeView.setVisibility(View.VISIBLE);
+
+        Button welcomeButton = (Button) findViewById(R.id.welcomeButtonOSM);
+        welcomeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                welcomeView.setVisibility(View.INVISIBLE);
+                tutorialOverlay = findViewById(R.id.tutorialOverlayOsm);
+                tutorialOverlay.setVisibility(View.VISIBLE);
+            }
+        });
 
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         String stepLengthString = settings.getString("step_length", null);
