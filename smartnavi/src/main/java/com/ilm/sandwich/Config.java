@@ -21,7 +21,7 @@ public class Config {
     // statistics
     public static final String API_URL = "http://5.39.91.189:3000/users";
     //debug
-    public static boolean debugMode = false;
+    public static boolean debugMode = true;
     //google or OSM
     public static boolean usingGoogleMaps;
     public static int PLACES_API_FALLBACK = 0;

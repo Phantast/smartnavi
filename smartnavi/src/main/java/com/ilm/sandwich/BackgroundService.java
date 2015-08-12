@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -207,11 +208,19 @@ public class BackgroundService extends SherlockActivity {
             geoLocationManager.setTestProviderEnabled(mocLocationNetworkProvider, true);
 
             notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notification = new Notification(R.drawable.stats, getApplicationContext().getResources().getString(R.string.tx_72), System.currentTimeMillis());
+
+
             Intent intent = new Intent(this, BackgroundService.class);
             PendingIntent activity = PendingIntent.getActivity(this, 0, intent, 0);
-            notification.flags = Notification.FLAG_ONGOING_EVENT;
-            notification.setLatestEventInfo(this, "SmartNavi", getApplicationContext().getResources().getString(R.string.tx_73), activity);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(
+                    this);
+            notification = builder.setContentIntent(activity)
+                    .setContentTitle(getApplicationContext().getResources().getString(R.string.tx_72))
+                    .setContentText(getApplicationContext().getResources().getString(R.string.tx_73))
+                    .setSmallIcon(R.drawable.stats)
+                    .setOngoing(true)
+                    .build();
+
             notificationManager.notify(0, notification);
             serviceButton.setText(getApplicationContext().getResources().getString(R.string.tx_69));
 

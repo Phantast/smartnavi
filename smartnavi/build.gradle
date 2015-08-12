@@ -1,11 +1,12 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 20
-    buildToolsVersion '20.0.0'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.2'
+    useLibrary 'org.apache.http.legacy'
     defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 20
+        minSdkVersion 10
+        targetSdkVersion 23
     }
     buildTypes {
         release {
@@ -24,19 +25,14 @@ android {
 }
 
 repositories {
+    maven { url "https://jitpack.io" }
     mavenCentral()
-    flatDir {
-        dirs 'libs'
-    }
 }
 
 dependencies {
-    compile(name: 'osmbonuspack_v5.2', ext: 'aar')
-    compile 'com.android.support:support-v4:20.0.0'
+    compile 'com.android.support:support-v4:23.1.1'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     playstoreCompile 'com.google.android.gms:play-services:+'
-    compile 'org.osmdroid:osmdroid-android:4.3'
-    compile 'org.slf4j:slf4j-android:1.6.1-RC1'
-    compile 'org.apache.commons:commons-lang3:3.3.2'
-    compile 'com.google.code.gson:gson:2.3'
+    compile 'com.github.MKergall.osmbonuspack:OSMBonusPack:v5.6'
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }

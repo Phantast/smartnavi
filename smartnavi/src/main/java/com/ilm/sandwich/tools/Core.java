@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.hardware.GeomagneticField;
 import android.hardware.SensorManager;
 import android.net.Uri;
+import android.opengl.Matrix;
 import android.os.Environment;
 import android.util.Log;
 
@@ -31,7 +32,8 @@ import java.util.TimeZone;
 public class Core {
 
     public static float[] gravity = new float[3];
-    public static float[] linear = new float[3];
+    public static float[] linear = new float[4];
+    public static float[] linearRemapped = new float[4];
     public static float[] origMagn = new float[3];
     public static float[] magn = new float[3];
     public static float[] origAcl = new float[3]; //only needed for logging/debug purposes
@@ -52,8 +54,9 @@ public class Core {
     private static float frequency;
     private static boolean stepBegin = false;
     private static float[] iMatrix = new float[9];
-    private static float[] RMatrix = new float[9];
-    private static float[] RMatrixRemapped = new float[9];
+    private static float[] RMatrix = new float[16];
+    private static float[] RMatrixRemapped = new float[16];
+    private static float[] RMatrixTranspose = new float[16];
     private static float[] orientation = new float[3];
     private static double deltaLat;
     private static double deltaLon;
@@ -409,6 +412,8 @@ public class Core {
         SensorManager.getRotationMatrix(RMatrix, iMatrix, gravity, magn);
         SensorManager.remapCoordinateSystem(RMatrix, SensorManager.AXIS_X, SensorManager.AXIS_Y, RMatrixRemapped);
         SensorManager.getOrientation(RMatrixRemapped, orientation);
+        Matrix.transposeM(RMatrixTranspose, 0, RMatrix, 0);
+        Matrix.multiplyMV(linearRemapped, 0, RMatrixTranspose, 0, linear, 0);
 
         // rechneSollYBeschl(); //Old correction of azimuth
 
@@ -444,7 +449,7 @@ public class Core {
     }
 
     public void stepDetection() {
-        float value = linear[2]; // Beware: linear or 2imbaLinear
+        float value = linearRemapped[2]; // Beware: linear or 2imbaLinear
         if (initialStep && value >= stepThreshold) {
             // Introduction of a step
             initialStep = false;

@@ -3,6 +3,7 @@ package com.ilm.sandwich;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -52,6 +53,9 @@ import com.actionbarsherlock.view.Window;
 import com.actionbarsherlock.widget.SearchView;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.actionbarsherlock.widget.SearchView.OnSuggestionListener;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.ilm.sandwich.tools.Core;
 import com.ilm.sandwich.tools.Locationer;
 import com.ilm.sandwich.tools.MyItemizedOverlay;
@@ -62,7 +66,6 @@ import com.ilm.sandwich.tools.SuggestionsAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.osmdroid.ResourceProxy;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.overlays.FolderOverlay;
 import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
@@ -79,11 +82,9 @@ import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.DirectedLocationOverlay;
-import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.OverlayManager;
 
 import java.text.DecimalFormat;
-import java.util.AbstractList;
 import java.util.ArrayList;
 
 /**
@@ -135,6 +136,11 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
     private boolean alreadyWaitingForAutoCorrect;
     private int stepsToWait = 0;
     private boolean backgroundServiceShallBeOn = false;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +167,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
         String tileProviderName = settings.getString("MapSource", "MapQuestOSM");
         if (tileProviderName.equalsIgnoreCase("MapQuestOSM")) {
             // in the following line the Zoom-Level could be raised from 19 to 20, but tiles are currently not reloading when map is moving
-            map.setTileSource(new XYTileSource("MapquestOSM", ResourceProxy.string.mapquest_osm, 0, 19, 256, ".jpg", new String[]{
+            map.setTileSource(new XYTileSource("MapquestOSM", 0, 21, 256, ".jpg", new String[]{
                     "http://otile1.mqcdn.com/tiles/1.0.0/map/", "http://otile2.mqcdn.com/tiles/1.0.0/map/", "http://otile3.mqcdn.com/tiles/1.0.0/map/",
                     "http://otile4.mqcdn.com/tiles/1.0.0/map/"}));
         } else {
@@ -275,6 +281,9 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
                 }
             }
         });
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void setOwnLocationMarker() {
@@ -415,7 +424,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
                         public void onClick(View arg0) {
                             try {
                                 startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                            } catch (android.content.ActivityNotFoundException ae) {
+                            } catch (ActivityNotFoundException ae) {
                                 startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
                             }
                             dialog.dismiss();
@@ -559,7 +568,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
         String tileProviderName = settings.getString("MapSource", "MapQuestOSM");
         if (tileProviderName.equalsIgnoreCase("MapQuestOSM")) {
             // in the following line the Zoom-Level could be raised from 19 to 20, but tiles are currently not reloading when map is moving
-            map.setTileSource(new XYTileSource("MapquestOSM", ResourceProxy.string.mapquest_osm, 0, 19, 256, ".jpg", new String[]{
+            map.setTileSource(new XYTileSource("MapquestOSM", 0, 19, 256, ".jpg", new String[]{
                     "http://otile1.mqcdn.com/tiles/1.0.0/map/", "http://otile2.mqcdn.com/tiles/1.0.0/map/", "http://otile3.mqcdn.com/tiles/1.0.0/map/",
                     "http://otile4.mqcdn.com/tiles/1.0.0/map/"}));
         } else {
@@ -720,6 +729,22 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
     protected void onStop() {
         map.getTileProvider().clearTileCache();
         super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "OsmMap Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.ilm.sandwich/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.disconnect();
     }
 
     private void restartListenerLight() {
@@ -875,7 +900,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
                 try {
                     startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                     userSwitchesGPS = true;
-                } catch (android.content.ActivityNotFoundException ae) {
+                } catch (ActivityNotFoundException ae) {
                     startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
                     userSwitchesGPS = true;
                 }
@@ -1161,7 +1186,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
     }
 
     @Override
-    public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu) {
 
         mainMenu = menu;
 
@@ -1202,7 +1227,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
     }
 
     @Override
-    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
 
         // if off, longPressMenu will be made invisible
         try {
@@ -1451,6 +1476,26 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
         myLocationOverlay.setLocation(new GeoPoint(latE6, lonE6));
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "OsmMap Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.ilm.sandwich/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
     private class writeSettings extends AsyncTask<Void, Void, Void> {
 
         private String key;
@@ -1531,7 +1576,9 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
                     waypoints.add(endPoint);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        new RoadManagerTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, waypoints);
+                        RoadManagerTask rm = new RoadManagerTask();
+                        rm.setContext(getApplicationContext());
+                        rm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, waypoints);
                     } else {
                         new RoadManagerTask().execute(waypoints);
                     }
@@ -1546,12 +1593,16 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
 
     private class RoadManagerTask extends AsyncTask<ArrayList<GeoPoint>, Void, Polyline> {
         private Road road;
+        private Context mContext;
 
+        public void setContext(Context context) {
+            mContext = context;
+        }
         @Override
         protected Polyline doInBackground(ArrayList<GeoPoint>... waypoints) {
             // old without pedestrian support
             // RoadManager roadManager = new OSRMRoadManager();
-            RoadManager roadManager = new MapQuestRoadManager(Config.MAPQUEST_API_KEY);
+            RoadManager roadManager = new MapQuestRoadManager(Config.MAPQUEST_API_KEY, mContext);
             roadManager.addRequestOption("routeType=pedestrian");
             // retreive the road between those points:
             road = roadManager.getRoad(waypoints[0]);
@@ -1562,9 +1613,8 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
 
         @Override
         protected void onPostExecute(Polyline roadOverlay) {
-            FolderOverlay myMarkersFolder = new FolderOverlay(OsmMapActivity.this);
-            AbstractList<Overlay> list = myMarkersFolder.getItems();
-            list.add(roadOverlay);
+            FolderOverlay roadMarkers = new FolderOverlay(mContext);
+            map.getOverlays().add(roadOverlay);
 
             showRouteInfo(false);
 
@@ -1601,8 +1651,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
                     }
                 });
 
-                //put into FolderOverlay list
-                list.add(nodeMarker);
+                roadMarkers.add(nodeMarker);
             }
 
             OverlayManager om = map.getOverlayManager();
@@ -1614,7 +1663,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
                 om.remove(1);
             }
 
-            map.getOverlays().add(myMarkersFolder);
+            map.getOverlays().add(roadMarkers);
             setNewPositionMarker();
             map.invalidate();
         }
