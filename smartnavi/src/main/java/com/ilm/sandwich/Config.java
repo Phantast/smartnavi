@@ -3,9 +3,13 @@ package com.ilm.sandwich;
 import android.app.SearchManager;
 import android.provider.BaseColumns;
 
+/**
+ * @author Christian Henke
+ *         www.smartnavi-app.com
+ */
 public class Config {
 
-    //Things to do before building the app:
+    //Things to do before releasing the app:
     // - insert valid GoogleMapsAPI-Key in AndroidManifest.xml
     // - set debugMode = false in Config.java
 
@@ -21,7 +25,7 @@ public class Config {
     // statistics
     public static final String API_URL = "http://5.39.91.189:3000/users";
     //debug
-    public static boolean debugMode = true;
+    public static boolean debugMode = false;
     //google or OSM
     public static boolean usingGoogleMaps;
     public static int PLACES_API_FALLBACK = 0;

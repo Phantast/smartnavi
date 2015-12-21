@@ -34,5 +34,4 @@ dependencies {
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     playstoreCompile 'com.google.android.gms:play-services:+'
     compile 'com.github.MKergall.osmbonuspack:OSMBonusPack:v5.6'
-    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }

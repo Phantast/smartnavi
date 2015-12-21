@@ -2,46 +2,11 @@
 <items version="2" >
 
     <item
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.google.android.gms\play-services-appindexing\8.1.0\jars\classes.jar"
+        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.1\jars\classes.jar"
         jumboMode="false"
         revision="23.0.2"
-        sha1="4477ea44f5ec5ad064022a22691732d7638ff197">
-        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\com.google.android.gms-play-services-appindexing-8.1.0_0f0d228189b35ce79b3f9a20dc3a05a82d86673f.jar" />
-    </item>
-    <item
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\org.osmdroid\osmdroid-android\5.0.1\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="ce9df050923f8cc3616946c592a64547d0c5bb03">
-        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\org.osmdroid-osmdroid-android-5.0.1_3cfd2891d4f4e25fc6da9f4757d3325eb77c74ec.jar" />
-    </item>
-    <item
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.google.android.gms\play-services-basement\8.1.0\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="d0dda274b703dd9c5bb056867649d22b4171ae7d">
-        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\com.google.android.gms-play-services-basement-8.1.0_af67fb80d90528854b097a70603172b8b8c7b88d.jar" />
-    </item>
-    <item
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.1\jars\libs\internal_impl-23.1.1.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="a4de9c81ae239414e1ed0f86441b02abaf29bca9">
-        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\internal_impl-23.1.1_c71962371b5762dc8e8752085b106afe5081b5dd.jar" />
-    </item>
-    <item
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.github.MKergall.osmbonuspack\OSMBonusPack\v5.6\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="9f896c89996710248d5433e9cfa0670ee903489d">
-        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\com.github.MKergall.osmbonuspack-OSMBonusPack-v5.6_f17577ed17f3a72eb0c59ba3bc64404a1c9931f8.jar" />
-    </item>
-    <item
-        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.4\695b63d702f505b9b916e02272e3b6381bade7f\gson-2.4.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="0695b63d702f505b9b916e02272e3b6381bade7f">
-        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\gson-2.4_91a2ec1634acf38cc87b061f1c649cd671fc91d2.jar" />
+        sha1="6cbc7773921fcfedbe55657578f0cbfe614778dc">
+        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\com.android.support-support-v4-23.1.1_f9621fb846004964e21cd967dc27fc4ddbd4faaa.jar" />
     </item>
     <item
         jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.actionbarsherlock\actionbarsherlock\4.4.0\jars\classes.jar"
@@ -51,11 +16,25 @@
         <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\com.actionbarsherlock-actionbarsherlock-4.4.0_e964fa88d5aa7df4d82501d5f7f0f9675f40cd55.jar" />
     </item>
     <item
-        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.squareup.okio\okio\1.6.0\98476622f10715998eacf9240d6b479f12c66143\okio-1.6.0.jar"
+        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\org.osmdroid\osmdroid-android\5.0.1\jars\classes.jar"
         jumboMode="false"
         revision="23.0.2"
-        sha1="98476622f10715998eacf9240d6b479f12c66143">
-        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\okio-1.6.0_e8f277ec86ec03761827cc457bfce8885465f1a9.jar" />
+        sha1="ce9df050923f8cc3616946c592a64547d0c5bb03">
+        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\org.osmdroid-osmdroid-android-5.0.1_3cfd2891d4f4e25fc6da9f4757d3325eb77c74ec.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp\2.6.0\212387a39088ecd3daff8e3bfc3bdc4123e33c67\okhttp-2.6.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="212387a39088ecd3daff8e3bfc3bdc4123e33c67">
+        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\okhttp-2.6.0_99594ba8880f8c3546bbc094312d78e6a36f1f1d.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.4\695b63d702f505b9b916e02272e3b6381bade7f\gson-2.4.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="0695b63d702f505b9b916e02272e3b6381bade7f">
+        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\gson-2.4_91a2ec1634acf38cc87b061f1c649cd671fc91d2.jar" />
     </item>
     <item
         jar="D:\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.1.1\support-annotations-23.1.1.jar"
@@ -65,11 +44,25 @@
         <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\support-annotations-23.1.1_160e21806fe4fcbe2b20c34d1bbde421f69a17ae.jar" />
     </item>
     <item
-        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.1\jars\classes.jar"
+        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.github.MKergall.osmbonuspack\OSMBonusPack\v5.6\jars\classes.jar"
         jumboMode="false"
         revision="23.0.2"
-        sha1="6cbc7773921fcfedbe55657578f0cbfe614778dc">
-        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\com.android.support-support-v4-23.1.1_f9621fb846004964e21cd967dc27fc4ddbd4faaa.jar" />
+        sha1="9f896c89996710248d5433e9cfa0670ee903489d">
+        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\com.github.MKergall.osmbonuspack-OSMBonusPack-v5.6_f17577ed17f3a72eb0c59ba3bc64404a1c9931f8.jar" />
+    </item>
+    <item
+        jar="D:\Development\Smartnavi\smartnavi\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.1\jars\libs\internal_impl-23.1.1.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="a4de9c81ae239414e1ed0f86441b02abaf29bca9">
+        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\internal_impl-23.1.1_c71962371b5762dc8e8752085b106afe5081b5dd.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.squareup.okio\okio\1.6.0\98476622f10715998eacf9240d6b479f12c66143\okio-1.6.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="98476622f10715998eacf9240d6b479f12c66143">
+        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\okio-1.6.0_e8f277ec86ec03761827cc457bfce8885465f1a9.jar" />
     </item>
     <item
         jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\org.apache.commons\commons-lang3\3.3.2\90a3822c38ec8c996e84c16a3477ef632cbc87a3\commons-lang3-3.3.2.jar"
@@ -77,13 +70,6 @@
         revision="23.0.2"
         sha1="90a3822c38ec8c996e84c16a3477ef632cbc87a3">
         <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\commons-lang3-3.3.2_fb539fc7ce923f709b0e99f9a67726a744047edd.jar" />
-    </item>
-    <item
-        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp\2.6.0\212387a39088ecd3daff8e3bfc3bdc4123e33c67\okhttp-2.6.0.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="212387a39088ecd3daff8e3bfc3bdc4123e33c67">
-        <dex dex="D:\Development\Smartnavi\smartnavi\build\intermediates\pre-dexed\free\debug\okhttp-2.6.0_99594ba8880f8c3546bbc094312d78e6a36f1f1d.jar" />
     </item>
 
 </items>

@@ -53,9 +53,6 @@ import com.actionbarsherlock.view.Window;
 import com.actionbarsherlock.widget.SearchView;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.actionbarsherlock.widget.SearchView.OnSuggestionListener;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.ilm.sandwich.tools.Core;
 import com.ilm.sandwich.tools.Locationer;
 import com.ilm.sandwich.tools.MyItemizedOverlay;
@@ -136,11 +133,6 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
     private boolean alreadyWaitingForAutoCorrect;
     private int stepsToWait = 0;
     private boolean backgroundServiceShallBeOn = false;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,8 +158,9 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
 
         String tileProviderName = settings.getString("MapSource", "MapQuestOSM");
         if (tileProviderName.equalsIgnoreCase("MapQuestOSM")) {
-            // in the following line the Zoom-Level could be raised from 19 to 20, but tiles are currently not reloading when map is moving
-            map.setTileSource(new XYTileSource("MapquestOSM", 0, 21, 256, ".jpg", new String[]{
+            final float scale = getBaseContext().getResources().getDisplayMetrics().density;
+            final int newScale = (int) (256 * scale);
+            map.setTileSource(new XYTileSource("MapquestOSM", 0, 22, newScale, ".jpg", new String[]{
                     "http://otile1.mqcdn.com/tiles/1.0.0/map/", "http://otile2.mqcdn.com/tiles/1.0.0/map/", "http://otile3.mqcdn.com/tiles/1.0.0/map/",
                     "http://otile4.mqcdn.com/tiles/1.0.0/map/"}));
         } else {
@@ -281,9 +274,6 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
                 }
             }
         });
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void setOwnLocationMarker() {
@@ -729,22 +719,6 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
     protected void onStop() {
         map.getTileProvider().clearTileCache();
         super.onStop();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "OsmMap Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.ilm.sandwich/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.disconnect();
     }
 
     private void restartListenerLight() {
@@ -983,11 +957,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
 
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                if (arg2 == 0) {
-                    metricUnits = true;
-                } else {
-                    metricUnits = false;
-                }
+                metricUnits = arg2 == 0;
             }
 
             @Override
@@ -1016,7 +986,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
                             } else {
                                 new writeSettings("step_length", numberString).execute();
                             }
-                            Core.stepLength = (float) (number / 222);
+                            Core.stepLength = number / 222;
                             tutorialAbgeschlossen = true;
                         } else if (number < 95 && number > 45 && metricUnits == false) {
 
@@ -1044,7 +1014,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
 
                 if (tutorialAbgeschlossen) {
                     // hide Tutorial
-                    tutorialOverlay = (View) findViewById(R.id.tutorialOverlayOsm);
+                    tutorialOverlay = findViewById(R.id.tutorialOverlayOsm);
                     tutorialOverlay.setVisibility(View.INVISIBLE);
                     // make Map clickable again
                     map.setClickable(true);
@@ -1474,26 +1444,6 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
         int latE6 = (int) (Core.startLat * 1E6);
         int lonE6 = (int) (Core.startLon * 1E6);
         myLocationOverlay.setLocation(new GeoPoint(latE6, lonE6));
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "OsmMap Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.ilm.sandwich/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
     }
 
     private class writeSettings extends AsyncTask<Void, Void, Void> {
