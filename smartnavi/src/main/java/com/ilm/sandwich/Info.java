@@ -1,5 +1,7 @@
 package com.ilm.sandwich;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
@@ -23,6 +25,15 @@ public class Info extends SherlockActivity {
         Spanned spanned = Html.fromHtml(getString(R.string.tx_89));
         betaTest.setMovementMethod(LinkMovementMethod.getInstance());
         betaTest.setText(spanned);
+        TextView versionNameText = (TextView) findViewById(R.id.versionName);
+        PackageInfo pInfo = null;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String versionName = pInfo.versionName;
+            versionNameText.setText(versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

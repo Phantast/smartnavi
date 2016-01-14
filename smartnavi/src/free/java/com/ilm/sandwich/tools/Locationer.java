@@ -57,6 +57,20 @@ public class Locationer implements LocationListener {
             deactivateLocationer();
         }
     };
+    private Runnable satelitesInRangeTest = new Runnable() {
+        public void run() {
+            if (satellitesInRange < 5) {
+                stopAutocorrect();
+                // Log.d("Location-Status", "Not enough satelites in range: " +
+                // satellitesInRange);
+            }
+        }
+    };
+    private Runnable autoStopTask = new Runnable() {
+        public void run() {
+            stopAutocorrect();
+        }
+    };
     private LocationListener gpsAutocorrectLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             if (location.getLatitude() != 0) {
@@ -104,20 +118,6 @@ public class Locationer implements LocationListener {
         public void onProviderDisabled(String provider) {
         }
 
-    };
-    private Runnable autoStopTask = new Runnable() {
-        public void run() {
-            stopAutocorrect();
-        }
-    };
-    private Runnable satelitesInRangeTest = new Runnable() {
-        public void run() {
-            if (satellitesInRange < 5) {
-                stopAutocorrect();
-                // Log.d("Location-Status", "Not enough satelites in range: " +
-                // satellitesInRange);
-            }
-        }
     };
 
 

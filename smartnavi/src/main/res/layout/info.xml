@@ -68,7 +68,7 @@
             </RelativeLayout>
 
             <TextView
-                android:id="@+id/text0"
+                android:id="@+id/versionName"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentBottom="true"
@@ -78,7 +78,6 @@
                 android:shadowDx="0"
                 android:shadowDy="-2"
                 android:shadowRadius="0.1"
-                android:text="v2.0.3"
                 android:textColor="#FFFFFF"
                 android:textSize="10sp" />
 

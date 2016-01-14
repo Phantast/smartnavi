@@ -6,6 +6,7 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.MKergall.osmbonuspack/OSMBonusPack/v5.6/d01ffeb06fb76142f7f7e756d82350803a2caa58/OSMBonusPack-v5.6-sources.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.MKergall.osmbonuspack/OSMBonusPack/v5.6/30261637d8edde8c676774f54619ff41d5958613/OSMBonusPack-v5.6-sources.jar!/" />
     </SOURCES>
   </library>

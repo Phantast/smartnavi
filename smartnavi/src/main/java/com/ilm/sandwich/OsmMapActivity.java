@@ -1548,6 +1548,7 @@ public class OsmMapActivity extends SherlockActivity implements SensorEventListe
         public void setContext(Context context) {
             mContext = context;
         }
+
         @Override
         protected Polyline doInBackground(ArrayList<GeoPoint>... waypoints) {
             // old without pedestrian support

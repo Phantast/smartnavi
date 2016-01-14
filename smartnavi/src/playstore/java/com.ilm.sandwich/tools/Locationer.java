@@ -14,11 +14,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -38,22 +34,13 @@ import java.util.Iterator;
  */
 public class Locationer implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, com.google.android.gms.location.LocationListener{
+        LocationListener, com.google.android.gms.location.LocationListener {
 
     public static double startLat;
     public static double startLon;
     public static double errorGPS;
     public static float lastErrorGPS = 9999999999.0f;
     private int satellitesInRange = 0;
-    private Runnable satelitesInRangeTest = new Runnable() {
-        public void run() {
-            if (satellitesInRange < 5) {
-                stopAutocorrect();
-                // Log.d("Location-Status", "Not enough satelites in range: " +
-                // satellitesInRange);
-            }
-        }
-    };
     private Handler mHandler = new Handler();
     private int erlaubterErrorGPS = 10;
     private boolean autoCorrectSuccess = true;
@@ -77,11 +64,6 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
     private Runnable deaktivateTask = new Runnable() {
         public void run() {
             deactivateLocationer();
-        }
-    };
-    private Runnable autoStopTask = new Runnable() {
-        public void run() {
-            stopAutocorrect();
         }
     };
     private LocationListener gpsAutocorrectLocationListener = new LocationListener() {
@@ -131,6 +113,20 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
         public void onProviderDisabled(String provider) {
         }
 
+    };
+    private Runnable autoStopTask = new Runnable() {
+        public void run() {
+            stopAutocorrect();
+        }
+    };
+    private Runnable satelitesInRangeTest = new Runnable() {
+        public void run() {
+            if (satellitesInRange < 5) {
+                stopAutocorrect();
+                // Log.d("Location-Status", "Not enough satelites in range: " +
+                // satellitesInRange);
+            }
+        }
     };
 
 
@@ -226,7 +222,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
             lastErrorGPS = lastLocation.getAccuracy();
             double altitude = lastLocation.getAltitude();
             lastLocationTime = lastLocation.getTime();
-            Log.i("Location-Status", "Last-Location: Error="+lastErrorGPS+" Time:"+lastLocationTime);
+            Log.i("Location-Status", "Last-Location: Error=" + lastErrorGPS + " Time:" + lastLocationTime);
             double middleLat = startLat * 0.01745329252;
             double distanceLongitude = 111.3D * Math.cos(middleLat);
 
