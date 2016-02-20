@@ -1,0 +1,36 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '23.0.2'
+    useLibrary 'org.apache.http.legacy'
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 23
+    }
+    buildTypes {
+        release {
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    productFlavors {
+        playstore {
+        }
+        free {
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+repositories {
+    maven { url "https://jitpack.io" }
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:23.1.0'
+    playstoreCompile 'com.google.android.gms:play-services:+'
+    compile 'com.github.MKergall.osmbonuspack:OSMBonusPack:v5.6'
+}

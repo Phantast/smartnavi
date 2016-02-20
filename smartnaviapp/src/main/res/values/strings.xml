@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- STANDARD ENGLISCH   -->
+
+<resources>
+
+    <string name="app_name">SmartNavi</string>
+    <string name="tx_01">Start <b>step based</b> navigation</string>
+    <string name="tx_02">Address</string>
+    <string name="tx_03">Search</string>
+    <string name="tx_04">Loading Route. Please wait&#8230;</string>
+    <string name="tx_05">Hold your device always in front of your body</string>
+    <string name="tx_06">SmartNavi was not able to get an initial position.\nPlease enable internet or GPS and restart SmartNavi,\nor contact our support: smartnavi@2imba.de</string>
+    <string name="tx_07">SmartNavi is OpenSource and offers\nstep-based and GPS independent navigation.</string>
+    <string name="tx_08"><u>How it works:</u></string>
+    <string name="tx_09">Feel free to contact us:\ncontact@smartnavi-app.com</string>
+    <string name="tx_10">Please enter your body height, so that your step length can be determined.</string>
+
+
+    <string name="tx_11">Thanks to Madeliniz for the SmartNavi Logo:\nhttp://madeliniz.deviantart.com</string>
+    <string name="tx_12">Touch and hold the map to get extra options. So you can set your exact start position.</string>
+    <string name="tx_13">Enter your\n<b>body height</b></string>
+    <string name="tx_14">Please enable\n<i>Mock Locations</i>\nunder:\> Settings\n> Development</string>
+    <string name="tx_15">Settings</string>
+    <string name="tx_16">e.g. 180</string>
+    <string name="tx_17">Set position</string>
+    <string name="tx_18">Long Press</string>
+    <string name="tx_19">More information on our website:\nwww.smartnavi-app.com</string>
+    <string name="tx_20">The body height is an invalid value. Only numbers allowed.</string>
+
+
+    <string name="tx_21">HOW IT</string>
+    <string name="tx_22">&#160;WORKS</string>
+    <string name="tx_23">e.g. 70</string>
+    <string name="tx_24">No Result. Check internet connection and try again.</string>
+    <string name="tx_25">deactivated</string>
+    <string name="tx_26"><u>Anonymous usage data</u></string>
+	<string name="tx_27">Support SmartNavi by sending anonymous usage data. This data will help us to improve SmartNavi. The data are about: device type, 
+	    sensor equipment and usage of features. The data is completely anonymous. No positions and no private information will be transmitted. You can deactivate usage data sending at every time in settings. Thank you for your support!</string>
+    <string name="tx_28">Close</string>
+    <string name="tx_29">Please enable location getting in settings.</string>
+    <string name="tx_30">Could not get route information. Please try again later.</string>
+
+
+    <string name="tx_31">It seems that you like SmartNavi. :) \nYour rating would be great support for us!</string>
+    <string name="tx_32">Invalid number.</string>
+    <string name="tx_33">Start</string>
+    <string name="tx_34">Rate SmartNavi</string>
+    <string name="tx_35">Cancel</string>
+    <string name="tx_36">Open Settings</string>
+    <string name="tx_37">Later</string>
+    <string name="tx_38">OK</string>
+    <string name="tx_39">Not now</string>
+    <string name="tx_40">Rate now in the PlayStore</string>
+	
+	
+	<string name="tx_41">SmartNavi recognizes steps by using accelerometer and magnetic-field-sensor data.
+	    Every step changes the position in the corresponding direction. Internal error correction guarantees a durable accuracy. The startposition 
+	    will be located by using either GPS or UMTS/Wifi/GSM locationing. By using internal sensors instead of GPS, SmartNavi can save up to 80% energy and therefore battery life.</string>
+    <string name="tx_42">No thanks</string>
+    <string name="tx_43">Unfortunately your device does not seem to have a magnetic field sensor (compass). SmartNavi can not work without that.\nMore information on our website:\nwww.smartnavi.mobi\n</string>
+    <string name="tx_44">Adjust settings:</string>
+    <string name="tx_45"><u>How it works:</u></string>
+    <string name="tx_46"><u>Settings:</u></string>
+    <string name="tx_47">Please check your internet connection.</string>
+    <string name="tx_48">Unfortunately SmartNavi can not initialize your accelerometer. \nFor support you can contact us via our website:\nwww.smartnavi.mobi\n</string>
+    <string name="tx_49">Attention! Please activate GPS!</string>
+    <string name="tx_50">Tutorial</string>
+
+
+    <string name="tx_51">Body Height</string>
+    <string name="tx_52">Your step length is calculated by using your height</string>
+    <string name="tx_53">Enter your body height</string>
+    <string name="tx_54">General</string>
+    <string name="tx_55">Vibration</string>
+    <string name="tx_56">Satellite View</string>
+    <string name="tx_57">Speech Output</string>
+    <string name="tx_58">Vibrates at next navigation step.</string>
+    <string name="tx_59">Exports the route you walk in a GPX-file on your SD-Card</string>
+    <string name="tx_60">Export Route</string>
+
+
+    <string name="tx_61">Initial positioning stopped.</string>
+    <string name="tx_62">Position</string>
+    <string name="tx_63">AutoCorrect</string>
+    <string name="tx_64">Background Service</string>
+    <string name="tx_65">About</string>
+    <string name="tx_66">AutoCorrect via GPS</string>
+    <string name="tx_67">SmartNavi can provide location data for other apps.</string>
+    <string name="tx_68">Use this feature to navigate with other apps stepbased and energy-saving.</string>
+    <string name="tx_69">Stop background service</string>
+    <string name="tx_70">Background service stopped.</string>
+
+
+    <string name="tx_71">Miscellaneous</string>
+    <string name="tx_72">SmartNavi is now running in background</string>
+    <string name="tx_73">Now providing location data</string>
+    <string name="tx_74">Start background service</string>
+    <string name="tx_75">Long battery life</string>
+    <string name="tx_76">Balanced</string>
+    <string name="tx_77">No results were found for your request.</string>
+    <string name="tx_78">Anonymous usage data</string>
+    <string name="tx_79">More Info about the specific data can be found under About</string>
+    <string name="tx_80">High accuracy</string>
+
+    <string name="tx_81">Enable GPS to get a better initial position.\nAfter getting your initial position SmartNavi works independent from GPS! :)</string>
+    <string name="tx_82">Initial positioning stopped.</string>
+    <string name="tx_83">Only for GoogleMaps</string>
+    <string name="tx_84">For navigation instructions</string>
+    <string name="tx_85">Corrects your position regularly with GPS</string>
+    <string name="tx_86">Map Provider</string>
+    <string name="tx_87">Change map tile provider</string>
+    <string name="tx_88">GPX-File will be created in Folder \"smartnavi\"</string>
+    <string name="tx_89">Join the Beta-Test Community &lt;br&gt; &lt;a href="https://plus.google.com/communities/105614123040262375968"&gt;Beta-Test Community&lt;/a&gt;</string>
+    <string name="tx_90">Offline Maps</string>
+
+    <string name="tx_91">Follow our tutorial to store offline maps on your device. Visit our website for more information.</string>
+    <string name="tx_92">smartnavi-app.com/offline</string>
+    <string name="tx_93">Open Website</string>
+    <string name="tx_94">Welcome!</string>
+    <string name="tx_95">SmartNavi recognizes your <b>steps</b> by using internal sensors</string>
+    <string name="tx_96">Be <b>independent</b> from <b>GPS</b> and save up to 80% battery</string>
+    <string name="tx_97">SmartNavi is open source and respects your privacy</string>
+    <string name="tx_98">Next</string>
+    <string name="tx_99">You cannot use Google Maps in the Open Source version of SmartNavi due to missing Google Play Services.</string>
+
+
+    <string-array name="dimension">
+        <item>cm</item>
+        <item>inch</item>
+    </string-array>
+
+    <string-array name="possetzen">
+        <item>Set Position</item>
+        <item>Set Destination</item>
+    </string-array>
+
+    <string-array name="possetzen2">
+        <item>Set Position</item>
+        <item>Set Destination</item>
+    </string-array>
+
+    <string-array name="mapProvider">
+        <item>Google Maps</item>
+        <item>MapQuest OSM</item>
+        <item>Mapnik OSM</item>
+    </string-array>
+
+
+</resources>
