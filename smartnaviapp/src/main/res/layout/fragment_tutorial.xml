@@ -1,0 +1,585 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.TutorialFragment">
+
+    <!-- TutorialFragment -->
+    <!-- TutorialFragment -->
+    <!-- TutorialFragment -->
+
+    <RelativeLayout
+        android:id="@+id/tutorialOverlay"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        android:background="#ffffff"
+        android:visibility="invisible">
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:id="@+id/tutorialTitleBar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="#333333">
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true">
+
+                        <TextView
+                            android:id="@+id/tutorialTitle1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            android:shadowColor="#000000"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_21"
+                            android:textColor="#ffffff"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tutorialTitle2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@+id/tutorialTitle1"
+                            android:layout_toRightOf="@+id/tutorialTitle1"
+                            android:shadowColor="#000000"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_22"
+                            android:textColor="#a6e03c"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tutorialNumber1Bar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="120dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/tutorialTitleBar"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="1dp"
+                    android:background="#f4f4f4">
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber1"
+                        android:layout_width="20dp"
+                        android:layout_height="fill_parent"
+                        android:background="#86b530">
+
+                        <TextView
+                            android:id="@+id/tutorialNumber1Zahl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:shadowColor="#6b9126"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="1"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber1TextBar"
+                        android:layout_width="170dp"
+                        android:layout_height="fill_parent"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@+id/tutorialNumber1"
+                        android:focusableInTouchMode="true">
+
+                        <TextView
+                            android:id="@+id/tutorialNumber1Text"
+                            style="@style/AudioFileInfoOverlayText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:shadowColor="#FFFFFF"
+                            android:shadowDx="0"
+                            android:shadowDy="2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_13"
+                            android:textColor="#4d4d4d" />
+
+                        <EditText
+                            android:id="@+id/tutorialEditText"
+                            android:layout_width="90dp"
+                            android:layout_height="45dp"
+                            android:layout_below="@+id/tutorialNumber1Text"
+                            android:layout_marginTop="5dp"
+                            android:background="@drawable/edittxt"
+                            android:ems="10"
+                            android:gravity="center"
+                            android:inputType="number"
+                            android:textColor="#86b530"
+                            android:textCursorDrawable="@null"
+                            android:textStyle="bold" />
+
+                        <Spinner
+                            android:id="@+id/tutorialSpinner"
+                            style="@style/spinnerText"
+                            android:layout_width="60dp"
+                            android:layout_height="45dp"
+                            android:layout_alignBottom="@+id/tutorialEditText"
+                            android:layout_below="@+id/tutorialNumber1Text"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_toRightOf="@+id/tutorialEditText"
+                            android:background="@drawable/spinner" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/tutorialImage1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="25dp"
+                        android:layout_toRightOf="@+id/tutorialNumber1TextBar"
+                        android:src="@drawable/tutorial1" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tutorialNumber2Bar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="120dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/tutorialNumber1Bar"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="1dp"
+                    android:background="#f4f4f4">
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber2"
+                        android:layout_width="20dp"
+                        android:layout_height="fill_parent"
+                        android:background="#86b530">
+
+                        <TextView
+                            android:id="@+id/tutorialNumber2Text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:shadowColor="#6b9126"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="2"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber2TextBar"
+                        android:layout_width="170dp"
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@+id/tutorialNumber2">
+
+                        <TextView
+                            android:id="@+id/tutorialNumber2TextBarText"
+                            style="@style/AudioFileInfoOverlayText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:shadowColor="#FFFFFF"
+                            android:shadowDx="0"
+                            android:shadowDy="2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_05"
+                            android:textColor="#4d4d4d" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/tutorialImage2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="25dp"
+                        android:layout_toRightOf="@+id/tutorialNumber2TextBar"
+                        android:src="@drawable/tutorial2" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tutorialNumber3Bar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/tutorialNumber2Bar"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="1dp"
+                    android:background="#f4f4f4"
+                    android:paddingBottom="1dp">
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber3"
+                        android:layout_width="20dp"
+                        android:layout_height="160dp"
+                        android:background="#86b530">
+
+                        <TextView
+                            android:id="@+id/tutorialNumber3Text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:shadowColor="#6b9126"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="3"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/tutorialNumber3TextBar"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@+id/tutorialNumber3">
+
+                        <TextView
+                            android:id="@+id/tutorialNumber4Text"
+                            style="@style/AudioFileInfoOverlayText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:shadowColor="#FFFFFF"
+                            android:shadowDx="0"
+                            android:shadowDy="2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_01"
+                            android:textColor="#4d4d4d" />
+
+                        <Button
+                            android:id="@+id/startbutton"
+                            style="@style/buttonText"
+                            android:layout_width="fill_parent"
+                            android:layout_height="45dp"
+                            android:layout_below="@+id/tutorialNumber4Text"
+                            android:layout_marginTop="5dp"
+                            android:background="@drawable/button"
+                            android:onClick="start"
+                            android:text="@string/tx_33" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/tutorialImage3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="120dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="25dp"
+                        android:layout_toRightOf="@+id/tutorialNumber3TextBar"
+                        android:src="@drawable/tutorial3" />
+                </RelativeLayout>
+            </RelativeLayout>
+        </ScrollView>
+    </RelativeLayout>
+
+    <!-- WelcomeView -->
+    <!-- WelcomeView -->
+    <!-- WelcomeView -->
+
+    <RelativeLayout
+        android:id="@+id/welcomeView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        android:background="#ffffff"
+        android:visibility="invisible">
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:id="@+id/welcomeTitleBar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="#333333">
+
+                    <RelativeLayout
+                        android:id="@+id/welcomeTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true">
+
+                        <TextView
+                            android:id="@+id/welcomeTitle1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            android:shadowColor="#000000"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_94"
+                            android:textColor="#ffffff"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                    </RelativeLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/welcomeNumber1Bar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="100dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/welcomeTitleBar"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="1dp"
+                    android:background="#f4f4f4">
+
+                    <RelativeLayout
+                        android:id="@+id/welcomeNumber1"
+                        android:layout_width="20dp"
+                        android:layout_height="fill_parent"
+                        android:background="#86b530">
+
+                        <TextView
+                            android:id="@+id/welcomeNumber1Zahl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:paddingRight="5dp"
+                            android:shadowColor="#6b9126"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="1"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/welcomeNumber1TextBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toLeftOf="@+id/welcomeImage1"
+                        android:layout_toRightOf="@+id/welcomeNumber1"
+                        android:layout_toStartOf="@+id/welcomeImage1"
+                        android:focusableInTouchMode="true">
+
+                        <TextView
+                            android:id="@+id/welcomeNumber1Text"
+                            style="@style/AudioFileInfoOverlayText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginTop="20dp"
+                            android:shadowColor="#FFFFFF"
+                            android:shadowDx="0"
+                            android:shadowDy="2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_95"
+                            android:textColor="#4d4d4d"
+                            android:textSize="18sp" />
+
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/welcomeImage1"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="20dp"
+                        android:src="@drawable/welcome_step" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/welcomeNumber2Bar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="100dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/welcomeNumber1Bar"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="1dp"
+                    android:background="#f4f4f4">
+
+                    <RelativeLayout
+                        android:id="@+id/welcomeNumber2"
+                        android:layout_width="20dp"
+                        android:layout_height="fill_parent"
+                        android:background="#86b530">
+
+                        <TextView
+                            android:id="@+id/welcomeNumber2Text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:shadowColor="#6b9126"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="2"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/welcomeNumber2TextBar"
+                        android:layout_width="170dp"
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toLeftOf="@+id/welcomeImage2"
+                        android:layout_toRightOf="@+id/welcomeNumber2"
+                        android:layout_toStartOf="@+id/welcomeImage2">
+
+                        <TextView
+                            android:id="@+id/welcomeNumber2TextBarText"
+                            style="@style/AudioFileInfoOverlayText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:paddingRight="5dp"
+                            android:shadowColor="#FFFFFF"
+                            android:shadowDx="0"
+                            android:shadowDy="2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_96"
+                            android:textColor="#4d4d4d"
+                            android:textSize="18sp" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/welcomeImage2"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="20dp"
+                        android:src="@drawable/gps_independent" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/welcomeNumber3Bar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="140dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/welcomeNumber2Bar"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="1dp"
+                    android:background="#f4f4f4"
+                    android:paddingBottom="1dp">
+
+                    <RelativeLayout
+                        android:id="@+id/welcomeNumber3"
+                        android:layout_width="20dp"
+                        android:layout_height="160dp"
+                        android:background="#86b530">
+
+                        <TextView
+                            android:id="@+id/welcomeNumber3Text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:shadowColor="#6b9126"
+                            android:shadowDx="0"
+                            android:shadowDy="-2"
+                            android:shadowRadius="0.1"
+                            android:text="3"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/welcomeNumber3TextBar"
+                        android:layout_width="170dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toLeftOf="@+id/welcomeImage3"
+                        android:layout_toRightOf="@+id/welcomeNumber3"
+                        android:layout_toStartOf="@+id/welcomeImage3">
+
+                        <TextView
+                            android:id="@+id/welcomeNumber4Text"
+                            style="@style/AudioFileInfoOverlayText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingRight="5dp"
+                            android:shadowColor="#FFFFFF"
+                            android:shadowDx="0"
+                            android:shadowDy="2"
+                            android:shadowRadius="0.1"
+                            android:text="@string/tx_97"
+                            android:textColor="#4d4d4d"
+                            android:textSize="18sp" />
+
+                        <Button
+                            android:id="@+id/welcomeButton"
+                            style="@style/buttonText"
+                            android:layout_width="150dp"
+                            android:layout_height="45dp"
+                            android:layout_below="@+id/welcomeNumber4Text"
+                            android:layout_marginTop="5dp"
+                            android:background="@drawable/button"
+                            android:text="@string/tx_98" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/welcomeImage3"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="20dp"
+                        android:src="@drawable/hook" />
+                </RelativeLayout>
+            </RelativeLayout>
+        </ScrollView>
+    </RelativeLayout>
+
+</FrameLayout>

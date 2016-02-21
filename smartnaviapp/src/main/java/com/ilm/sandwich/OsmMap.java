@@ -18,10 +18,11 @@ import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -35,23 +36,18 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
+import com.ilm.sandwich.fragments.TutorialFragment;
 import com.ilm.sandwich.tools.Config;
 import com.ilm.sandwich.tools.Core;
 import com.ilm.sandwich.tools.Locationer;
@@ -89,7 +85,7 @@ import java.util.ArrayList;
  *         www.smartnavi-app.com
  */
 
-public class OsmMap extends AppCompatActivity implements SensorEventListener, MapEventsReceiver {
+public class OsmMap extends AppCompatActivity implements SensorEventListener, MapEventsReceiver, TutorialFragment.onTutorialFinishedListener {
 
     public static Handler listHandler;
     public static SearchView searchView;
@@ -107,6 +103,7 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
     protected DirectedLocationOverlay myLocationOverlay;
     View tutorialOverlay;
     View welcomeView;
+    TutorialFragment tutorialFragment;
     private MapView map;
     private IMapController mapController;
     private MyItemizedOverlay[] myItemizedOverlay = new MyItemizedOverlay[10];
@@ -181,9 +178,7 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         double mittellat = defaultLat * 0.01745329252;
         double abstandLaengengrade = 111.3D * Math.cos(mittellat);
         Core.initialize(defaultLat, defaultLon, abstandLaengengrade, 200, 3000);
-        //mapController.setCenter(new GeoPoint(defaultLat, defaultLon));
         mapController.setZoom(3);
-        map.setMultiTouchControls(true);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -225,7 +220,11 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
                 e.printStackTrace();
             }
         } else {
-            tutorialStuff(0);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            tutorialFragment = new TutorialFragment();
+            fragmentTransaction.add(R.id.osmmap_actvity_layout, tutorialFragment);
+            fragmentTransaction.commit();
         }
 
         positionUpdate();
@@ -871,132 +870,6 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         Toast.makeText(this, getResources().getString(R.string.tx_82), Toast.LENGTH_SHORT).show();
     }
 
-    public void tutorialStuff(int i) {
-        viaOptions = i;
-        // show Tutorial and deactivate Clicks on Map and Longpresses
-        map.setClickable(false);
-
-        welcomeView = findViewById(R.id.welcomeViewOSM);
-        welcomeView.setVisibility(View.VISIBLE);
-
-        Button welcomeButton = (Button) findViewById(R.id.welcomeButtonOSM);
-        welcomeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                welcomeView.setVisibility(View.INVISIBLE);
-                tutorialOverlay = findViewById(R.id.tutorialOverlayOsm);
-                tutorialOverlay.setVisibility(View.VISIBLE);
-            }
-        });
-
-        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-        String stepLengthString = settings.getString("step_length", null);
-        Spinner spinner = (Spinner) findViewById(R.id.tutorialSpinnerOsm);
-        // Create an ArrayAdapter using the string array and a default spinner
-        // layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.dimension, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        if (stepLengthString != null) {
-            try {
-                stepLengthString = stepLengthString.replace(",", ".");
-                int savedHeight = Integer.parseInt(stepLengthString);
-                if (savedHeight < 241 && savedHeight > 119) {
-                    EditText editText = (EditText) findViewById(R.id.tutorialEditTextOsm);
-                    editText.setText("" + savedHeight);
-                    spinner.setSelection(0);
-                } else if (savedHeight < 95 && savedHeight > 45) {
-                    EditText editText = (EditText) findViewById(R.id.tutorialEditTextOsm);
-                    editText.setText("" + savedHeight);
-                    spinner.setSelection(1);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                metricUnits = arg2 == 0;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }
-        });
-
-        Button startButton = (Button) findViewById(R.id.startbuttonOsm);
-        startButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                boolean tutorialAbgeschlossen = false;
-                final EditText heightField = (EditText) findViewById(R.id.tutorialEditTextOsm);
-                int op = heightField.length();
-                float number;
-                if (op != 0) {
-                    try {
-                        number = Float.valueOf(heightField.getText().toString());
-                        if (number < 241 && number > 119 && metricUnits == true) {
-                            String numberString = df0.format(number);
-                            new writeSettings("step_length", numberString).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                            Core.stepLength = number / 222;
-                            tutorialAbgeschlossen = true;
-                        } else if (number < 95 && number > 45 && metricUnits == false) {
-                            String numberString = df0.format(number);
-                            new writeSettings("step_length", numberString).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                            Core.stepLength = (float) (number * 2.54 / 222);
-                            tutorialAbgeschlossen = true;
-                        } else {
-                            Toast.makeText(OsmMap.this, getApplicationContext().getResources().getString(R.string.tx_10), Toast.LENGTH_LONG).show();
-                        }
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                        Toast.makeText(OsmMap.this, getApplicationContext().getResources().getString(R.string.tx_32), Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    Toast.makeText(OsmMap.this, getApplicationContext().getResources().getString(R.string.tx_10), Toast.LENGTH_LONG).show();
-                }
-                if (tutorialAbgeschlossen) {
-                    // hide Tutorial
-                    tutorialOverlay = findViewById(R.id.tutorialOverlayOsm);
-                    tutorialOverlay.setVisibility(View.INVISIBLE);
-                    // make Map clickable again
-                    map.setClickable(true);
-                    // LongPressDialog
-                    if (viaOptions == 1) {
-                        showLongPressDialog();
-                    }
-                }
-            }
-        });
-
-        EditText heightField = (EditText) findViewById(R.id.tutorialEditTextOsm);
-        heightField.setOnEditorActionListener(new OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND || actionId == EditorInfo.IME_ACTION_NEXT) {
-                    try {
-                        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                        EditText heightField = (EditText) findViewById(R.id.tutorialEditText);
-                        heightField.setFocusableInTouchMode(false); //Workaround: Coursor out of textfield
-                        heightField.setFocusable(false);
-                        heightField.setFocusableInTouchMode(true);
-                        heightField.setFocusable(true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                return false;
-            }
-        });
-    }
-
     private void showLongPressDialog() {
         try {
             myItemizedOverlay[0].getItem(0).getDrawable().setVisible(false, true);
@@ -1085,8 +958,14 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
                 startActivity(new Intent(this, Settings.class));
                 return true;
             case R.id.menu_tutorial:
-                // open Tutorial
-                tutorialStuff(1);
+                // open TutorialFragment
+                if (tutorialFragment != null) {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    tutorialFragment = new TutorialFragment();
+                    fragmentTransaction.add(R.id.osmmap_actvity_layout, tutorialFragment);
+                    fragmentTransaction.commit();
+                }
                 return true;
             case R.id.menu_info:
                 // go to About Page
@@ -1272,6 +1151,13 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         int latE6 = (int) (Core.startLat * 1E6);
         int lonE6 = (int) (Core.startLon * 1E6);
         myLocationOverlay.setLocation(new GeoPoint(latE6, lonE6));
+    }
+
+    @Override
+    public void onTutorialFinished() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.remove(tutorialFragment).commit();
     }
 
     private class writeSettings extends AsyncTask<Void, Void, Void> {

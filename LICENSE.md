@@ -21,7 +21,6 @@ http://creativecommons.org/licenses/by-sa/4.0/
 Libraries
 ==============
 SmartNavi makes use of the following libraries under their corresponding licenses:
-* ActionBarSherlock - Apache License 2.0
 * osmdroid - Apache License 2.0
 * OsmBonusPack - GNU LESSER GENERAL PUBLIC LICENSE
 

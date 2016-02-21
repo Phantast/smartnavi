@@ -28,6 +28,8 @@ import android.os.Message;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -37,25 +39,18 @@ import android.text.Spanned;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -74,6 +69,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.ilm.sandwich.fragments.TutorialFragment;
 import com.ilm.sandwich.tools.Config;
 import com.ilm.sandwich.tools.Core;
 import com.ilm.sandwich.tools.HttpRequests;
@@ -87,7 +83,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -97,7 +92,7 @@ import java.util.Locale;
  *         www.smartnavi-app.com
  */
 public class GoogleMap extends AppCompatActivity implements SensorEventListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, TutorialFragment.onTutorialFinishedListener {
 
 
     public static double destLat;
@@ -119,7 +114,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     public static Handler changeSuggestionAdapter;
     static SensorManager mSensorManager;
     static boolean uTaskIsOn;
-    static DecimalFormat df0 = new DecimalFormat("0");
     static LatLng longpressLocation;
     static ListView list;
     private static int stepCounterOld = 1;
@@ -155,20 +149,17 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     public boolean waitedAtStart = false;
     public int counterRouteComplexity = 0;
     public boolean speechOutput;
-    public boolean metricUnits = true;
     public Context sbContext;
     Menu mainMenu;
     String language;
     TextToSpeech mTts;
     int phases;
     int segmentCounter;
-    View tutorialOverlay;
-    View welcomeView;
+    TutorialFragment tutorialFragment;
     private com.google.android.gms.maps.GoogleMap map;
     private String[] html_instructions = new String[31];
     private String[] polylineArray = new String[31];
     private int iteration = 1;
-    private SubMenu subMenu1;
     private int magnUnits;
     private int aclUnits;
     private Locationer mLocationer;
@@ -180,7 +171,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     private int stepsToWait = 0;
     private boolean listVisible = false;
     private Polyline[] completeRoute = new Polyline[31];
-    private int viaOptions = 0;
     private Toolbar toolbar;
 
     public static double neueDistanz(double lat, double lon) {
@@ -377,7 +367,12 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                 }
             }
         } else {
-            tutorialStuff(0);
+            map.getUiSettings().setAllGesturesEnabled(false);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            tutorialFragment = new TutorialFragment();
+            fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment);
+            fragmentTransaction.commit();
         }
         // Compass nach unten setzen
         listHandler.sendEmptyMessageDelayed(1, 10);
@@ -1270,7 +1265,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             try {
-                mainMenu.performIdentifierAction(subMenu1.getItem().getItemId(), 0);
+                //TODO close menu when user clicked on map?  mainMenu.performIdentifierAction();
 
                 // if off, longPressMenu will be made invisible
                 list = (ListView) findViewById(R.id.liste);
@@ -1321,8 +1316,14 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                 startActivity(new Intent(GoogleMap.this, Webview.class));
                 return true;
             case R.id.menu_tutorial:
-                // Tutorial
-                tutorialStuff(1);
+                // TutorialFragment
+                if(tutorialFragment != null){
+                    map.getUiSettings().setAllGesturesEnabled(false);
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    tutorialFragment = new TutorialFragment();
+                    fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment).commit();
+                }
                 return true;
             case R.id.menu_info:
                 // About Page
@@ -1360,7 +1361,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             mSensorManager.registerListener(GoogleMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
             mSensorManager.registerListener(GoogleMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
         } catch (Exception e) {
-            if (Config.debugMode)
                 e.printStackTrace();
         }
     }
@@ -1460,144 +1460,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         listHandler.sendEmptyMessageDelayed(11, 3000);
     }
 
-    public void tutorialStuff(int i) {
-        viaOptions = i;
-        //show Tutorial, and decativate touching the Map
-        map.getUiSettings().setAllGesturesEnabled(false);
 
-        welcomeView = findViewById(R.id.welcomeView);
-        welcomeView.setVisibility(View.VISIBLE);
-
-        Button welcomeButton = (Button) findViewById(R.id.welcomeButton);
-        welcomeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                welcomeView.setVisibility(View.INVISIBLE);
-                tutorialOverlay = findViewById(R.id.tutorialOverlay);
-                tutorialOverlay.setVisibility(View.VISIBLE);
-            }
-        });
-
-        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-        String stepLengthString = settings.getString("step_length", null);
-        Spinner spinner = (Spinner) findViewById(R.id.tutorialSpinner);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.dimension, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        if (stepLengthString != null) {
-            try {
-                stepLengthString = stepLengthString.replace(",", ".");
-                int savedBodyHeight = Integer.parseInt(stepLengthString);
-                if (savedBodyHeight < 241 && savedBodyHeight > 119) {
-                    EditText editText = (EditText) findViewById(R.id.tutorialEditText);
-                    editText.setText("" + savedBodyHeight);
-                    spinner.setSelection(0);
-                } else if (savedBodyHeight < 95 && savedBodyHeight > 45) {
-                    EditText editText = (EditText) findViewById(R.id.tutorialEditText);
-                    editText.setText("" + savedBodyHeight);
-                    spinner.setSelection(1);
-                }
-            } catch (Exception e) {
-                if (Config.debugMode)
-                    e.printStackTrace();
-            }
-        }
-        spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                if (arg2 == 0) {
-                    metricUnits = true;
-                } else {
-                    metricUnits = false;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-
-            }
-        });
-
-        Button startButton = (Button) findViewById(R.id.startbutton);
-        startButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                boolean tutorialDone = false;
-                final EditText heightField = (EditText) findViewById(R.id.tutorialEditText);
-                int op = heightField.length();
-                float number;
-                if (op != 0) {
-                    try {
-                        number = Float.valueOf(heightField.getText().toString());
-                        if (number < 241 && number > 119 && metricUnits == true) {
-
-                            String numberString = df0.format(number);
-                            new changeSettings("step_length", numberString).execute();
-                            Core.stepLength = (float) (number / 222);
-                            tutorialDone = true;
-                        } else if (number < 95 && number > 45 && metricUnits == false) {
-
-                            String numberString = df0.format(number);
-                            new changeSettings("step_length", numberString).execute();
-                            Core.stepLength = (float) (number * 2.54 / 222);
-                            tutorialDone = true;
-                        } else {
-                            Toast.makeText(GoogleMap.this, getApplicationContext().getResources().getString(R.string.tx_10), Toast.LENGTH_LONG).show();
-                        }
-
-                    } catch (NumberFormatException e) {
-                        if (Config.debugMode)
-                            e.printStackTrace();
-                        Toast.makeText(GoogleMap.this, getApplicationContext().getResources().getString(R.string.tx_32), Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    Toast.makeText(GoogleMap.this, getApplicationContext().getResources().getString(R.string.tx_10), Toast.LENGTH_LONG).show();
-                }
-
-                if (tutorialDone) {
-                    // Tutorial hide
-                    tutorialOverlay = findViewById(R.id.tutorialOverlay);
-                    tutorialOverlay.setVisibility(View.INVISIBLE);
-                    // make Map touchable again
-                    map.getUiSettings().setAllGesturesEnabled(true);
-                    // show LongPressDialog
-                    if (viaOptions == 1) {
-                        showLongPressDialog();
-                    }
-                }
-            }
-        });
-
-        EditText bodyHeightField = (EditText) findViewById(R.id.tutorialEditText);
-        bodyHeightField.setOnEditorActionListener(new OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND || actionId == EditorInfo.IME_ACTION_NEXT) {
-                    try {
-                        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        try {
-                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        EditText bodyHeightField = (EditText) findViewById(R.id.tutorialEditText); //Workaround Coursor out off textfield
-                        bodyHeightField.setFocusable(false);
-                        bodyHeightField.setFocusableInTouchMode(true);
-                        bodyHeightField.setFocusable(true);
-                    } catch (Exception e) {
-                        if (Config.debugMode)
-                            e.printStackTrace();
-                    }
-                }
-                return false;
-            }
-        });
-    }
 
     private void showLongPressDialog() {
         try {
@@ -1964,6 +1827,14 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
 
     }
 
+    @Override
+    public void onTutorialFinished() {
+        map.getUiSettings().setAllGesturesEnabled(true);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.remove(tutorialFragment).commit();
+    }
+
     private class routeTask extends AsyncTask<String, Void, Void> {
 
         private String endAddress;
@@ -2121,46 +1992,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
 
     }
 
-    private class changeSettings extends AsyncTask<Void, Void, Void> {
-
-        private String key;
-        private int dataType;
-        private boolean setting1;
-        private String setting2;
-        private int einstellung3;
-
-        private changeSettings(String key, boolean setting1) {
-            this.key = key;
-            this.setting1 = setting1;
-            dataType = 0;
-        }
-
-        private changeSettings(String key, String setting2) {
-            this.key = key;
-            this.setting2 = setting2;
-            dataType = 1;
-        }
-
-        private changeSettings(String key, int einstellung3) {
-            this.key = key;
-            this.einstellung3 = einstellung3;
-            dataType = 2;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-            if (dataType == 0) {
-                settings.edit().putBoolean(key, setting1).commit();
-            } else if (dataType == 1) {
-                settings.edit().putString(key, setting2).commit();
-            } else if (dataType == 2) {
-                settings.edit().putInt(key, einstellung3).commit();
-            }
-            return null;
-        }
-    }
-
     private class PlacesTextSeachAsync extends AsyncTask<String, Void, JSONObject> {
 
         private String query;
@@ -2305,4 +2136,44 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         }
     }
 
+
+    private class changeSettings extends AsyncTask<Void, Void, Void> {
+
+        private String key;
+        private int dataType;
+        private boolean setting1;
+        private String setting2;
+        private int setting3;
+
+        private changeSettings(String key, boolean setting1) {
+            this.key = key;
+            this.setting1 = setting1;
+            dataType = 0;
+        }
+
+        private changeSettings(String key, String setting2) {
+            this.key = key;
+            this.setting2 = setting2;
+            dataType = 1;
+        }
+
+        private changeSettings(String key, int setting3) {
+            this.key = key;
+            this.setting3 = setting3;
+            dataType = 2;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
+            if (dataType == 0) {
+                settings.edit().putBoolean(key, setting1).commit();
+            } else if (dataType == 1) {
+                settings.edit().putString(key, setting2).commit();
+            } else if (dataType == 2) {
+                settings.edit().putInt(key, setting3).commit();
+            }
+            return null;
+        }
+    }
 }
