@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.ilm.sandwich.BackgroundService;
+import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.GoogleMap;
 
 import java.util.Iterator;
@@ -55,20 +56,6 @@ public class Locationer implements LocationListener {
     private Runnable deaktivateTask = new Runnable() {
         public void run() {
             deactivateLocationer();
-        }
-    };
-    private Runnable satelitesInRangeTest = new Runnable() {
-        public void run() {
-            if (satellitesInRange < 5) {
-                stopAutocorrect();
-                // Log.d("Location-Status", "Not enough satelites in range: " +
-                // satellitesInRange);
-            }
-        }
-    };
-    private Runnable autoStopTask = new Runnable() {
-        public void run() {
-            stopAutocorrect();
         }
     };
     private LocationListener gpsAutocorrectLocationListener = new LocationListener() {
@@ -114,6 +101,20 @@ public class Locationer implements LocationListener {
         public void onProviderDisabled(String provider) {
         }
 
+    };
+    private Runnable autoStopTask = new Runnable() {
+        public void run() {
+            stopAutocorrect();
+        }
+    };
+    private Runnable satelitesInRangeTest = new Runnable() {
+        public void run() {
+            if (satellitesInRange < 5) {
+                stopAutocorrect();
+                // Log.d("Location-Status", "Not enough satelites in range: " +
+                // satellitesInRange);
+            }
+        }
     };
 
 
@@ -168,7 +169,7 @@ public class Locationer implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        if (Config.debugMode) {
+        if (BuildConfig.debug) {
             Log.i("Location-Status", "onLocationChanged Acc:" + location.getAccuracy());
         }
         long differenceTime = location.getTime() - lastLocationTime;
@@ -191,7 +192,7 @@ public class Locationer implements LocationListener {
                 try {
                     deactivateLocationer();
                 } catch (Exception e) {
-                    if (Config.debugMode)
+                    if (BuildConfig.debug)
                         e.printStackTrace();
                 }
             }
@@ -212,13 +213,13 @@ public class Locationer implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
         SharedPreferences settings = mContext.getSharedPreferences(mContext.getPackageName() + "_preferences", Context.MODE_PRIVATE);
-        if (Config.debugMode) {
+        if (BuildConfig.debug) {
             Log.i("Location-Status", "onProviderDisabled");
         }
         if (settings.getBoolean("gpsDialogShown", false) == false) {
 
             new writeSettings("gpsDialogShown", true).execute();
-            locationListener.onLocationUpdate(13);
+            locationListener.onLocationUpdate(5);
 
         }
     }

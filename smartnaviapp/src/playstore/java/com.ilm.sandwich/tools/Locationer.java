@@ -14,11 +14,12 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.ilm.sandwich.BackgroundService;
+import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.GoogleMap;
 
 import java.util.Iterator;
@@ -65,21 +66,6 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
             deactivateLocationer();
         }
     };
-    private Runnable satelitesInRangeTest = new Runnable() {
-        public void run() {
-            if (satellitesInRange < 5) {
-                stopAutocorrect();
-                // Log.d("Location-Status", "Not enough satelites in range: " +
-                // satellitesInRange);
-            }
-        }
-    };
-    private Runnable autoStopTask = new Runnable() {
-        public void run() {
-
-            stopAutocorrect();
-        }
-    };
     private LocationListener gpsAutocorrectLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             if (location.getLatitude() != 0) {
@@ -123,6 +109,21 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
         public void onProviderDisabled(String provider) {
         }
 
+    };
+    private Runnable autoStopTask = new Runnable() {
+        public void run() {
+
+            stopAutocorrect();
+        }
+    };
+    private Runnable satelitesInRangeTest = new Runnable() {
+        public void run() {
+            if (satellitesInRange < 5) {
+                stopAutocorrect();
+                // Log.d("Location-Status", "Not enough satelites in range: " +
+                // satellitesInRange);
+            }
+        }
     };
 
 
@@ -171,7 +172,8 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
     }
 
     public void startLocationUpdates() {
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mContext);
+        GoogleApiAvailability api = GoogleApiAvailability.getInstance();
+        int status = api.isGooglePlayServicesAvailable(mContext);
         if (status != ConnectionResult.SUCCESS) {
             try {
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 0, this);
@@ -194,7 +196,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
             it.next();
             i += 1;
         }
-        if (Config.debugMode) {
+        if (BuildConfig.debug) {
             Log.i("Location-Status", "Satelites in range: " + i);
         }
         satellitesInRange = i;
@@ -202,7 +204,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
 
     @Override
     public void onConnectionFailed(ConnectionResult arg0) {
-        if (Config.debugMode) {
+        if (BuildConfig.debug) {
             Log.i("Location-Status", "Connection FAILED" + arg0.getErrorCode());
         }
     }
@@ -214,22 +216,24 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
 
     @Override
     public void onConnected(Bundle arg0) {
-        if (Config.debugMode) {
+        if (BuildConfig.debug) {
             Log.i("Location-Status", "onConnected");
         }
         try {
             Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            double startLat = lastLocation.getLatitude();
-            double startLon = lastLocation.getLongitude();
-            lastErrorGPS = lastLocation.getAccuracy();
-            double altitude = lastLocation.getAltitude();
-            lastLocationTime = lastLocation.getTime();
-            Log.i("Location-Status", "Last-Location: Error=" + lastErrorGPS + " Time:" + lastLocationTime);
-            double middleLat = startLat * 0.01745329252;
-            double distanceLongitude = 111.3D * Math.cos(middleLat);
-
-            Core.initialize(startLat, startLon, distanceLongitude, altitude, lastErrorGPS);
-            Log.i("Location-Status", "Core initialized.");
+            if (lastLocation != null) {
+                double startLat = lastLocation.getLatitude();
+                double startLon = lastLocation.getLongitude();
+                lastErrorGPS = lastLocation.getAccuracy();
+                double altitude = lastLocation.getAltitude();
+                lastLocationTime = lastLocation.getTime();
+                if (BuildConfig.debug) {
+                    Log.i("Location-Status", "Last-Location: Error=" + lastErrorGPS + " Time:" + lastLocationTime);
+                }
+                double middleLat = startLat * 0.01745329252;
+                double distanceLongitude = 111.3D * Math.cos(middleLat);
+                Core.initialize(startLat, startLon, distanceLongitude, altitude, lastErrorGPS);
+            }
             highRequest = LocationRequest.create();
             highRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
             highRequest.setInterval(1000); // Update location every second
@@ -241,11 +245,13 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
             mHandler.postDelayed(deaktivateTask, 40000);
 
         } catch (SecurityException e) {
-            Log.i("Location-Status", e.toString());
             LocationManager locManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
             boolean locationEnabled = locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             if (locationEnabled == false) {
                 //no position has ever been requested or Location Services are deactivated, so tell the user to activate them
+                if(BuildConfig.debug){
+                    Log.d("Location-Status", "Security Exception");
+                }
                 locationListener.onLocationUpdate(5);
             } else {
                 // location services are activated but no location has ever been requested
@@ -269,7 +275,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
 
     @Override
     public void onConnectionSuspended(int i) {
-        if (Config.debugMode) {
+        if (BuildConfig.debug) {
             Log.i("Location-Status", "Connection suspended!");
         }
     }
@@ -277,7 +283,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
 
     @Override
     public void onLocationChanged(Location location) {
-        if (Config.debugMode) {
+        if (BuildConfig.debug) {
             Log.i("Location-Status", "onLocationChanged Acc:" + location.getAccuracy());
         }
         long differenceTime = location.getTime() - lastLocationTime;
@@ -300,7 +306,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
                 try {
                     deactivateLocationer();
                 } catch (Exception e) {
-                    if (Config.debugMode)
+                    if (BuildConfig.debug)
                         e.printStackTrace();
                 }
             }
@@ -321,14 +327,12 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
     @Override
     public void onProviderDisabled(String provider) {
         SharedPreferences settings = mContext.getSharedPreferences(mContext.getPackageName() + "_preferences", Context.MODE_PRIVATE);
-        if (Config.debugMode) {
+        if (BuildConfig.debug) {
             Log.i("Location-Status", "onProviderDisabled");
         }
         if (settings.getBoolean("gpsDialogShown", false) == false) {
-
             new writeSettings("gpsDialogShown", true).execute();
-            locationListener.onLocationUpdate(13);
-
+            locationListener.onLocationUpdate(5);
         }
     }
 

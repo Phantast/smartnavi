@@ -1,5 +1,6 @@
 package com.ilm.sandwich;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -7,6 +8,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Color;
@@ -19,10 +21,15 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -40,10 +47,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,6 +75,7 @@ import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.bonuspack.routing.RoadNode;
+import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
@@ -78,7 +84,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.DirectedLocationOverlay;
 import org.osmdroid.views.overlay.OverlayManager;
 
-import java.text.DecimalFormat;
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -97,14 +103,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     public static MatrixCursor cursor = new MatrixCursor(Config.COLUMNS);
     public static Handler changeSuggestionAdapter;
     static ListView list;
-    static DecimalFormat df0 = new DecimalFormat("0");
     private static Menu mainMenu;
     private static GeoPoint longPressedGeoPoint;
-    public boolean metricUnits = true;
     public Context sbContext;
     protected DirectedLocationOverlay myLocationOverlay;
-    View tutorialOverlay;
-    View welcomeView;
     TutorialFragment tutorialFragment;
     private MapView map;
     private IMapController mapController;
@@ -112,7 +114,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     private SensorManager mSensorManager;
     private Core mCore;
     private String uid;
-    private int iteration = 1;
     private Locationer mLocationer;
     private boolean userSwitchesGPS;
     private boolean knownReasonForBreak;
@@ -122,8 +123,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     private long startTime;
     private long timePassed;
     private boolean followMe = true;
-    private int compassStatus;
-    private boolean egoPerspective;
     private boolean listIsVisible = false;
     private long POS_UPDATE_FREQ = 2200;
     private boolean autoCorrect = false;
@@ -133,6 +132,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     private boolean backgroundServiceShallBeOn = false;
     private Toolbar toolbar;
     private Analytics mAnalytics;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +147,80 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
         mAnalytics = new Analytics(trackingAllowed);
 
+        fab = (FloatingActionButton) findViewById(R.id.fabosm);
+        if (fab != null) {
+            fab.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // longPressMenu will become invisible
+                    try {
+                        list = (ListView) findViewById(R.id.listeOsm);
+                        if (list.getVisibility() == View.VISIBLE)
+                            list.setVisibility(View.INVISIBLE);
+                    } catch (NullPointerException e) {
+                        if (BuildConfig.debug)
+                            e.printStackTrace();
+                    }
+                    setFollowOn();
+                }
+            });
+        }
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    Config.PERMISSION_REQUEST_FINE_LOCATION);
+        } else {
+            checkOfflineMapsDirectory();
+            proceedOnCreate();
+        }
+    }
+
+    private void checkWriteStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    Config.PERMISSION_WRITE_EXTERNAL_STORAGE);
+        } else {
+            proceedOnCreate();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Config.PERMISSION_REQUEST_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mAnalytics.trackEvent("Location_Permission", "Granted_OSM");
+                    checkWriteStoragePermission();
+                } else {
+                    Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_100), Toast.LENGTH_LONG).show();
+                    mAnalytics.trackEvent("Location_Permission", "Denied_OSM");
+                    finish();
+                }
+            }
+            case Config.PERMISSION_WRITE_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mAnalytics.trackEvent("Storage_Permission", "Granted_OSM");
+                    proceedOnCreate();
+                } else {
+                    Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_101), Toast.LENGTH_LONG).show();
+                    mAnalytics.trackEvent("Storage_Permission", "Denied_OSM");
+                    finish();
+                }
+            }
+        }
+    }
+
+    private void proceedOnCreate() {
+        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         map = (MapView) findViewById(R.id.openmapview);
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this, this);
         map.getOverlays().add(mapEventsOverlay);
@@ -235,6 +309,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         positionUpdate();
 
         list = (ListView) findViewById(R.id.listeOsm);
+        if (list.getVisibility() == View.VISIBLE)
         list.setVisibility(View.INVISIBLE);
         listIsVisible = false;
         list.setOnItemClickListener(new OnItemClickListener() {
@@ -244,7 +319,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                     Core.setLocation(longPressedGeoPoint.getLatitude(), longPressedGeoPoint.getLongitude());
                     mAnalytics.trackEvent("OSM_LongPress_Action", "Set_Position");
                     list.setVisibility(View.INVISIBLE);
-                    listIsVisible = false;
                     setFollowOn();
                     map.invalidate();
                     mapController.animateTo(longPressedGeoPoint);
@@ -255,7 +329,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                     mAnalytics.trackEvent("OSM_LongPress_Action", "Set_Destination");
                     new PlacesTextSeachAsync().execute(longPressedGeoPoint.getLatitude() + ", " + longPressedGeoPoint.getLongitude());
                     list.setVisibility(View.INVISIBLE);
-                    listIsVisible = false;
                 }
             }
         });
@@ -265,7 +338,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         // Set Marker
         if (firstPositionFound == false) {
             {
-                if (Config.debugMode) {
+                if (BuildConfig.debug) {
                     Log.d("Location-Status", "Set FIRST Position: " + Core.startLat + " and " + Core.startLon + " Error: " + Core.lastErrorGPS);
                 }
             }
@@ -339,37 +412,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         listHandler = new Handler() {
 
             public void handleMessage(Message msg) {
-                if (msg.what == 1) {
-                    // set margin for compass, dependent on the height of the actionbar
-                    int height = toolbar.getHeight();
-                    if (height > 0) {
-                        try {
-                            ImageView compass = (ImageView) findViewById(R.id.osmNadel);
-                            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-                            lp.setMargins(10, height + 10, 0, 0);
-                            compass.setLayoutParams(lp);
-                            ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBarOsm);
-                            RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-                            lp2.setMargins(10, height + 10, 0, 0);
-                            lp2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                            mProgressBar.setLayoutParams(lp2);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        listHandler.sendEmptyMessageDelayed(1, 100);
-                    }
-                } else if (msg.what == 2) {
-                    if (egoPerspective) {
-                        map.setMapOrientation((float) Core.azimuth * (-1));
-                    }
-                    listHandler.sendEmptyMessageDelayed(2, 5);
-                } else if (msg.what == 3) {
+                if (msg.what == 3) {
                     finish(); // used by Settings to change to GoogleMap
                 } else if (msg.what == 4) {
-                    listHandler.removeMessages(0);
                     positionUpdate();
                 } else if (msg.what == 6) {
                     // initialize Autocorrect or start new because of activity_settings change
@@ -402,9 +447,14 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 } else if (msg.what == 10) {
                     restartListenerLight();
                 } else if (msg.what == 11) {
-                    if (listIsVisible) {
-                        list.setVisibility(View.GONE);
-                        listIsVisible = false;
+                    try {
+                        list = (ListView) findViewById(R.id.listeOsm);
+                        if (listIsVisible) {
+                            list.setVisibility(View.INVISIBLE);
+                            listIsVisible = false;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
                 super.handleMessage(msg);
@@ -425,33 +475,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 listHandler.sendEmptyMessage(6);
                 return;
             case 5:
-                // Dialog if user has LocationSettings disabled
-                final Dialog dialog = new Dialog(OsmMap.this);
-                dialog.setContentView(R.layout.dialog2);
-                dialog.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
-                dialog.setCancelable(false);
-                dialog.setCanceledOnTouchOutside(false);
-                dialog.show();
-
-                Button cancel = (Button) dialog.findViewById(R.id.dialogCancelLoc);
-                cancel.setOnClickListener(new OnClickListener() {
-                    public void onClick(View arg0) {
-                        dialog.dismiss();
-                    }
-                });
-                Button settings = (Button) dialog.findViewById(R.id.dialogSettingsLoc);
-                settings.setOnClickListener(new OnClickListener() {
-                    public void onClick(View arg0) {
-                        try {
-                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                        } catch (ActivityNotFoundException ae) {
-                            startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
-                        }
-                        dialog.dismiss();
-                        finish();
-                    }
-                });
-                return;
+                showGPSDialog();
             case 8:
                 Core.setLocation(Locationer.startLat, Locationer.startLon);
                 mLocationer.stopAutocorrect();
@@ -459,19 +483,13 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                     Config.backgroundServiceActive = true;
                     BackgroundService.reactivateFakeProvider();
                 }
-                return;
             case 12:
                 // message from Locationer
                 ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBarOsm);
                 if (mProgressBar != null) mProgressBar.setVisibility(View.GONE);
-                return;
-            case 13:
-                showGPSDialog();
-                return;
             case 14:
                 // next position from Locationer
                 setPosition(true);
-                return;
         }
     }
 
@@ -490,21 +508,46 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         listHandler.sendEmptyMessageDelayed(4, POS_UPDATE_FREQ);
     }
 
+
+    private void checkOfflineMapsDirectory() {
+        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
+        String offlineMapsPath = settings.getString("offlinemapspath", null);
+        File osmdroidDirectory = new File(Environment.getExternalStorageDirectory(), "/osmdroid/tiles");
+        if (offlineMapsPath != null) {
+            //Use saved custom tile storage path
+            OpenStreetMapTileProviderConstants.setOfflineMapsPath(offlineMapsPath);
+            OpenStreetMapTileProviderConstants.setCachePath(offlineMapsPath);
+        } else if (offlineMapsPath == null && !osmdroidDirectory.exists()) {
+            //Initialize default tile storage path
+            File mapsDirectory = new File(Environment.getExternalStorageDirectory(), Config.DEFAULT_OFFLINE_MAPS_FOLDER);
+            if (!mapsDirectory.exists()) {
+                boolean geschafft = mapsDirectory.mkdirs();
+                Log.i("ordner", "OSMMap erstellen: " + geschafft);
+            }
+            OpenStreetMapTileProviderConstants.setOfflineMapsPath(Config.DEFAULT_OFFLINE_MAPS_PATH);
+            OpenStreetMapTileProviderConstants.setCachePath(Config.DEFAULT_OFFLINE_MAPS_PATH);
+            new writeSettings("offlinemapspath", Config.DEFAULT_OFFLINE_MAPS_PATH).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else if (offlineMapsPath == null && osmdroidDirectory.exists()) {
+            //Already existing directory but not saved yet in SharePreferences
+            OpenStreetMapTileProviderConstants.setOfflineMapsPath("/sdcard/osmdroid/tiles");
+            OpenStreetMapTileProviderConstants.setCachePath("/sdcard/osmdroid/tiles");
+            new writeSettings("offlinemapspath", "/sdcard/osmdroid/tiles").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
     @Override
     protected void onResume() {
         firstPositionFound = false;
-
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         autoCorrect = settings.getBoolean("autocorrect", false);
-
         Config.usingGoogleMaps = false;
-        egoPerspective = false;
         setFollowOn();
         positionUpdate();
         if (userSwitchesGPS == false) {
             restartListener();
 
             if (knownReasonForBreak == true) {
+                checkOfflineMapsDirectory();
                 // User is coming from Settings, Background Service or About
                 knownReasonForBreak = false;
             } else {
@@ -533,9 +576,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBarOsm);
             mProgressBar.setVisibility(View.VISIBLE);
         }
-
-        // CompassNeedle and ProgressBar position down with margin
-        listHandler.sendEmptyMessageDelayed(1, 10);
 
         String tileProviderName = settings.getString("MapSource", "MapQuestOSM");
         if (tileProviderName.equalsIgnoreCase("MapQuestOSM")) {
@@ -576,86 +616,20 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     }
 
     public void setFollowOn() {
-        ImageView compass = (ImageView) findViewById(R.id.osmNadel);
         followMe = true;
-        if (compassStatus == 2) {
-            // setze Status 1
-            compass.setImageResource(R.drawable.needle);
-            compassStatus = 1;
-        } else if (compassStatus == 4) {
-            // setze Status 3
-            compass.setImageResource(R.drawable.needle3);
-            compassStatus = 3;
-        }
+        map.setMapOrientation(0);
+        int latE6 = (int) (Core.startLat * 1E6);
+        int lonE6 = (int) (Core.startLon * 1E6);
+        mapController.animateTo(new GeoPoint(latE6, lonE6));
+        fab.hide();
     }
 
     public void setFollowOff() {
-        ImageView compass = (ImageView) findViewById(R.id.osmNadel);
         followMe = false;
-        if (compassStatus == 1) {
-            // setze Status 2
-            compass.setImageResource(R.drawable.needle2);
-            compassStatus = 2;
-        } else if (compassStatus == 3) {
-            // setze Status 4
-            compass.setImageResource(R.drawable.needle4);
-            compassStatus = 4;
-        }
-    }
-
-    public void compassNeedleOsm(final View view) {
-        ImageView compass = (ImageView) findViewById(R.id.osmNadel);
-
-        listHandler.removeMessages(0);
-        listHandler.removeMessages(2);
-
-        if (compassStatus == 1) {
-            // status 3
-            compass.setImageResource(R.drawable.needle3);
-            compassStatus = 3;
-            // Camera in Compass Direction
-            egoPerspective = true;
-            listHandler.sendEmptyMessage(2);
-        } else if (compassStatus == 3) {
-            // status 1
-            egoPerspective = false;
-            compass.setImageResource(R.drawable.needle);
-            compassStatus = 1;
-            // camera points north
-            map.setMapOrientation(0);
-        } else if (compassStatus == 4) {
-            // status 3
-            setFollowOn();
-            compass.setImageResource(R.drawable.needle3);
-            compassStatus = 3;
-        } else if (compassStatus == 2) {
-            // status 1
-            setFollowOn();
-            compass.setImageResource(R.drawable.needle);
-            compassStatus = 1;
-        }
-        mAnalytics.trackEvent("Compass", "OSM_to_" + compassStatus);
-        // Positionstask reactivate
-        listHandler.sendEmptyMessageDelayed(4, 50);
-    }
-
-    public void setCompassNeedleOsmOff() {
-        ImageView compass = (ImageView) findViewById(R.id.osmNadel);
-        listHandler.removeMessages(0);
-        listHandler.removeMessages(2);
-        // status 2
-        egoPerspective = false;
-        compass.setImageResource(R.drawable.needle2);
-        compassStatus = 2;
-        map.setMapOrientation(0);
-        // Positionstask reactivate
-        listHandler.sendEmptyMessageDelayed(4, 50);
+        fab.show();
     }
 
     private void restartListener() {
-        iteration = 1;
-        Config.meanAclFreq = Config.meanMagnFreq = 0;
-
         units = 0;
         aclUnits = 0;
         magnUnits = 0;
@@ -745,12 +719,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             if (timePassed >= 2000000000) {
                 mCore.changeDelay(aclUnits / 2, 0);
                 mCore.changeDelay(magnUnits / 2, 1);
-                // Log.d("egal", "timePassed = 2000; aclFreq = " +aclUnits/2 + " magnFreq = " + magnUnits/2);
-
-                // calculate mean values and save
-                Config.meanAclFreq = (Config.meanAclFreq + aclUnits / 2) / iteration;
-                Config.meanMagnFreq = (Config.meanMagnFreq + magnUnits / 2) / iteration;
-                iteration = 2;
 
                 aclUnits = magnUnits = 0;
                 startTime = System.nanoTime();
@@ -786,7 +754,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        listHandler.removeMessages(0);
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             listHandler.removeMessages(4);
@@ -795,7 +762,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
             if (followMe == true) {
                 setFollowOff();
-                setCompassNeedleOsmOff();
             }
         }
         //Make longPressList invisible, but it is important to wait some time
@@ -923,8 +889,8 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             try {
                 // if off, longPressMenu will be made invisible
                 list = (ListView) findViewById(R.id.listeOsm);
+                if (list.getVisibility() == View.VISIBLE)
                 list.setVisibility(View.INVISIBLE);
-                listIsVisible = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -939,10 +905,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         // if off, longPressMenu will be made invisible
         try {
             list = (ListView) findViewById(R.id.listeOsm);
+            if (list.getVisibility() == View.VISIBLE)
             list.setVisibility(View.INVISIBLE);
-            listIsVisible = false;
         } catch (Exception e) {
-
+            if (BuildConfig.debug)
             e.printStackTrace();
         }
 
@@ -1001,7 +967,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
 
     @Override
     public boolean longPressHelper(GeoPoint p) {
-        listIsVisible = false;
         longPressedGeoPoint = p;
         list = (ListView) findViewById(R.id.listeOsm);
         list.setVisibility(View.VISIBLE);
@@ -1028,8 +993,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 // if off, longPressMenu will be made invisible
                 try {
                     list = (ListView) findViewById(R.id.listeOsm);
+                    if (list.getVisibility() == View.VISIBLE)
                     list.setVisibility(View.INVISIBLE);
                 } catch (Exception e) {
+                    if (BuildConfig.debug)
                     e.printStackTrace();
                 }
             }
@@ -1066,11 +1033,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                     Toast.makeText(OsmMap.this, "You can not find Chuck Norris. Chuck Norris finds YOU!", Toast.LENGTH_LONG).show();
                 else if (query.equalsIgnoreCase("cake") || query.equalsIgnoreCase("the cake") || query.equalsIgnoreCase("portal"))
                     Toast.makeText(OsmMap.this, "The cake is a lie!", Toast.LENGTH_LONG).show();
-                else if (query.equalsIgnoreCase("tomlernt")) {
-                    // start debug mode
-                    Toast.makeText(OsmMap.this, "Debug-Mode ON", Toast.LENGTH_SHORT).show();
-                    Config.debugMode = true;
-                } else if (query.equalsIgnoreCase("smartnavihelp")) {
+                else if (query.equalsIgnoreCase("smartnavihelp")) {
                     // User ID anzeigen
                     SharedPreferences activity_settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
                     uid = activity_settings.getString("uid", "0");
@@ -1086,7 +1049,8 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                     if (Config.PLACES_API_UNDER_LIMIT) {
                         new PlacesTextSeachAsync().execute(query);
                     }
-                    //TODO react to exceeded places api limit. Use GeocodeTask from GoogleMap
+                    //react to exceeded places api limit. Use GeocodeTask from GoogleMap
+                    //but should not happen due to high limit
                 }
                 return true;
             }
@@ -1094,7 +1058,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             @Override
             public boolean onQueryTextChange(String query) {
                 // min 3 chars before autocomplete
-                if (query.length() >= 5) {
+                if (query.length() >= Config.PLACES_SEARCH_QUERY_CHARACTER_LIMIT) {
                     // prevent hammering
                     if (!suggestionsInProgress) {
                         // get suggestions

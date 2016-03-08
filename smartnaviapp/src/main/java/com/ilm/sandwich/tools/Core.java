@@ -9,6 +9,8 @@ import android.opengl.Matrix;
 import android.os.Environment;
 import android.util.Log;
 
+import com.ilm.sandwich.BuildConfig;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -441,7 +443,7 @@ public class Core {
 
         azimuth = azimuthUnfilteredUncorrected;
 
-        if (export && Config.debugMode) {
+        if (export && BuildConfig.debug) {
             dataOutput();
         }
     }
@@ -484,7 +486,7 @@ public class Core {
 
     private void newStep(double winkel) {
         double winkel2 = winkel * 0.01745329252;
-        if (Config.debugMode) {
+        if (BuildConfig.debug) {
             Log.d("Location-Status", "Step: " + Core.startLon);
         }
         deltaLat = Math.cos(winkel2) * 0.000008984725966 * stepLength;

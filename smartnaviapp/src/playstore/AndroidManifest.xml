@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ilm.sandwich"
     android:installLocation="auto"
-    android:versionCode="27"
-    android:versionName="2.1.1">
+    android:versionCode="31"
+    android:versionName="2.1.9">
 
 
     <uses-feature
@@ -29,7 +29,8 @@
         <activity
             android:name=".Splashscreen"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,7 +39,8 @@
         </activity>
         <activity
             android:name=".GoogleMap"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name="Info"
             android:screenOrientation="portrait" />
@@ -53,7 +55,8 @@
         <activity
             android:name=".OsmMap"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -63,7 +66,7 @@
         <!-- AIzaSyDZa_esegGL-6q8L8nMz6h1jMWpM4QD0X8  RELEASE-KEY -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDZa_esegGL-6q8L8nMz6h1jMWpM4QD0X8" />
+            android:value="AIzaSyCcDat03ECeRA1ewS1IexEZGucwU9q4htM" />
     </application>
 
 </manifest>

@@ -30,8 +30,7 @@
         <activity
             android:name=".Splashscreen"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,28 +39,32 @@
         </activity>
         <activity
             android:name=".GoogleMap"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Info"
-            android:screenOrientation="portrait" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".BackgroundService"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".Webview"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".Settings"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".OsmMap"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

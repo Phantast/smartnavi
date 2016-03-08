@@ -216,35 +216,5 @@
                 android:textColor="#4d4d4d"
                 android:textSize="12sp" />
         </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/thx"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/howto"
-            android:layout_marginTop="1dp"
-            android:background="#f5f5f5"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:orientation="vertical"
-            android:padding="10dp">
-
-            <TextView
-                android:id="@+id/text5"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:autoLink="web"
-                android:gravity="center_horizontal"
-                android:linksClickable="true"
-                android:shadowColor="#FFFFFF"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="0.1"
-                android:text="@string/tx_11"
-                android:textColor="#4d4d4d"
-                android:textColorLink="#86b530"
-                android:textSize="12sp" />
-
-        </RelativeLayout>
     </RelativeLayout>
 </ScrollView>

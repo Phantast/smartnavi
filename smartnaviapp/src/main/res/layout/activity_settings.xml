@@ -35,7 +35,7 @@
                 android:textStyle="bold" />
         </RelativeLayout>
 
-        <!-- Koerpergroesse -->
+        <!-- Body height -->
 
         <RelativeLayout
             android:id="@+id/bodyheight"
@@ -186,7 +186,7 @@
                 android:layout_marginBottom="5dp"
                 android:spinnerMode="dropdown" />
         </RelativeLayout>
-        <!-- SatellitenAnsicht -->
+        <!-- Satellite View -->
 
         <RelativeLayout
             android:id="@+id/satellite"
@@ -244,13 +244,70 @@
                 android:button="@drawable/custom_checkbox" />
         </RelativeLayout>
 
+        <!-- Offline Maps Path -->
+
+        <RelativeLayout
+            android:id="@+id/offlineMaps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/satellite"
+            android:layout_marginTop="1dp"
+            android:background="#f5f5f5"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp">
+
+            <TextView
+                android:id="@+id/offlineMapsText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_29"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#4d4d4d"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/offlineMapsTextBelow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/offlineMapsText"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:textColor="#4d4d4d"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/choosefolderbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/offlineMapsText"
+                android:src="@android:drawable/ic_menu_more" />
+
+
+        </RelativeLayout>
+
         <!-- GPS Korrektur -->
 
         <RelativeLayout
             android:id="@+id/gpsCorrection"
             android:layout_width="wrap_content"
             android:layout_height="25dp"
-            android:layout_below="@+id/satellite"
+            android:layout_below="@+id/offlineMaps"
             android:layout_marginTop="1dp"
             android:background="#333333"
             android:focusable="true"

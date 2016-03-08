@@ -39,7 +39,7 @@
 	    Sensorausstattung sowie Nutzungsverhalten (z.B. von Funktionen). Die Daten sind vollständig anonym. Es werden keine Positionsdaten oder andere private Daten gesendet. 
 	     Das Senden der Daten kann jederzeit in den Einstellungen deaktiviert werden. Vielen Dank für Deine Unterstützung!</string>
     <string name="tx_28">Schließen</string>
-    <string name="tx_29">Bitte aktiviere genaue Standortbestimmung in den Einstellungen.</string>
+    <string name="tx_29">Offline Karten Speicherpfad</string>
     <string name="tx_30">Kann keine Routeninformationen abrufen. Bitte später erneut versuchen.</string>
 
 
@@ -125,6 +125,10 @@
     <string name="tx_97">SmartNavi ist Open Source und respektiert deine Privatsphäre</string>
     <string name="tx_98">Weiter</string>
     <string name="tx_99">GoogleMaps kann in der Open Source Version von SmartNavi nicht verwendet werden, da Google Play Services fehlen.</string>
+    <string name="tx_100">SmartNavi benötigt Rechte zur Standortbestimmung.</string>
+
+    <string name="tx_101">SmartNavi benötigt Rechte um Kartenmaterial zu speichern.</string>
+    <string name="tx_102">Nicht möglich mit Google Maps als Kartenmaterial</string>
 
 
     <string-array name="possetzen">

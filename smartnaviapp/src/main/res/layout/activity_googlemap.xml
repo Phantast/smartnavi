@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:scaleType="center"
+        android:src="@android:drawable/ic_menu_mylocation"
+        android:visibility="invisible"
+        app:backgroundTint="@android:color/holo_green_dark"
+        app:layout_anchor="@+id/googlemap_fragment"
+        app:layout_anchorGravity="bottom|right|end"
+        app:rippleColor="@android:color/holo_green_light" />
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/googlemap_actvity_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -20,16 +39,6 @@
         class="com.ilm.sandwich.tools.MySupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-    <ImageView
-        android:id="@+id/nadel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="50dp"
-        android:alpha="0.7"
-        android:onClick="compassNadel"
-        android:src="@drawable/needle" />
 
     <TextView
         android:id="@+id/mapText"
@@ -61,6 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_marginTop="60dp"
         android:onClick="abortGPS"
         android:visibility="gone" />
 
@@ -270,3 +280,5 @@
 
 
 </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

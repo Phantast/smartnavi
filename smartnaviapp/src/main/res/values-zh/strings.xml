@@ -37,7 +37,7 @@
     <string name="tx_26"><u>匿名的使用数据</u></string>
     <string name="tx_27">请通过发送匿名的使用数据来支持我们。数据包含：通用的设备型号（如Nexus S），传感器配备和用户使用习惯。数据完全是匿名的。设备不会发送位置信息或个人数据等。数据发送可随时在设置中取消。感谢您的支持！</string>
     <string name="tx_28">行</string>
-    <string name="tx_29">Please enable location getting in settings.</string>
+    <string name="tx_29">Offline Maps Storage Path</string>
     <string name="tx_30">Could not get route information. Please try again later.</string>
 
 
@@ -121,7 +121,10 @@
     <string name="tx_97">SmartNavi is open source and respects your privacy</string>
     <string name="tx_98">Next</string>
     <string name="tx_99">You cannot use Google Maps in the Open Source version of SmartNavi due to missing Google Play Services.</string>
+    <string name="tx_100">SmartNavi needs permission for location services.</string>
 
+    <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
+    <string name="tx_102">Not possible with Google Maps as Map Provider</string>
 
     <string-array name="dimension">
         <item>厘米(cm)</item>

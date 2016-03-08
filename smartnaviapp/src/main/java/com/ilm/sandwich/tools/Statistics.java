@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.Splashscreen;
 
 import org.json.JSONObject;
@@ -86,32 +87,11 @@ public class Statistics {
                 usageData.put("aclName", aclName);
                 usageData.put("magnName", magnetName);
                 usageData.put("gyroName", gyroName);
-
-                usageData.put("meanAclFreq", (int) Config.meanAclFreq);
-                usageData.put("meanMagnFreq", (int) Config.meanMagnFreq);
-
                 if (Splashscreen.PLAYSTORE_VERSION) {
                     usageData.put("mapSource", settings.getString("MapSource", "GoogleMaps"));
                 } else {
                     usageData.put("mapSource", settings.getString("MapSource", "MapQuestOSM"));
                 }
-
-                int serviceUsage = 0;
-                if (Config.backgroundServiceUsed) {
-                    serviceUsage = 1;
-                }
-                usageData.put("serviceUsage", serviceUsage);
-
-                int autoCorrect = 0;
-                if (settings.getBoolean("autocorrect", false)) {
-                    autoCorrect = 1;
-                }
-                usageData.put("autocorrect", autoCorrect);
-                usageData.put("gpstimer", settings.getInt("gpstimer", 1));
-
-                int time = (int) ((System.currentTimeMillis() - Config.startTime) / 1000);
-                usageData.put("time", time);
-
                 //Number of steps
                 usageData.put("stepCounter", Core.stepCounter);
             } catch (Exception e) {
@@ -128,7 +108,7 @@ public class Statistics {
             }
         }
 
-        if (Config.debugMode) {
+        if (BuildConfig.debug) {
             Log.i("Usage Data", usageData.toString());
         }
 
@@ -155,7 +135,7 @@ public class Statistics {
                 out.write(usageData.toString());
                 out.close();
                 int respCode = httpCon.getResponseCode();
-                if (Config.debugMode) {
+                if (BuildConfig.debug) {
                     Log.d("UsageData", "Server-Response: " + respCode);
                 }
                 httpCon.disconnect();

@@ -2,12 +2,9 @@ package com.ilm.sandwich;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
-
-import com.ilm.sandwich.tools.Config;
 
 /**
  * This class is for playStore Version important because it checks if user has GooglePlayServices installed
@@ -27,7 +24,6 @@ public class Splashscreen extends Activity {
         //Remove title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splashscreen);
-        Config.startTime = System.currentTimeMillis();
 
         Handler waitingTimer = new Handler();
         waitingTimer.postDelayed(new Runnable() {

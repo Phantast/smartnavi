@@ -38,7 +38,7 @@
 	<string name="tx_27">Support SmartNavi by sending anonymous usage data. This data will help us to improve SmartNavi. The data are about: device type, 
 	    sensor equipment and usage of features. The data is completely anonymous. No positions and no private information will be transmitted. You can deactivate usage data sending at every time in settings. Thank you for your support!</string>
     <string name="tx_28">Close</string>
-    <string name="tx_29">Please enable location getting in settings.</string>
+    <string name="tx_29">Offline Maps Storage Path</string>
     <string name="tx_30">Could not get route information. Please try again later.</string>
 
 
@@ -123,7 +123,10 @@
     <string name="tx_97">SmartNavi is open source and respects your privacy</string>
     <string name="tx_98">Next</string>
     <string name="tx_99">You cannot use Google Maps in the Open Source version of SmartNavi due to missing Google Play Services.</string>
+    <string name="tx_100">SmartNavi needs permission for location services.</string>
 
+    <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
+    <string name="tx_102">Not possible with Google Maps as Map Provider</string>
 
     <string-array name="dimension">
         <item>cm</item>

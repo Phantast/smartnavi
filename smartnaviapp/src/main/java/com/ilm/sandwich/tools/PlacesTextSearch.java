@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.GoogleMap;
 import com.ilm.sandwich.R;
 
@@ -88,15 +89,15 @@ public class PlacesTextSearch {
 
 
         } catch (MalformedURLException e) {
-            if (Config.debugMode) {
+            if (BuildConfig.debug) {
                 Log.e(LOG_TAG, "Error processing Places API URL TextSearch", e);
             }
         } catch (IOException e) {
-            if (Config.debugMode) {
+            if (BuildConfig.debug) {
                 Log.e(LOG_TAG, "Error connecting to Places API TextSearch", e);
             }
         } catch (JSONException e) {
-            if (Config.debugMode) {
+            if (BuildConfig.debug) {
                 Log.e(LOG_TAG, "Cannot process JSON results", e);
             }
         } finally {

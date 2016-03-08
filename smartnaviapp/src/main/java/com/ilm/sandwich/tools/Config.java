@@ -8,11 +8,6 @@ import android.provider.BaseColumns;
  *         www.smartnavi-app.com
  */
 public class Config {
-
-    //Things to do before releasing the app:
-    // - insert valid GoogleMapsAPI-Key in AndroidManifest.xml
-    // - set debugMode = false in Config.java
-
     //app-Rate Dialog
     public final static String APP_PNAME = "com.ilm.sandwich";
     public final static int DAYS_UNTIL_PROMPT = 2; // 2
@@ -26,16 +21,13 @@ public class Config {
     public static final String SMARTNAVI_API_URL = "http://5.39.91.189:3000/users";
     //permission integers
     public static final int PERMISSION_REQUEST_FINE_LOCATION = 0;
+    public static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 1;
+    public static final String DEFAULT_OFFLINE_MAPS_PATH = "/sdcard/smartnavi";
+    public static final String DEFAULT_OFFLINE_MAPS_FOLDER = "/smartnavi";
+    public static final int PLACES_SEARCH_QUERY_CHARACTER_LIMIT = 3;
     public static boolean PLACES_API_UNDER_LIMIT = true;
-    //debug
-    public static boolean debugMode = false;
-    ////is used in playStoreVersion to differ between currently active map
+    //is used in playStoreVersion to differ between currently active map
     public static boolean usingGoogleMaps;
-    public static float meanAclFreq = 0;
-    public static float meanMagnFreq = 0;
-    public static boolean backgroundServiceUsed = false;
-    public static long startTime = 0;
     //other
     public static boolean backgroundServiceActive = false;
-
 }

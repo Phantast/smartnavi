@@ -1,4 +1,4 @@
-**SmartNavi - Copyright 2011-2014 Christian Henke**
+**SmartNavi - Copyright 2011-2016 Christian Henke**
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ Libraries
 SmartNavi makes use of the following libraries under their corresponding licenses:
 * osmdroid - Apache License 2.0
 * OsmBonusPack - GNU LESSER GENERAL PUBLIC LICENSE
+* Android DirectoryChooser - Apache License 2.0
 
 
 Apache License

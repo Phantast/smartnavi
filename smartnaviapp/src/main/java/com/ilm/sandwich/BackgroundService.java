@@ -1,7 +1,6 @@
 package com.ilm.sandwich;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -13,6 +12,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,7 +27,7 @@ import com.ilm.sandwich.tools.Core;
  * @author Christian Henke
  *         www.smartnavi-app.com
  */
-public class BackgroundService extends Activity {
+public class BackgroundService extends AppCompatActivity {
 
     // the following two are just that the following map (if user goes back) can get an actual position
     public static double sGeoLat;
@@ -131,7 +131,7 @@ public class BackgroundService extends Activity {
             //e.printStackTrace();
         }
 
-        if (Config.debugMode) {
+        if (BuildConfig.debug) {
             //Log.i("Frequenzen", loc.toString());
         }
     }
@@ -140,8 +140,9 @@ public class BackgroundService extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_backgroundservice);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setTitle(getResources().getString(R.string.tx_64));
+        ;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(getResources().getString(R.string.tx_64));
         geoLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
@@ -235,7 +236,6 @@ public class BackgroundService extends Activity {
             shouldStart = false;
             serviceButton.setText(getApplicationContext().getResources().getString(R.string.tx_69));
             Config.backgroundServiceActive = true;
-            Config.backgroundServiceUsed = true;
 
 
             //tell the Maps to restart the sensor listeners after 10s because

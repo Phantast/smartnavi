@@ -19,9 +19,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.R;
 import com.ilm.sandwich.tools.Analytics;
-import com.ilm.sandwich.tools.Config;
 import com.ilm.sandwich.tools.Core;
 
 import java.text.DecimalFormat;
@@ -119,7 +119,7 @@ public class TutorialFragment extends Fragment {
                     spinner.setSelection(1);
                 }
             } catch (Exception e) {
-                if (Config.debugMode)
+                if (BuildConfig.debug)
                     e.printStackTrace();
             }
         }
@@ -156,13 +156,11 @@ public class TutorialFragment extends Fragment {
                     try {
                         number = Float.valueOf(heightField.getText().toString());
                         if (number < 241 && number > 119 && metricUnits == true) {
-
                             String numberString = df0.format(number);
                             fragmentView.getContext().getSharedPreferences(fragmentView.getContext().getPackageName() + "_preferences", fragmentView.getContext().MODE_PRIVATE).edit().putString("step_length", numberString).commit();
                             Core.stepLength = (number / 222);
                             tutorialDone = true;
                         } else if (number < 95 && number > 45 && metricUnits == false) {
-
                             String numberString = df0.format(number);
                             fragmentView.getContext().getSharedPreferences(fragmentView.getContext().getPackageName() + "_preferences", fragmentView.getContext().MODE_PRIVATE).edit().putString("step_length", numberString).commit();
                             Core.stepLength = (float) (number * 2.54 / 222);
@@ -170,10 +168,8 @@ public class TutorialFragment extends Fragment {
                         } else {
                             Toast.makeText(fragmentView.getContext(), fragmentView.getContext().getResources().getString(R.string.tx_10), Toast.LENGTH_LONG).show();
                         }
-
                     } catch (NumberFormatException e) {
-                        if (Config.debugMode)
-                            e.printStackTrace();
+                        if (BuildConfig.debug)
                         Toast.makeText(fragmentView.getContext(), fragmentView.getContext().getResources().getString(R.string.tx_32), Toast.LENGTH_LONG).show();
                     }
                 } else {
@@ -206,7 +202,7 @@ public class TutorialFragment extends Fragment {
                         bodyHeightField.setFocusableInTouchMode(true);
                         bodyHeightField.setFocusable(true);
                     } catch (Exception e) {
-                        if (Config.debugMode)
+                        if (BuildConfig.debug)
                             e.printStackTrace();
                     }
                 }

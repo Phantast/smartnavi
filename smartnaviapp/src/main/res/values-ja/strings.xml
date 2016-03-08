@@ -38,7 +38,7 @@
 	<string name="tx_27">匿名の使用状況データを送信して SmartNavi をご支援ください。このデータは SmartNavi の改善に役立ちます。データは、デバイスの種類、
 	    センサー機器、機能の使用状況を含みます。データは完全に匿名です。場所や個人情報は送信しません。使用状況データの送信はいつでも設定から無効にできます。ご支援ありがとうございます!</string>
     <string name="tx_28">閉じる</string>
-    <string name="tx_29">設定で位置の取得を有効にしてください。</string>
+    <string name="tx_29">Offline Maps Storage Path</string>
     <string name="tx_30">経路情報を取得できません。後でもう一度試してください。</string>
 
 
@@ -123,7 +123,10 @@
     <string name="tx_97">SmartNavi はオープンソースで、あなたのプライバシーを尊重します</string>
     <string name="tx_98">次へ</string>
     <string name="tx_99">You cannot use Google Maps in the Open Source version of SmartNavi due to missing Google Play Services.</string>
+    <string name="tx_100">SmartNavi needs permission for location services.</string>
 
+    <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
+    <string name="tx_102">Not possible with Google Maps as Map Provider</string>
 
     <string-array name="dimension">
         <item>cm</item>

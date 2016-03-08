@@ -4,6 +4,7 @@ import android.database.MatrixCursor;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.GoogleMap;
 import com.ilm.sandwich.OsmMap;
 
@@ -69,11 +70,11 @@ public class PlacesAutoComplete extends AsyncTask<String, String, StringBuilder>
             }
 
         } catch (MalformedURLException e) {
-            if (Config.debugMode) {
+            if (BuildConfig.debug) {
                 Log.e(LOG_TAG, "Error processing Places API URL", e);
             }
         } catch (IOException e) {
-            if (Config.debugMode) {
+            if (BuildConfig.debug) {
                 Log.e(LOG_TAG, "Error connecting to Places API", e);
             }
         } finally {

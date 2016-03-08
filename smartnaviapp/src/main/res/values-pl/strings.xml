@@ -38,7 +38,7 @@
 	<string name="tx_27">Wesprzyj SmartNavi wysyłając anonimowe dane użytkowania. Te dane pomogą nam udoskonalić SmartNavi. Dane informują o: typie urządzenia, 
 	    wyposażeniu w czujniki i wykorzystaniu możliwości. Dane są całkowicie anonimowe. Pozycie i informacje prywatne nie są transmitowane. Można wyłączyć wysyłanie danych o użytkowaniu w każdym czasie w ustawieniach. Dziękujemy za twoje wsparcie!</string>
     <string name="tx_28">Ostatni cel podróży:\n</string>
-    <string name="tx_29">Please enable location getting in settings.</string>
+    <string name="tx_29">Offline Maps Storage Path</string>
     <string name="tx_30">Nie udało się uzyskać informacji o trasie. Spróbuj ponownie później.</string>
 
 
@@ -123,7 +123,10 @@
     <string name="tx_97">SmartNavi is open source and respects your privacy</string>
     <string name="tx_98">Next</string>
     <string name="tx_99">You cannot use Google Maps in the Open Source version of SmartNavi due to missing Google Play Services.</string>
+    <string name="tx_100">SmartNavi needs permission for location services.</string>
 
+    <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
+    <string name="tx_102">Not possible with Google Maps as Map Provider</string>
 
     <string-array name="dimension">
         <item>cm</item>

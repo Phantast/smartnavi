@@ -1,13 +1,20 @@
 package com.ilm.sandwich;
 
-import android.app.Activity;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +30,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
@@ -33,13 +41,17 @@ import android.widget.Toast;
 import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
 
+import net.rdrei.android.dirchooser.DirectoryChooserConfig;
+import net.rdrei.android.dirchooser.DirectoryChooserFragment;
+
+import java.io.File;
 import java.text.DecimalFormat;
 
 /**
  * @author Christian Henke
  *         www.smartnavi-app.com
  */
-public class Settings extends Activity implements OnEditorActionListener, OnCheckedChangeListener {
+public class Settings extends AppCompatActivity implements OnEditorActionListener, OnCheckedChangeListener, DirectoryChooserFragment.OnFragmentInteractionListener {
 
     static DecimalFormat df = new DecimalFormat("0");
     EditText editText;
@@ -55,14 +67,14 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
     private String actualMapSource;
     private SubMenu subMenu1;
     private Analytics mAnalytics;
+    private DirectoryChooserFragment mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setTitle(getResources().getString(R.string.tx_15));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(getResources().getString(R.string.tx_15));
         setContentView(R.layout.activity_settings);
-
 
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
@@ -122,6 +134,8 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
         String savedMapSource;
         if (Config.usingGoogleMaps) {
             savedMapSource = "GoogleMaps";
+            TextView offlineMapsPathText = (TextView) findViewById(R.id.offlineMapsTextBelow);
+            offlineMapsPathText.setText(getApplicationContext().getResources().getString(R.string.tx_102));
         } else {
             savedMapSource = settings.getString("MapSource", "MapQuestOSM");
         }
@@ -133,6 +147,37 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
             mapSpinner.setSelection(1);
         } else if (savedMapSource.equalsIgnoreCase("MapnikOSM")) {
             mapSpinner.setSelection(2);
+        }
+
+        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                .newDirectoryName("")
+                .initialDirectory("/sdcard")
+                .allowNewDirectoryNameModification(true)
+                .allowNewDirectoryNameModification(true)
+                .build();
+        mDialog = DirectoryChooserFragment.newInstance(config);
+
+        ImageView chooseFolderButton = (ImageView) findViewById(R.id.choosefolderbutton);
+        if (Config.usingGoogleMaps) {
+            chooseFolderButton.setClickable(false);
+        } else {
+            chooseFolderButton.setClickable(true);
+        }
+        if (chooseFolderButton != null) {
+            chooseFolderButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (ContextCompat.checkSelfPermission(Settings.this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(Settings.this,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                Config.PERMISSION_WRITE_EXTERNAL_STORAGE);
+                    } else {
+                        mDialog.show(getFragmentManager(), null);
+                    }
+                }
+            });
         }
 
         boolean vibration = settings.getBoolean("vibration", true);
@@ -218,6 +263,38 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
         });
     }
 
+    private void checkOfflineMapsDirectory() {
+        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
+        TextView offlineMapsPathText = (TextView) findViewById(R.id.offlineMapsTextBelow);
+        String offlineMapsPath = settings.getString("offlinemapspath", null);
+        if (offlineMapsPath != null) {
+            //Use saved custom tile storage path
+            offlineMapsPathText.setText(offlineMapsPath);
+            Log.i("ordner", "existiert schon");
+        }
+        if (ContextCompat.checkSelfPermission(Settings.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            File osmdroidDirectory = new File(Environment.getExternalStorageDirectory(), "/osmdroid/tiles");
+            if (offlineMapsPath == null && !osmdroidDirectory.exists()) {
+                //Initialize default tile storage path
+                Log.i("ordner", "setze auf smartnavi");
+                File mapsDirectory = new File(Environment.getExternalStorageDirectory(), Config.DEFAULT_OFFLINE_MAPS_FOLDER);
+                if (!mapsDirectory.exists()) {
+                    boolean geschafft = mapsDirectory.mkdirs();
+                    Log.i("ordner", "Settings erstellen: " + geschafft);
+                }
+                offlineMapsPathText.setText(Config.DEFAULT_OFFLINE_MAPS_PATH);
+                new writeSettings("offlinemapspath", Config.DEFAULT_OFFLINE_MAPS_PATH).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else if (offlineMapsPath == null && osmdroidDirectory.exists()) {
+                //Already existing directory but not saved yet in SharePreferences
+                Log.i("ordner", "setze auf osmdroid");
+                offlineMapsPathText.setText("/sdcard/osmdroid/tiles");
+                new writeSettings("offlinemapspath", "/sdcard/osmdroid/tiles").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        }
+    }
+
     private void setMapSource(String chosenMapSource) {
         new writeSettings("MapSource", chosenMapSource).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         if (chosenMapSource.equalsIgnoreCase("GoogleMaps")) {
@@ -226,6 +303,11 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
             TextView sateliteText = (TextView) findViewById(R.id.sateliteText);
             sateliteText.setTextColor(Color.parseColor("#4d4d4d"));
             checkBoxSatellite.setClickable(true);
+            ImageView chooseFolderButton = (ImageView) findViewById(R.id.choosefolderbutton);
+            //disable offlineMapsPath Button
+            chooseFolderButton.setClickable(false);
+            TextView offlineMapsPathText = (TextView) findViewById(R.id.offlineMapsTextBelow);
+            offlineMapsPathText.setText(getApplicationContext().getResources().getString(R.string.tx_102));
         } else if (chosenMapSource.equalsIgnoreCase("MapQuestOSM")) {
             mapSpinner.setSelection(1);
             //deactivate checkbox for satelite view
@@ -235,6 +317,10 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
             if (checkBoxSatellite.isChecked()) {
                 checkBoxSatellite.performClick();
             }
+            //enable offlineMapsPath Button
+            ImageView chooseFolderButton = (ImageView) findViewById(R.id.choosefolderbutton);
+            chooseFolderButton.setClickable(true);
+            checkOfflineMapsDirectory();
         } else if (chosenMapSource.equalsIgnoreCase("MapnikOSM")) {
             mapSpinner.setSelection(2);
             //deactivate checkbox for satelite view
@@ -244,6 +330,10 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
             if (checkBoxSatellite.isChecked()) {
                 checkBoxSatellite.performClick();
             }
+            //enable offlineMapsPath Button
+            ImageView chooseFolderButton = (ImageView) findViewById(R.id.choosefolderbutton);
+            chooseFolderButton.setClickable(false);
+            checkOfflineMapsDirectory();
         }
         actualMapSource = chosenMapSource;
     }
@@ -439,9 +529,10 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
             key = "autocorrect";
 
         } else if (buttonView.getId() == R.id.checkBoxExport) {
-            key = "export";
-            if (isChecked) {
-                Toast.makeText(Settings.this, getResources().getString(R.string.tx_88), Toast.LENGTH_SHORT).show();
+            if (isChecked == true) {
+                //Check permission before starting export
+                checkWriteStoragePermission(isChecked);
+                return;
             }
         } else if (buttonView.getId() == R.id.checkBoxSatellite) {
             key = "view";
@@ -454,6 +545,49 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
         }
         mAnalytics.trackEvent("Settings", key + "_changed_to_" + isChecked);
         new writeSettings(key, isChecked).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void checkWriteStoragePermission(boolean isChecked) {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    Config.PERMISSION_WRITE_EXTERNAL_STORAGE);
+        } else {
+            String key = "export";
+            if (isChecked) {
+                Toast.makeText(Settings.this, getResources().getString(R.string.tx_88), Toast.LENGTH_LONG).show();
+            }
+            mAnalytics.trackEvent("Settings", key + "_changed_to_" + isChecked);
+            new writeSettings(key, isChecked).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            mAnalytics.trackEvent("Storage_Permission", "Granted_Google");
+            checkOfflineMapsDirectory();
+        } else {
+            Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_101), Toast.LENGTH_LONG).show();
+            mAnalytics.trackEvent("Storage_Permission", "Denied_Google");
+        }
+    }
+
+    @Override
+    public void onSelectDirectory(@NonNull String path) {
+        new writeSettings("offlinemapspath", path).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        TextView offlineMapsPathText = (TextView) findViewById(R.id.offlineMapsTextBelow);
+        offlineMapsPathText.setText(path);
+        mDialog.dismiss();
+    }
+
+    @Override
+    public void onCancelChooser() {
+        mDialog.dismiss();
     }
 
     private class writeSettings extends AsyncTask<Void, Void, Void> {
