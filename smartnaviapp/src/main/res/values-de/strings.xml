@@ -125,6 +125,8 @@
     <string name="tx_97">SmartNavi ist Open Source und respektiert deine Privatsphäre</string>
     <string name="tx_98">Weiter</string>
     <string name="tx_99">GoogleMaps kann in der Open Source Version von SmartNavi nicht verwendet werden, da Google Play Services fehlen.</string>
+    <string name="tx_100">SmartNavi benötigt Rechte zur Standortbestimmung.</string>
+    <string name="tx_101">SmartNavi benötigt Rechte um Kartenmaterial zu speichern.</string>
 
 
     <string-array name="possetzen">

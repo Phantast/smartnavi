@@ -42,12 +42,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/playstoreDebug/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/playstoreDebug/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/playstoreDebug/rs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/playstore/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/playstore/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/playstore/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/playstore/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/playstore/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/playstore/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystoreDebug/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystoreDebug/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystoreDebug/assets" type="java-test-resource" />
@@ -55,6 +49,12 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystoreDebug/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystoreDebug/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystoreDebug/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/playstore/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/playstore/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/playstore/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/playstore/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/playstore/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/playstore/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/playstore/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/playstore/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/playstore/assets" type="java-resource" />
@@ -62,13 +62,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/playstore/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/playstore/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/playstore/rs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystore/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystore/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystore/assets" type="java-test-resource" />
@@ -76,6 +69,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystore/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystore/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testPlaystore/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestPlaystore/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />
@@ -113,6 +113,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/builds" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />

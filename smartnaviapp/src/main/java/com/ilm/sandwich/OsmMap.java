@@ -1,5 +1,6 @@
 package com.ilm.sandwich;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -7,6 +8,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Color;
@@ -21,8 +23,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -147,6 +152,60 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
         mAnalytics = new Analytics(trackingAllowed);
 
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    Config.PERMISSION_REQUEST_FINE_LOCATION);
+        } else {
+            proceedOnCreate();
+        }
+    }
+
+    private void checkWriteStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    Config.PERMISSION_WRITE_EXTERNAL_STORAGE);
+        } else {
+            proceedOnCreate();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Config.PERMISSION_REQUEST_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mAnalytics.trackEvent("Location_Permission", "Granted_OSM");
+                    checkWriteStoragePermission();
+                } else {
+                    Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_100), Toast.LENGTH_LONG).show();
+                    mAnalytics.trackEvent("Location_Permission", "Denied_OSM");
+                    finish();
+                }
+            }
+            case Config.PERMISSION_WRITE_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mAnalytics.trackEvent("Storage_Permission", "Granted_OSM");
+                    proceedOnCreate();
+                } else {
+                    Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_101), Toast.LENGTH_LONG).show();
+                    mAnalytics.trackEvent("Storage_Permission", "Denied_OSM");
+                    finish();
+                }
+            }
+        }
+    }
+
+    private void proceedOnCreate() {
+        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         map = (MapView) findViewById(R.id.openmapview);
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this, this);
         map.getOverlays().add(mapEventsOverlay);

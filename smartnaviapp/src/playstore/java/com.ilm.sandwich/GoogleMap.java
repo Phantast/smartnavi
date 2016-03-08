@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -226,25 +227,15 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Config.usingGoogleMaps = true;
-        mLocationer = new Locationer(GoogleMap.this);
+
         setContentView(R.layout.activity_googlemap);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         toolbar = (Toolbar) findViewById(R.id.toolbar_googlemap); // Attaching the layout to the toolbar object
         setSupportActionBar(toolbar);                   // Setting toolbar as the ActionBar with setSupportActionBar() call
 
-        // Rate App show for debugging
-        //showRateDialog();
-        // Rate App live
-        appRateDialog();
-
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
         mAnalytics = new Analytics(trackingAllowed);
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.googlemap_fragment);
-        mapFragment.getMapAsync(this);
-
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -252,12 +243,63 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     Config.PERMISSION_REQUEST_FINE_LOCATION);
-            //TODO: react to granted permission
+        } else {
+            checkWriteStoragePermission();
         }
-
-
     }
 
+    private void checkWriteStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    Config.PERMISSION_WRITE_EXTERNAL_STORAGE);
+        } else {
+            proceedOnCreate();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Config.PERMISSION_REQUEST_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mAnalytics.trackEvent("Location_Permission", "Granted_Google");
+                    checkWriteStoragePermission();
+                } else {
+                    Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_100), Toast.LENGTH_LONG).show();
+                    mAnalytics.trackEvent("Location_Permission", "Denied_Google");
+                    finish();
+                }
+            }
+            case Config.PERMISSION_WRITE_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mAnalytics.trackEvent("Storage_Permission", "Granted_Google");
+                    proceedOnCreate();
+                } else {
+                    Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_101), Toast.LENGTH_LONG).show();
+                    mAnalytics.trackEvent("Storage_Permission", "Denied_Google");
+                    finish();
+                }
+            }
+        }
+    }
+
+    private void proceedOnCreate() {
+        // Rate App show for debugging
+        //showRateDialog();
+        // Rate App live
+        appRateDialog();
+        mLocationer = new Locationer(GoogleMap.this);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.googlemap_fragment);
+        mapFragment.getMapAsync(this);
+    }
 
     @Override
     public void onMapReady(com.google.android.gms.maps.GoogleMap googleMap) {
@@ -1069,6 +1111,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         }
     }
 
+
     @Override
     protected void onResume() {
         try {
@@ -1099,7 +1142,9 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                 knownReasonForBreak = false;
             } else {
                 //User calls onResume, probably because screen was deactiaved for a short time. Get GPS Position to go on!
-                mLocationer.startLocationUpdates();
+                if (mLocationer != null) {
+                    mLocationer.startLocationUpdates();
+                }
             }
 
             if (Config.debugMode) {
@@ -1164,7 +1209,9 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         } else if (userSwitchedGps) {
             //SmartNavi sent user into his settings (e.g. to activate GPS)
             //so, search for new position
-            mLocationer.startLocationUpdates();
+            if (mLocationer != null) {
+                mLocationer.startLocationUpdates();
+            }
         }
         super.onResume();
     }
@@ -1224,17 +1271,23 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         if (status != ConnectionResult.SUCCESS) {
             // nothing
         } else {
-            map.clear();
-            mSensorManager.unregisterListener(this);
+            if (map != null) {
+                map.clear();
+            }
+            if (mSensorManager != null) {
+                mSensorManager.unregisterListener(this);
+            }
             if (uTaskIsOn) {
                 waitedAtStart = true;
                 uTaskIsOn = false;
             }
-            mCore.shutdown(this);
-
-            mTts.stop();
-            mTts.shutdown();
-
+            if (mCore != null) {
+                mCore.shutdown(this);
+            }
+            if (mTts != null) {
+                mTts.stop();
+                mTts.shutdown();
+            }
             try {
                 mLocationer.stopAutocorrect();
             } catch (Exception e) {

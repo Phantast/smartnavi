@@ -26,6 +26,7 @@ public class Config {
     public static final String SMARTNAVI_API_URL = "http://5.39.91.189:3000/users";
     //permission integers
     public static final int PERMISSION_REQUEST_FINE_LOCATION = 0;
+    public static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 1;
     public static boolean PLACES_API_UNDER_LIMIT = true;
     //debug
     public static boolean debugMode = false;
