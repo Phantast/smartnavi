@@ -70,6 +70,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.ilm.sandwich.fragments.TutorialFragment;
+import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
 import com.ilm.sandwich.tools.Core;
 import com.ilm.sandwich.tools.HttpRequests;
@@ -88,10 +89,12 @@ import java.util.List;
 import java.util.Locale;
 
 /**
+ * MapActivitiy for Google Maps
+ *
  * @author Christian Henke
  *         www.smartnavi-app.com
  */
-public class GoogleMap extends AppCompatActivity implements SensorEventListener,
+public class GoogleMap extends AppCompatActivity implements SensorEventListener, Locationer.onLocationUpdateListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, TutorialFragment.onTutorialFinishedListener {
 
 
@@ -153,6 +156,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     Menu mainMenu;
     String language;
     TextToSpeech mTts;
+    ProgressBar mProgressBar;
     int phases;
     int segmentCounter;
     TutorialFragment tutorialFragment;
@@ -172,8 +176,9 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     private boolean listVisible = false;
     private Polyline[] completeRoute = new Polyline[31];
     private Toolbar toolbar;
+    private Analytics mAnalytics;
 
-    public static double neueDistanz(double lat, double lon) {
+    public static double computeDistanz(double lat, double lon) {
         // Entfernung bzw. Distanz zur eigenen aktuellen Position
         double mittellat2 = (Core.startLat + lat) / 2 * 0.01745329252;
         double distanceLongitude = 111.3 * Math.cos(mittellat2);
@@ -182,10 +187,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         double distance = Math.sqrt(dlat2 * dlat2 + dlon2 * dlon2);
         return distance; // in km Luftlinie
     }
-
-    // ------------------------------------------------------------------------------------------------------------------
-    // ------ONCREATE---------------------------------------------------------------------------------------------------
-    // ------------------------------------------------------------------------------------------------------------------
 
     public void setPosition(boolean follow) {
         startLatLng = new LatLng(Core.startLat, Core.startLon);
@@ -218,19 +219,14 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                 // map.getCameraPosition().zoom);
             }
         }
-        // Log.d("Location-Status", "Fazit zoom auf:" +
-        // map.getCameraPosition().zoom);
     }
 
-    // ------------------------------------------------------------------------------------------------------------------
-    // ------END OF ONCREATE-----------------------------------------------------------------------------------------------
-    // -------------------------------------------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Config.usingGoogleMaps = true;
-        mLocationer = new Locationer(this);
+        mLocationer = new Locationer(GoogleMap.this);
         setContentView(R.layout.activity_googlemap);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         toolbar = (Toolbar) findViewById(R.id.toolbar_googlemap); // Attaching the layout to the toolbar object
@@ -240,6 +236,10 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         //showRateDialog();
         // Rate App live
         appRateDialog();
+
+        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
+        boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
+        mAnalytics = new Analytics(trackingAllowed);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.googlemap_fragment);
@@ -258,6 +258,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
 
     }
 
+
     @Override
     public void onMapReady(com.google.android.gms.maps.GoogleMap googleMap) {
         map = googleMap;
@@ -273,6 +274,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         map.setOnMapLongClickListener(new OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng arg0) {
+                mAnalytics.trackEvent("LongPress_View", "Google_View");
                 longpressLocation = arg0;
                 if (longPressMarker != null) {
                     if (longPressMarker.isVisible()) {
@@ -337,11 +339,13 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
 
         uid = settings.getString("uid", "0");
         if (uid.equalsIgnoreCase("0")) {
+            //App is launched for First Time, create Shortcut and uid
+            createShortcutIcon();
             String neuUID = "" + (1 + (int) (Math.random() * ((10000000 - 1) + 1)));
             new changeSettings("uid", neuUID).execute();
             uid = settings.getString("uid", "0");
         }
-        // Log.d("Location-Status" , "UID = "+uid);
+
         satelliteView = settings.getBoolean("view", false);
         if (satelliteView) {
             map.setMapType(com.google.android.gms.maps.GoogleMap.MAP_TYPE_HYBRID);
@@ -388,11 +392,13 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 if (arg2 == 0) {
                     setHome();
+                    mAnalytics.trackEvent("Google_LongPress_Action", "Set_Position");
                     list.setVisibility(View.INVISIBLE);
                     listVisible = false;
                     longPressMarker.remove();
                 } else {
                     fingerDestination(longpressLocation);
+                    mAnalytics.trackEvent("Google_LongPress_Action", "Set_Destination");
                     list.setVisibility(View.INVISIBLE);
                     listVisible = false;
                     longPressMarker.remove();
@@ -421,18 +427,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     public void startHandler() {
         listHandler = new Handler() {
             public void handleMessage(Message msg) {
-                if (msg.what == 0) {
-                    // First Position from the Locationer
-                    startLatLng = new LatLng(Core.startLat, Core.startLon);
-                    setFirstPosition();
-                    restartListener();
-                    foreignIntent();
-                    // start Autocorrect if user wants it
-                    listHandler.sendEmptyMessage(6);
-                    ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
-                    mProgressBar.setVisibility(View.VISIBLE);
-
-                } else if (msg.what == 1) {
+                if (msg.what == 1) {
                     //Set margin for compass, dependent from height of ActionBar
                     int height = toolbar.getHeight();
                     if (height > 0) {
@@ -467,35 +462,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                     listHandler.removeMessages(4);
                     positionUpdate();
                     // Log.d("Location-Status","Positionstask ACTIVATED (listHandler 4)");
-                } else if (msg.what == 5) {
-                    //Dialog is location services are disabled
-                    final Dialog dialog = new Dialog(GoogleMap.this);
-                    dialog.setContentView(R.layout.dialog2);
-                    dialog.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
-                    dialog.setCancelable(false);
-                    dialog.setCanceledOnTouchOutside(false);
-                    dialog.show();
-
-                    Button cancel = (Button) dialog.findViewById(R.id.dialogCancelLoc);
-                    cancel.setOnClickListener(new OnClickListener() {
-                        public void onClick(View arg0) {
-                            dialog.dismiss();
-                            // finish();
-                        }
-                    });
-
-                    Button settings = (Button) dialog.findViewById(R.id.dialogSettingsLoc);
-                    settings.setOnClickListener(new OnClickListener() {
-                        public void onClick(View arg0) {
-                            try {
-                                startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                            } catch (android.content.ActivityNotFoundException ae) {
-                                startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
-                            }
-                            dialog.dismiss();
-                            finish();
-                        }
-                    });
                 } else if (msg.what == 6) {
                     // initialize Autocorrect oder restart new
                     // after activity_settings changed if necessary
@@ -516,13 +482,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                 } else if (msg.what == 7) {
                     autoCorrect = false;
                     mLocationer.stopAutocorrect();
-                } else if (msg.what == 8) {
-                    Core.setLocation(Locationer.startLat, Locationer.startLon);
-                    mLocationer.stopAutocorrect();
-                    if (backgroundServiceShallBeOnAgain == true) {
-                        Config.backgroundServiceActive = true;
-                        BackgroundService.reactivateFakeProvider();
-                    }
                 } else if (msg.what == 9) {
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -558,22 +517,77 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                     // Restart PositionTask
                     listHandler.sendEmptyMessageDelayed(4, 1500);
                     // Log.d("Location-Status", "ListeHandler 11  ruft auf");
-                } else if (msg.what == 12) {
-                    // message from Locationer
-                    ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
-                    mProgressBar.setVisibility(View.GONE);
-                } else if (msg.what == 13) {
-                    showGPSDialog();
-                } else if (msg.what == 14) {
-                    // next position from Locationer
-                    setPosition(true);
                 } else if (msg.what == 15) {
                     onMapTouch();
                 }
-
                 super.handleMessage(msg);
             }
         };
+    }
+
+    @Override
+    public void onLocationUpdate(int event) {
+        switch (event) {
+            case 0:
+                // First Position from the Locationer
+                startLatLng = new LatLng(Core.startLat, Core.startLon);
+                setFirstPosition();
+                restartListener();
+                foreignIntent();
+                // start Autocorrect if user wants it
+                listHandler.sendEmptyMessage(6);
+                mProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
+                mProgressBar.setVisibility(View.VISIBLE);
+                return;
+            case 5:
+                //Dialog if location services are disabled
+                final Dialog dialog = new Dialog(GoogleMap.this);
+                dialog.setContentView(R.layout.dialog2);
+                dialog.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
+                Button cancel = (Button) dialog.findViewById(R.id.dialogCancelLoc);
+                cancel.setOnClickListener(new OnClickListener() {
+                    public void onClick(View arg0) {
+                        dialog.dismiss();
+                        // finish();
+                    }
+                });
+                Button settings = (Button) dialog.findViewById(R.id.dialogSettingsLoc);
+                settings.setOnClickListener(new OnClickListener() {
+                    public void onClick(View arg0) {
+                        try {
+                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        } catch (android.content.ActivityNotFoundException ae) {
+                            startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
+                        }
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+                return;
+            case 8:
+                Core.setLocation(Locationer.startLat, Locationer.startLon);
+                mLocationer.stopAutocorrect();
+                if (backgroundServiceShallBeOnAgain == true) {
+                    Config.backgroundServiceActive = true;
+                    BackgroundService.reactivateFakeProvider();
+                }
+                return;
+            case 12:
+                // message from Locationer
+                mProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
+                mProgressBar.setVisibility(View.GONE);
+                return;
+            case 13:
+                showGPSDialog();
+                return;
+            case 14:
+                // next position from Locationer
+                setPosition(true);
+                return;
+        }
     }
 
     public void createAllMarkersInvisible() {
@@ -623,6 +637,18 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         current_position_anim_g2.setVisible(false);
     }
 
+    private void createShortcutIcon(){
+        Intent shortcutIntent = new Intent(getApplicationContext(), Splashscreen.class);
+        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent addIntent = new Intent();
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "SmartNavi");
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.drawable.ic_launcher));
+        addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+        getApplicationContext().sendBroadcast(addIntent);
+    }
+
     public boolean isOnline() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -668,7 +694,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                         try {
                             mLocationer.deactivateLocationer();
                         } catch (Exception e) {
-
                             e.printStackTrace();
                         }
                     } else if (requestString.contains("?daddr=")) {
@@ -689,14 +714,12 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                             try {
                                 mLocationer.deactivateLocationer();
                             } catch (Exception e) {
-                                if (Config.debugMode)
-                                    e.printStackTrace();
+                                e.printStackTrace();
                             }
                         } else {
                             //In case that ?daddr has been sent, but now startLocation
                             // Variante 3 :
                             // "http://maps.google.com/maps?daddr=50.685053,10.910772"
-
                             requestArray3 = requestArray1[1].split(",");
                             destLat = Float.parseFloat(requestArray3[0]);
                             destLon = Float.parseFloat(requestArray3[1]);
@@ -888,7 +911,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
 
             }
         } catch (Exception e) {
-            if (Config.debugMode)
+
                 e.printStackTrace();
         }
         if (followMe) {
@@ -982,7 +1005,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     }
 
     public void segmentControl() {
-        double abstand = neueDistanz(gp2Latk[segmentCounter], gp2Lonk[segmentCounter]);
+        double abstand = computeDistanz(gp2Latk[segmentCounter], gp2Lonk[segmentCounter]);
         if (abstand < 0.03 && finishedTalking) {
             finishedTalking = false;
             completeRoute[segmentCounter].remove();
@@ -1069,16 +1092,14 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             ImageView compass = (ImageView) findViewById(R.id.nadel);
             compass.setImageResource(R.drawable.needle);
         } catch (Exception e) {
-            if (Config.debugMode)
-                e.printStackTrace();
+            e.printStackTrace();
         }
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
         if (status != ConnectionResult.SUCCESS) {
             try {
                 new changeSettings("MapSource", "MapQuestOSM").execute();
             } catch (Exception e) {
-                if (Config.debugMode)
-                    e.printStackTrace();
+                e.printStackTrace();
             }
         } else if (!userSwitchedGps) {
             if (listHandler != null) {
@@ -1135,14 +1156,10 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             autoCorrect = settings.getBoolean("autocorrect", false);
 
             // Export
-            boolean export = settings.getBoolean("export", false);
-            try {
+            if(mCore != null){
+                boolean export = settings.getBoolean("export", false);
                 mCore.writeLog(export);
-            } catch (Exception e) {
-                if (Config.debugMode)
-                    e.printStackTrace();
             }
-
             // MapView change
             satelliteView = settings.getBoolean("view", false);
             if (satelliteView && map != null) {
@@ -1171,29 +1188,25 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         try {
             mLocationer.deactivateLocationer();
         } catch (Exception e) {
-            if (Config.debugMode)
-                e.printStackTrace();
+            e.printStackTrace();
         }
         try {
             ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
             mProgressBar.setVisibility(View.GONE);
         } catch (Exception e) {
-            if (Config.debugMode)
-                e.printStackTrace();
+            e.printStackTrace();
         }
 
         try {
             listHandler.removeMessages(4);
             // Log.d("Location-Status", "Positionstask OFF    onPause");
         } catch (Exception e) {
-            if (Config.debugMode)
-                e.printStackTrace();
+            e.printStackTrace();
         }
         try {
             mSensorManager.unregisterListener(this);
         } catch (Exception e) {
-            if (Config.debugMode)
-                e.printStackTrace();
+            e.printStackTrace();
         }
         // // Log.d("Location-Status", "Sensors stopped.");
         super.onPause();
@@ -1219,8 +1232,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             listHandler.removeMessages(11);
 
         } catch (Exception e) {
-            if (Config.debugMode)
-                e.printStackTrace();
+            e.printStackTrace();
         }
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
         if (status != ConnectionResult.SUCCESS) {
@@ -1240,8 +1252,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             try {
                 mLocationer.stopAutocorrect();
             } catch (Exception e) {
-                if (Config.debugMode)
-                    e.printStackTrace();
+                e.printStackTrace();
             }
         }
 
@@ -1265,8 +1276,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             try {
-                //TODO close menu when user clicked on map?  mainMenu.performIdentifierAction();
-
                 // if off, longPressMenu will be made invisible
                 list = (ListView) findViewById(R.id.liste);
                 list.setVisibility(View.INVISIBLE);
@@ -1290,17 +1299,20 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
 
         switch (item.getItemId()) {
             case R.id.menu_bgservice:
+                mAnalytics.trackEvent("Google_Menu", "background_service");
                 // activity_backgroundservice
                 knownReasonForBreak = true;
                 Intent myIntent = new Intent(GoogleMap.this, BackgroundService.class);
                 startActivity(myIntent);
                 return true;
             case R.id.menu_settings:
+                mAnalytics.trackEvent("Google_Menu", "settings");
                 // Go to Settings
                 knownReasonForBreak = true;
                 startActivity(new Intent(this, Settings.class));
                 return true;
             case R.id.menu_offlinemaps:
+                mAnalytics.trackEvent("Google_Menu", "offline_maps");
                 /*
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                     String url = "http://smartnavi-app.com/offline/";
@@ -1316,16 +1328,22 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                 startActivity(new Intent(GoogleMap.this, Webview.class));
                 return true;
             case R.id.menu_tutorial:
+                mAnalytics.trackEvent("Google_Menu", "tutorial");
                 // TutorialFragment
-                if(tutorialFragment != null){
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                if (tutorialFragment != null) {
                     map.getUiSettings().setAllGesturesEnabled(false);
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     tutorialFragment = new TutorialFragment();
                     fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment).commit();
+                }else{
+                    tutorialFragment = new TutorialFragment();
+                    fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment);
+                    fragmentTransaction.commit();
                 }
                 return true;
             case R.id.menu_info:
+                mAnalytics.trackEvent("Google_Menu", "info");
                 // About Page
                 knownReasonForBreak = true;
                 startActivity(new Intent(this, Info.class));
@@ -1349,8 +1367,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             mSensorManager.registerListener(GoogleMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
             mSensorManager.registerListener(GoogleMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
         } catch (Exception e) {
-            if (Config.debugMode)
-                e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -1361,7 +1378,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             mSensorManager.registerListener(GoogleMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
             mSensorManager.registerListener(GoogleMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
         } catch (Exception e) {
-                e.printStackTrace();
         }
     }
 
@@ -1461,7 +1477,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     }
 
 
-
     private void showLongPressDialog() {
         try {
             actualMarker[0].setVisible(false);
@@ -1549,6 +1564,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             compassStatus = 1;
             map.animateCamera(CameraUpdateFactory.newLatLng(newPos));
         }
+        mAnalytics.trackEvent("Compass", "Google_to_"+compassStatus);
         // Positionstask reactivate
         listHandler.sendEmptyMessageDelayed(4, 1500);
     }
@@ -1587,13 +1603,13 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     private void showRateDialog() {
         final View appRateDialog = findViewById(R.id.appRateDialog);
         appRateDialog.setVisibility(View.VISIBLE);
-
+        mAnalytics.trackEvent("Rating_Dialog_View", "View");
         Button rateButton1 = (Button) findViewById(R.id.rateButton);
         rateButton1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 appRateDialog.setVisibility(View.INVISIBLE);
-
+                mAnalytics.trackEvent("Rating_Dialog_Action", "No");
                 SharedPreferences prefs = getSharedPreferences(getPackageName() + "_preferences", 0);
                 int notRated = prefs.getInt("not_rated", 0) + 1;
 
@@ -1616,6 +1632,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         rateButton3.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                mAnalytics.trackEvent("Rating_Dialog_Action", "Yes_Button");
                 new changeSettings("not_rated", 999).execute();
                 appRateDialog.setVisibility(View.INVISIBLE);
                 new changeSettings("dontshowagain", true).execute();
@@ -1626,6 +1643,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
 
     public void clickOnStars(final View view) {
         new changeSettings("not_rated", 999).execute();
+        mAnalytics.trackEvent("Rating_Dialog_Action", "Yes_Stars");
         final View appRateDialog = findViewById(R.id.appRateDialog);
         appRateDialog.setVisibility(View.INVISIBLE);
         new changeSettings("dontshowagain", true).execute();
@@ -1643,6 +1661,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     public void abortGPS(final View view) {
         // Abort GPS was pressed (ProgressBar was pressed)
         try {
+            mAnalytics.trackEvent("GPS_Cancel_Pressed", "pressed_on_Google");
             mLocationer.deactivateLocationer();
             ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
             mProgressBar.setVisibility(View.GONE);
@@ -1659,10 +1678,12 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         dialogGPS.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
         dialogGPS.setCanceledOnTouchOutside(false);
         dialogGPS.show();
+        mAnalytics.trackEvent("GPS_Dialog_View", "Google_View");
 
         Button cancel = (Button) dialogGPS.findViewById(R.id.dialogCancelgps);
         cancel.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
+                mAnalytics.trackEvent("Google_GPS_Dialog_Action", "Cancel");
                 dialogGPS.dismiss();
             }
         });
@@ -1677,6 +1698,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                     startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
                     userSwitchedGps = true;
                 }
+                mAnalytics.trackEvent("Google_GPS_Dialog_Action", "Go_To_Settings");
                 dialogGPS.dismiss();
             }
         });
@@ -1834,6 +1856,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.remove(tutorialFragment).commit();
     }
+
 
     private class routeTask extends AsyncTask<String, Void, Void> {
 

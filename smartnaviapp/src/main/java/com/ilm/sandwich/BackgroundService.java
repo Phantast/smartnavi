@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
 import com.ilm.sandwich.tools.Core;
 
@@ -40,6 +42,7 @@ public class BackgroundService extends Activity {
     Button serviceButton;
     NotificationManager notificationManager;
     private boolean shouldStart = true;
+    private Analytics mAnalytics;
 
     public static void pauseFakeProvider() {
         //Log.d("Location-Status","pause Fake Provider");
@@ -141,6 +144,10 @@ public class BackgroundService extends Activity {
         getActionBar().setTitle(getResources().getString(R.string.tx_64));
         geoLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
+        boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
+        mAnalytics = new Analytics(trackingAllowed);
+
         //restart Sensors
         try {
             if (Config.usingGoogleMaps) {
@@ -239,11 +246,15 @@ public class BackgroundService extends Activity {
                 OsmMap.listHandler.sendEmptyMessage(9);
             }
 
+            mAnalytics.trackEvent("Background_Service", "Start_Success");
+
             Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);
             startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(startMain);
+
         } catch (SecurityException sece) {
+            mAnalytics.trackEvent("Background_Service", "Start_Error");
             final Dialog dialog1 = new Dialog(BackgroundService.this);
             dialog1.setContentView(R.layout.dialog1);
             dialog1.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
@@ -287,6 +298,7 @@ public class BackgroundService extends Activity {
 
     public void stop() {
         //stop the Handlers who are responsible for restarting the sensor-listeners
+        mAnalytics.trackEvent("Background_Service", "Stop");
         if (Config.usingGoogleMaps) {
             GoogleMap.listHandler.removeMessages(10);
         } else {

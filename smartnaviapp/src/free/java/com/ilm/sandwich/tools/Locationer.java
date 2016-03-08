@@ -14,9 +14,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.ilm.sandwich.BackgroundService;
-import com.ilm.sandwich.tools.Config;
 import com.ilm.sandwich.GoogleMap;
-import com.ilm.sandwich.OsmMap;
 
 import java.util.Iterator;
 
@@ -35,12 +33,14 @@ public class Locationer implements LocationListener {
     public static float lastErrorGPS = 9999999999.0f;
     private int satellitesInRange = 0;
     private Handler mHandler = new Handler();
+    ;
     private int erlaubterErrorGPS = 10;
     private boolean autoCorrectSuccess = true;
     private int additionalSecondsAutocorrect = 0;
     private boolean giveGpsMoreTime = true;
     private long lastLocationTime = 0L;
     private LocationManager mLocationManager;
+    private onLocationUpdateListener locationListener;
     private Context mContext;
     private Listener mGpsStatusListener = new Listener() {
         @Override
@@ -57,6 +57,20 @@ public class Locationer implements LocationListener {
             deactivateLocationer();
         }
     };
+    private Runnable satelitesInRangeTest = new Runnable() {
+        public void run() {
+            if (satellitesInRange < 5) {
+                stopAutocorrect();
+                // Log.d("Location-Status", "Not enough satelites in range: " +
+                // satellitesInRange);
+            }
+        }
+    };
+    private Runnable autoStopTask = new Runnable() {
+        public void run() {
+            stopAutocorrect();
+        }
+    };
     private LocationListener gpsAutocorrectLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             if (location.getLatitude() != 0) {
@@ -69,11 +83,7 @@ public class Locationer implements LocationListener {
                     // location.getProvider() + " "
                     // + location.getAccuracy());
 
-                    if (Config.usingGoogleMaps) {
-                        GoogleMap.listHandler.sendEmptyMessage(8);
-                    } else {
-                        OsmMap.listHandler.sendEmptyMessage(8);
-                    }
+                    locationListener.onLocationUpdate(8);
 
                     erlaubterErrorGPS = 10;
                     autoCorrectSuccess = true;
@@ -105,20 +115,6 @@ public class Locationer implements LocationListener {
         }
 
     };
-    private Runnable autoStopTask = new Runnable() {
-        public void run() {
-            stopAutocorrect();
-        }
-    };
-    private Runnable satelitesInRangeTest = new Runnable() {
-        public void run() {
-            if (satellitesInRange < 5) {
-                stopAutocorrect();
-                // Log.d("Location-Status", "Not enough satelites in range: " +
-                // satellitesInRange);
-            }
-        }
-    };
 
 
     // LocationClient
@@ -126,23 +122,19 @@ public class Locationer implements LocationListener {
 
     public Locationer(Context context) {
         super();
+        if (context instanceof onLocationUpdateListener) {
+            locationListener = (onLocationUpdateListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         mContext = context;
     }
 
     public void deactivateLocationer() {
         //ProgressBar must be made invisible (GONE)
-        try {
-            if (Config.usingGoogleMaps) {
-                GoogleMap.listHandler.sendEmptyMessage(12);
-                //Log.i("Location-Status", "Progress aus GOOGLE");
-            } else {
-                OsmMap.listHandler.sendEmptyMessage(12);
-                //Log.i("Location-Status", "Progress aus OSM");
-            }
-        } catch (Exception e) {
-            //nothing, may happen sometimes if the views of the activity are already destroyed
-        }
+        locationListener.onLocationUpdate(12);
         try {
             mLocationManager.removeUpdates(this);
         } catch (SecurityException e) {
@@ -193,11 +185,7 @@ public class Locationer implements LocationListener {
 
             Core.initialize(startLat, startLon, distanceLongitude, altitude, lastErrorGPS);
 
-            if (Config.usingGoogleMaps) {
-                //not in free version: GoogleMap.setPosition(true);
-            } else {
-                OsmMap.listHandler.sendEmptyMessage(14);
-            }
+            locationListener.onLocationUpdate(14);
 
             if (location.getAccuracy() < 16) {
                 try {
@@ -230,12 +218,7 @@ public class Locationer implements LocationListener {
         if (settings.getBoolean("gpsDialogShown", false) == false) {
 
             new writeSettings("gpsDialogShown", true).execute();
-            if (Config.usingGoogleMaps) {
-                //show GPS Dialog
-                GoogleMap.listHandler.sendEmptyMessage(13);
-            } else {
-                OsmMap.listHandler.sendEmptyMessage(13);
-            }
+            locationListener.onLocationUpdate(13);
 
         }
     }
@@ -287,6 +270,10 @@ public class Locationer implements LocationListener {
         } catch (SecurityException e) {
             e.printStackTrace();
         }
+    }
+
+    public interface onLocationUpdateListener {
+        void onLocationUpdate(int event);
     }
 
     private class writeSettings extends AsyncTask<Void, Void, Void> {

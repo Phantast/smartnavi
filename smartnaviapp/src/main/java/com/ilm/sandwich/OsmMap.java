@@ -48,6 +48,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ilm.sandwich.fragments.TutorialFragment;
+import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
 import com.ilm.sandwich.tools.Core;
 import com.ilm.sandwich.tools.Locationer;
@@ -81,11 +82,12 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
+ * MapActvitiy for OpenStreetMaps
  * @author Christian Henke
  *         www.smartnavi-app.com
  */
 
-public class OsmMap extends AppCompatActivity implements SensorEventListener, MapEventsReceiver, TutorialFragment.onTutorialFinishedListener {
+public class OsmMap extends AppCompatActivity implements Locationer.onLocationUpdateListener, SensorEventListener, MapEventsReceiver, TutorialFragment.onTutorialFinishedListener {
 
     public static Handler listHandler;
     public static SearchView searchView;
@@ -130,7 +132,7 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
     private int stepsToWait = 0;
     private boolean backgroundServiceShallBeOn = false;
     private Toolbar toolbar;
-    private int viaOptions = 0;
+    private Analytics mAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +143,9 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         toolbar = (Toolbar) findViewById(R.id.toolbar_osm); // Attaching the layout to the toolbar object
         setSupportActionBar(toolbar);                   // Setting toolbar as the ActionBar with setSupportActionBar() call
+
+        boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
+        mAnalytics = new Analytics(trackingAllowed);
 
         map = (MapView) findViewById(R.id.openmapview);
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this, this);
@@ -197,12 +202,13 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
 
         uid = settings.getString("uid", "0");
         if (uid.equalsIgnoreCase("0")) {
+            createShortcutIcon();
             String neuUID = "" + (1 + (int) (Math.random() * ((10000000 - 1) + 1)));
             new writeSettings("uid", neuUID).execute();
             uid = settings.getString("uid", "0");
         }
 
-        mLocationer = new Locationer(this);
+        mLocationer = new Locationer(OsmMap.this);
 
         startHandler();
 
@@ -237,6 +243,7 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 if (arg2 == 0) {
                     Core.setLocation(longPressedGeoPoint.getLatitude(), longPressedGeoPoint.getLongitude());
+                    mAnalytics.trackEvent("OSM_LongPress_Action", "Set_Position");
                     list.setVisibility(View.INVISIBLE);
                     listIsVisible = false;
                     setFollowOn();
@@ -246,6 +253,7 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
                     listHandler.sendEmptyMessageDelayed(4, 50);
                 } else {
                     showRouteInfo(true);
+                    mAnalytics.trackEvent("OSM_LongPress_Action", "Set_Destination");
                     new PlacesTextSeachAsync().execute(longPressedGeoPoint.getLatitude() + ", " + longPressedGeoPoint.getLongitude());
                     list.setVisibility(View.INVISIBLE);
                     listIsVisible = false;
@@ -258,7 +266,9 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         // Set Marker
         if (firstPositionFound == false) {
             {
-                Log.d("Location-Status", "Set FIRST Position: " + Core.startLat + " and " + Core.startLon + " Error: " + Core.lastErrorGPS);
+                if (Config.debugMode) {
+                    Log.d("Location-Status", "Set FIRST Position: " + Core.startLat + " and " + Core.startLon + " Error: " + Core.lastErrorGPS);
+                }
             }
             if (Core.lastErrorGPS < 100) {
                 mapController.setZoom(19);
@@ -325,20 +335,24 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         }
     }
 
+    private void createShortcutIcon() {
+        Intent shortcutIntent = new Intent(getApplicationContext(), Splashscreen.class);
+        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent addIntent = new Intent();
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "SmartNavi");
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.drawable.ic_launcher));
+        addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+        getApplicationContext().sendBroadcast(addIntent);
+    }
+
     @SuppressLint("HandlerLeak")
     public void startHandler() {
         listHandler = new Handler() {
 
             public void handleMessage(Message msg) {
-                if (msg.what == 0) {
-                    setOwnLocationMarker();
-                    setPosition(true);
-                    positionUpdate();
-                    restartListener();
-                    // foreignIntent();
-                    // starte Autocorrect if wanted
-                    listHandler.sendEmptyMessage(6);
-                } else if (msg.what == 1) {
+                if (msg.what == 1) {
                     // set margin for compass, dependent on the height of the actionbar
                     int height = toolbar.getHeight();
                     if (height > 0) {
@@ -370,33 +384,6 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
                 } else if (msg.what == 4) {
                     listHandler.removeMessages(0);
                     positionUpdate();
-                } else if (msg.what == 5) {
-                    // Dialog if user has LocationSettings disabled
-                    final Dialog dialog = new Dialog(OsmMap.this);
-                    dialog.setContentView(R.layout.dialog2);
-                    dialog.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
-                    dialog.setCancelable(false);
-                    dialog.setCanceledOnTouchOutside(false);
-                    dialog.show();
-
-                    Button cancel = (Button) dialog.findViewById(R.id.dialogCancelLoc);
-                    cancel.setOnClickListener(new OnClickListener() {
-                        public void onClick(View arg0) {
-                            dialog.dismiss();
-                        }
-                    });
-                    Button settings = (Button) dialog.findViewById(R.id.dialogSettingsLoc);
-                    settings.setOnClickListener(new OnClickListener() {
-                        public void onClick(View arg0) {
-                            try {
-                                startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                            } catch (ActivityNotFoundException ae) {
-                                startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
-                            }
-                            dialog.dismiss();
-                            finish();
-                        }
-                    });
                 } else if (msg.what == 6) {
                     // initialize Autocorrect or start new because of activity_settings change
                     SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
@@ -417,13 +404,6 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
                 } else if (msg.what == 7) {
                     autoCorrect = false;
                     mLocationer.stopAutocorrect();
-                } else if (msg.what == 8) {
-                    Core.setLocation(Locationer.startLat, Locationer.startLon);
-                    mLocationer.stopAutocorrect();
-                    if (backgroundServiceShallBeOn == true) {
-                        Config.backgroundServiceActive = true;
-                        BackgroundService.reactivateFakeProvider();
-                    }
                 } else if (msg.what == 9) {
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -439,31 +419,79 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
                         list.setVisibility(View.GONE);
                         listIsVisible = false;
                     }
-                } else if (msg.what == 12) {
-                    try {
-                        // message from Locationer
-                        ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBarOsm);
-                        mProgressBar.setVisibility(View.GONE);
-                    } catch (Exception e) {
-                        //nothing, may happen sometimes if the views of the activity are already destroyed
-                    }
-
-                } else if (msg.what == 13) {
-                    showGPSDialog();
-                } else if (msg.what == 14) {
-                    // next position from Locationer
-                    setPosition(true);
                 }
                 super.handleMessage(msg);
             }
         };
     }
 
-    private void positionUpdate() {
-        if (firstPositionFound) {
-            int latE6 = (int) (Core.startLat * 1E6);
-            int lonE6 = (int) (Core.startLon * 1E6);
+    @Override
+    public void onLocationUpdate(int event) {
+        switch (event) {
+            case 0:
+                setOwnLocationMarker();
+                setPosition(true);
+                positionUpdate();
+                restartListener();
+                // foreignIntent();
+                // starte Autocorrect if wanted
+                listHandler.sendEmptyMessage(6);
+                return;
+            case 5:
+                // Dialog if user has LocationSettings disabled
+                final Dialog dialog = new Dialog(OsmMap.this);
+                dialog.setContentView(R.layout.dialog2);
+                dialog.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
 
+                Button cancel = (Button) dialog.findViewById(R.id.dialogCancelLoc);
+                cancel.setOnClickListener(new OnClickListener() {
+                    public void onClick(View arg0) {
+                        dialog.dismiss();
+                    }
+                });
+                Button settings = (Button) dialog.findViewById(R.id.dialogSettingsLoc);
+                settings.setOnClickListener(new OnClickListener() {
+                    public void onClick(View arg0) {
+                        try {
+                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        } catch (ActivityNotFoundException ae) {
+                            startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
+                        }
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+                return;
+            case 8:
+                Core.setLocation(Locationer.startLat, Locationer.startLon);
+                mLocationer.stopAutocorrect();
+                if (backgroundServiceShallBeOn == true) {
+                    Config.backgroundServiceActive = true;
+                    BackgroundService.reactivateFakeProvider();
+                }
+                return;
+            case 12:
+                // message from Locationer
+                ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBarOsm);
+                if (mProgressBar != null) mProgressBar.setVisibility(View.GONE);
+                return;
+            case 13:
+                showGPSDialog();
+                return;
+            case 14:
+                // next position from Locationer
+                setPosition(true);
+                return;
+        }
+    }
+
+    private void positionUpdate() {
+        int latE6 = (int) (Core.startLat * 1E6);
+        int lonE6 = (int) (Core.startLon * 1E6);
+        if (myLocationOverlay != null) {
             myLocationOverlay.setLocation(new GeoPoint(latE6, lonE6));
             myLocationOverlay.setBearing((float) Core.azimuth);
             map.invalidate();
@@ -483,15 +511,9 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         autoCorrect = settings.getBoolean("autocorrect", false);
 
         Config.usingGoogleMaps = false;
-        try {
-            egoPerspective = false;
-            compassStatus = 1;
-            ImageView compass = (ImageView) findViewById(R.id.osmNadel);
-            compass.setImageResource(R.drawable.needle);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        egoPerspective = false;
+        setFollowOn();
+        positionUpdate();
         if (userSwitchesGPS == false) {
             restartListener();
 
@@ -500,7 +522,7 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
                 knownReasonForBreak = false;
             } else {
                 // User calls onResume, probably because Screen was off and turned on again
-                //get Position and go on
+                // get Position and go on
                 mLocationer.startLocationUpdates();
                 ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBarOsm);
                 mProgressBar.setVisibility(View.VISIBLE);
@@ -548,12 +570,8 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
 
     @Override
     protected void onPause() {
-        try {
-            if (mLocationer != null) {
-                mLocationer.deactivateLocationer();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (mLocationer != null) {
+            mLocationer.deactivateLocationer();
         }
         try {
             ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBarOsm);
@@ -561,17 +579,11 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         } catch (Exception e) {
             //nothing
         }
-
-        try {
+        if (listHandler != null) {
             listHandler.removeMessages(4);
-            // Log.d("Location-Status", "Positiontask OFF    onPause");
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        try {
+        if (mSensorManager != null) {
             mSensorManager.unregisterListener(this);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         super.onPause();
     }
@@ -635,6 +647,7 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
             compass.setImageResource(R.drawable.needle);
             compassStatus = 1;
         }
+        mAnalytics.trackEvent("Compass", "OSM_to_" + compassStatus);
         // Positionstask reactivate
         listHandler.sendEmptyMessageDelayed(4, 50);
     }
@@ -824,10 +837,12 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         dialogGPS.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
         dialogGPS.setCanceledOnTouchOutside(false);
         dialogGPS.show();
+        mAnalytics.trackEvent("GPS_Dialog_View", "OSM_View");
 
         Button cancel = (Button) dialogGPS.findViewById(R.id.dialogCancelgps);
         cancel.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
+                mAnalytics.trackEvent("OSM_GPS_Dialog_Action", "Cancel");
                 dialogGPS.dismiss();
             }
         });
@@ -835,6 +850,7 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         Button settingsGPS = (Button) dialogGPS.findViewById(R.id.dialogSettingsgps);
         settingsGPS.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
+                mAnalytics.trackEvent("OSM_GPS_Dialog_Action", "Go_To_Settings");
                 try {
                     startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                     userSwitchesGPS = true;
@@ -861,6 +877,7 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
     public void abortGPS(final View view) {
         // Abort GPS was pressed (ProgressBar was pressed)
         try {
+            mAnalytics.trackEvent("GPS_Cancel_Pressed", "pressed_on_OSM");
             mLocationer.deactivateLocationer();
             ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBarOsm);
             mProgressBar.setVisibility(View.GONE);
@@ -945,29 +962,38 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         switch (item.getItemId()) {
             case R.id.menu_bgservice:
                 // activity_backgroundservice / background service
+                mAnalytics.trackEvent("OSM_Menu", "background_service");
                 knownReasonForBreak = true;
                 Intent myIntent = new Intent(this, BackgroundService.class);
                 startActivity(myIntent);
                 return true;
             case R.id.menu_offlinemaps:
+                mAnalytics.trackEvent("OSM_Menu", "offline_maps");
                 startActivity(new Intent(OsmMap.this, Webview.class));
                 return true;
             case R.id.menu_settings:
+                mAnalytics.trackEvent("OSM_Menu", "settings");
                 // Go to Settings
                 knownReasonForBreak = true;
                 startActivity(new Intent(this, Settings.class));
                 return true;
             case R.id.menu_tutorial:
+                mAnalytics.trackEvent("OSM_Menu", "tutorial");
                 // open TutorialFragment
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 if (tutorialFragment != null) {
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    tutorialFragment = new TutorialFragment();
+                    fragmentTransaction.add(R.id.osmmap_actvity_layout, tutorialFragment);
+                    fragmentTransaction.commit();
+                } else {
                     tutorialFragment = new TutorialFragment();
                     fragmentTransaction.add(R.id.osmmap_actvity_layout, tutorialFragment);
                     fragmentTransaction.commit();
                 }
                 return true;
             case R.id.menu_info:
+                mAnalytics.trackEvent("OSM_Menu", "info");
                 // go to About Page
                 knownReasonForBreak = true;
                 startActivity(new Intent(this, Info.class));
@@ -992,6 +1018,7 @@ public class OsmMap extends AppCompatActivity implements SensorEventListener, Ma
         longPressedGeoPoint = p;
         list = (ListView) findViewById(R.id.listeOsm);
         list.setVisibility(View.VISIBLE);
+        mAnalytics.trackEvent("LongPress_View", "OSM_View");
         //Set this variable after quite some time, so that the dialog
         //has a guaranteed mininum lifetime and is not discarded after a short
         //random touch on the screen

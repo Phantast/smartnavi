@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ilm.sandwich.R;
+import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
 import com.ilm.sandwich.tools.Core;
 
@@ -36,26 +37,18 @@ public class TutorialFragment extends Fragment {
     private View welcomeView;
     private boolean metricUnits = true;
     private View fragmentView;
+    private Analytics mAnalytics;
 
     public TutorialFragment() {
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment TutorialFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TutorialFragment newInstance() {
-        TutorialFragment fragment = new TutorialFragment();
-        return fragment;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         fragmentView = view;
+        SharedPreferences settings = this.getActivity().getSharedPreferences(this.getActivity().getPackageName() + "_preferences", this.getActivity().MODE_PRIVATE);
+        boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
+        mAnalytics = new Analytics(trackingAllowed);
         startTutorial();
     }
 
@@ -96,6 +89,7 @@ public class TutorialFragment extends Fragment {
         welcomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mAnalytics.trackEvent("Tutorial", "Welcome");
                 welcomeView.setVisibility(View.INVISIBLE);
                 tutorialOverlay = fragmentView.findViewById(R.id.tutorialOverlay);
                 tutorialOverlay.setVisibility(View.VISIBLE);
@@ -151,6 +145,9 @@ public class TutorialFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
+
+                mAnalytics.trackEvent("Tutorial", "Start");
+
                 boolean tutorialDone = false;
                 final EditText heightField = (EditText) fragmentView.findViewById(R.id.tutorialEditText);
                 int op = heightField.length();

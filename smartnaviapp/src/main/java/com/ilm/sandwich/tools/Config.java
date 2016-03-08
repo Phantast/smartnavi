@@ -28,7 +28,7 @@ public class Config {
     public static final int PERMISSION_REQUEST_FINE_LOCATION = 0;
     public static boolean PLACES_API_UNDER_LIMIT = true;
     //debug
-    public static boolean debugMode = true;
+    public static boolean debugMode = false;
     ////is used in playStoreVersion to differ between currently active map
     public static boolean usingGoogleMaps;
     public static float meanAclFreq = 0;
@@ -37,6 +37,5 @@ public class Config {
     public static long startTime = 0;
     //other
     public static boolean backgroundServiceActive = false;
-
 
 }

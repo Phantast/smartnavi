@@ -20,7 +20,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.ilm.sandwich.BackgroundService;
 import com.ilm.sandwich.GoogleMap;
-import com.ilm.sandwich.OsmMap;
 
 import java.util.Iterator;
 
@@ -37,10 +36,9 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
 
     public static double startLat;
     public static double startLon;
-
-
     public static double errorGPS;
     public static float lastErrorGPS = 9999999999.0f;
+    private onLocationUpdateListener locationListener;
     private int satellitesInRange = 0;
     private Handler mHandler = new Handler();
     private int erlaubterErrorGPS = 10;
@@ -67,6 +65,21 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
             deactivateLocationer();
         }
     };
+    private Runnable satelitesInRangeTest = new Runnable() {
+        public void run() {
+            if (satellitesInRange < 5) {
+                stopAutocorrect();
+                // Log.d("Location-Status", "Not enough satelites in range: " +
+                // satellitesInRange);
+            }
+        }
+    };
+    private Runnable autoStopTask = new Runnable() {
+        public void run() {
+
+            stopAutocorrect();
+        }
+    };
     private LocationListener gpsAutocorrectLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             if (location.getLatitude() != 0) {
@@ -79,11 +92,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
                     // location.getProvider() + " "
                     // + location.getAccuracy());
 
-                    if (Config.usingGoogleMaps) {
-                        GoogleMap.listHandler.sendEmptyMessage(8);
-                    } else {
-                        OsmMap.listHandler.sendEmptyMessage(8);
-                    }
+                    locationListener.onLocationUpdate(8);
 
                     erlaubterErrorGPS = 10;
                     autoCorrectSuccess = true;
@@ -115,20 +124,6 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
         }
 
     };
-    private Runnable autoStopTask = new Runnable() {
-        public void run() {
-            stopAutocorrect();
-        }
-    };
-    private Runnable satelitesInRangeTest = new Runnable() {
-        public void run() {
-            if (satellitesInRange < 5) {
-                stopAutocorrect();
-                // Log.d("Location-Status", "Not enough satelites in range: " +
-                // satellitesInRange);
-            }
-        }
-    };
 
 
     // LocationClient
@@ -136,6 +131,12 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
 
     public Locationer(Context context) {
         super();
+        if (context instanceof onLocationUpdateListener) {
+            locationListener = (onLocationUpdateListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         mContext = context;
 
@@ -148,19 +149,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
 
     public void deactivateLocationer() {
         //ProgressBar must be made invisible (GONE)
-        try {
-            if (Config.usingGoogleMaps) {
-                GoogleMap.listHandler.sendEmptyMessage(12);
-                //Log.i("Location-Status", "Progress aus GOOGLE");
-            } else {
-                OsmMap.listHandler.sendEmptyMessage(12);
-                //Log.i("Location-Status", "Progress aus OSM");
-            }
-        } catch (Exception e) {
-            //nothing, may happen sometimes if the views of the activity are already destroyed
-        }
-
-
+        locationListener.onLocationUpdate(12);
         try {
             if (mGoogleApiClient.isConnected()) {
                 try {
@@ -168,7 +157,6 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
                 } catch (SecurityException e) {
                     e.printStackTrace();
                 }
-
                 mGoogleApiClient.disconnect();
             }
         } catch (Exception e) {
@@ -190,8 +178,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
                 mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10, 0, this);
                 mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 10, 0, this);
             } catch (SecurityException e) {
-                if (Config.debugMode)
-                    e.printStackTrace();
+                e.printStackTrace();
             }
         } else {
             // get first position
@@ -249,11 +236,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
 
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, highRequest, this);
 
-            if (Config.usingGoogleMaps) {
-                GoogleMap.listHandler.sendEmptyMessage(0);
-            } else {
-                OsmMap.listHandler.sendEmptyMessage(0);
-            }
+            locationListener.onLocationUpdate(0);
             // remove location updates after 40s automatically
             mHandler.postDelayed(deaktivateTask, 40000);
 
@@ -263,11 +246,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
             boolean locationEnabled = locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             if (locationEnabled == false) {
                 //no position has ever been requested or Location Services are deactivated, so tell the user to activate them
-                if (Config.usingGoogleMaps) {
-                    GoogleMap.listHandler.sendEmptyMessage(5);
-                } else {
-                    OsmMap.listHandler.sendEmptyMessage(5);
-                }
+                locationListener.onLocationUpdate(5);
             } else {
                 // location services are activated but no location has ever been requested
                 // so, start with 0,0 and hope the best
@@ -280,11 +259,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
                 double distanceLongitude = 111.3 * Math.cos(middleLat);
                 Core.initialize(startLat, startLon, distanceLongitude, altitude, lastErrorGPS);
 
-                if (Config.usingGoogleMaps) {
-                    GoogleMap.listHandler.sendEmptyMessage(0);
-                } else {
-                    OsmMap.listHandler.sendEmptyMessage(0);
-                }
+                locationListener.onLocationUpdate(8);
                 // nach 40sek automatisch location updates removen
                 mHandler.postDelayed(deaktivateTask, 40000);
             }
@@ -319,11 +294,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
 
             Core.initialize(startLat, startLon, distanceLongitude, altitude, lastErrorGPS);
 
-            if (Config.usingGoogleMaps) {
-                GoogleMap.listHandler.sendEmptyMessage(14);
-            } else {
-                OsmMap.listHandler.sendEmptyMessage(14);
-            }
+            locationListener.onLocationUpdate(14);
 
             if (location.getAccuracy() < 16) {
                 try {
@@ -356,12 +327,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
         if (settings.getBoolean("gpsDialogShown", false) == false) {
 
             new writeSettings("gpsDialogShown", true).execute();
-            if (Config.usingGoogleMaps) {
-                //show GPS Dialog
-                GoogleMap.listHandler.sendEmptyMessage(13);
-            } else {
-                OsmMap.listHandler.sendEmptyMessage(13);
-            }
+            locationListener.onLocationUpdate(13);
 
         }
     }
@@ -412,13 +378,15 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
 
     }
 
+    public interface onLocationUpdateListener {
+        void onLocationUpdate(int event);
+    }
+
     private class writeSettings extends AsyncTask<Void, Void, Void> {
 
         private String key;
         private int dataType;
         private boolean setting1;
-        private String setting2;
-        private int einstellung3;
 
         private writeSettings(String key, boolean setting1) {
             this.key = key;
@@ -426,27 +394,11 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
             dataType = 0;
         }
 
-        private writeSettings(String key, String setting2) {
-            this.key = key;
-            this.setting2 = setting2;
-            dataType = 1;
-        }
-
-        private writeSettings(String key, int einstellung3) {
-            this.key = key;
-            this.einstellung3 = einstellung3;
-            dataType = 2;
-        }
-
         @Override
         protected Void doInBackground(Void... params) {
             SharedPreferences settings = mContext.getSharedPreferences(mContext.getPackageName() + "_preferences", Context.MODE_PRIVATE);
             if (dataType == 0) {
                 settings.edit().putBoolean(key, setting1).commit();
-            } else if (dataType == 1) {
-                settings.edit().putString(key, setting2).commit();
-            } else if (dataType == 2) {
-                settings.edit().putInt(key, einstellung3).commit();
             }
             return null;
         }

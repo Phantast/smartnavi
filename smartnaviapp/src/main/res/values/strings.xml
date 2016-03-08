@@ -146,8 +146,7 @@
         <item>Mapnik OSM</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="google_app_id">553322027565</string>
 
 
 </resources>

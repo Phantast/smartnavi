@@ -484,7 +484,9 @@ public class Core {
 
     private void newStep(double winkel) {
         double winkel2 = winkel * 0.01745329252;
-        Log.d("Location-Status", "Step: " + Core.startLon);
+        if (Config.debugMode) {
+            Log.d("Location-Status", "Step: " + Core.startLon);
+        }
         deltaLat = Math.cos(winkel2) * 0.000008984725966 * stepLength;
         // 100cm for a step will be calculated according to angle on lat
         deltaLon = Math.sin(winkel2) / (distanceLongitude * 1000) * stepLength;

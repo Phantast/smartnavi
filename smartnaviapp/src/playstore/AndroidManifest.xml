@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ilm.sandwich"
     android:installLocation="auto"
-    android:versionCode="25"
-    android:versionName="2.0.5">
+    android:versionCode="26"
+    android:versionName="2.1.0">
 
 
     <uses-feature
@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
     <application
@@ -55,11 +55,15 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="e3f856c04200e3fdb3ba0317d9976507cf173969" />
+
         <!-- AIzaSyCcDat03ECeRA1ewS1IexEZGucwU9q4htM  DEBUG-KEY -->
         <!-- AIzaSyDZa_esegGL-6q8L8nMz6h1jMWpM4QD0X8  RELEASE-KEY -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCcDat03ECeRA1ewS1IexEZGucwU9q4htM" />
+            android:value="AIzaSyDZa_esegGL-6q8L8nMz6h1jMWpM4QD0X8" />
     </application>
 
 </manifest>

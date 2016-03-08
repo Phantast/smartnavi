@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -28,8 +29,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
-import android.view.SubMenu;
 
+import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
 
 import java.text.DecimalFormat;
@@ -53,6 +54,7 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
     private String oldMapSource;
     private String actualMapSource;
     private SubMenu subMenu1;
+    private Analytics mAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,11 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle(getResources().getString(R.string.tx_15));
         setContentView(R.layout.activity_settings);
+
+
+        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
+        boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
+        mAnalytics = new Analytics(trackingAllowed);
 
         editText = (EditText) findViewById(R.id.editText);
         checkBoxVibration = (CheckBox) findViewById(R.id.checkBoxVibration);
@@ -98,6 +105,7 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
                     chosenMapSource = "MapnikOSM";
                     setMapSource(chosenMapSource);
                 }
+                mAnalytics.trackEvent("Settings", "mapSource_to_" + chosenMapSource);
             }
 
             @Override
@@ -105,8 +113,6 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
             }
         });
 
-
-        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
 
         String stepLength = settings.getString("step_length", null);
         if (stepLength != null) {
@@ -193,7 +199,7 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 new writeSettings("gpstimer", seekBar.getProgress()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+                mAnalytics.trackEvent("Settings", "AutoCorrect_to_" + seekBar.getProgress());
                 // start Autocorrect after 3sek
                 // because after this time the activity_settings are surely updated correctly
                 try {
@@ -316,6 +322,7 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
                 editText.setFocusable(true);
             }
         }
+        mAnalytics.trackEvent("Settings", "Body_Height_Change");
         return false;
     }
 
@@ -334,6 +341,7 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case 7:
+                mAnalytics.trackEvent("Settings", "Info_via_Menu");
                 startActivity(new Intent(this, Info.class));
                 return true;
             case android.R.id.home:
@@ -380,7 +388,7 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         String key = "";
 
-        // AutoCorrekt
+        // AutoCorrect
         if (buttonView.getId() == R.id.checkBoxGPS) {
 
             SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
@@ -444,7 +452,7 @@ public class Settings extends Activity implements OnEditorActionListener, OnChec
         } else if (buttonView.getId() == R.id.checkBoxVibration) {
             key = "vibration";
         }
-
+        mAnalytics.trackEvent("Settings", key + "_changed_to_" + isChecked);
         new writeSettings(key, isChecked).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 

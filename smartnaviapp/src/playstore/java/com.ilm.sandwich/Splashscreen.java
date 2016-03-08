@@ -7,9 +7,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.ilm.sandwich.tools.Config;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * This class is important because it checks if user has GooglePlayServices installed
@@ -27,6 +31,12 @@ public class Splashscreen extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final Fabric fabric = new Fabric.Builder(this)
+                .kits(new Crashlytics())
+                .debuggable(true)
+                .build();
+        Fabric.with(fabric);
+        Fabric.with(this, new Answers());
         //Remove title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splashscreen);
