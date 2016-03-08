@@ -339,8 +339,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
 
         uid = settings.getString("uid", "0");
         if (uid.equalsIgnoreCase("0")) {
-            //App is launched for First Time, create Shortcut and uid
-            createShortcutIcon();
             String neuUID = "" + (1 + (int) (Math.random() * ((10000000 - 1) + 1)));
             new changeSettings("uid", neuUID).execute();
             uid = settings.getString("uid", "0");
@@ -635,18 +633,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         current_position_anim_g2 = map.addMarker(new MarkerOptions().position(northPoleHideout)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_indicator_current_position_anim_g2)).anchor(0.5f, 0.5f));
         current_position_anim_g2.setVisible(false);
-    }
-
-    private void createShortcutIcon(){
-        Intent shortcutIntent = new Intent(getApplicationContext(), Splashscreen.class);
-        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        Intent addIntent = new Intent();
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "SmartNavi");
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.drawable.ic_launcher));
-        addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-        getApplicationContext().sendBroadcast(addIntent);
     }
 
     public boolean isOnline() {

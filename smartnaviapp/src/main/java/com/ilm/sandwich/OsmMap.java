@@ -202,7 +202,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
 
         uid = settings.getString("uid", "0");
         if (uid.equalsIgnoreCase("0")) {
-            createShortcutIcon();
             String neuUID = "" + (1 + (int) (Math.random() * ((10000000 - 1) + 1)));
             new writeSettings("uid", neuUID).execute();
             uid = settings.getString("uid", "0");
@@ -333,18 +332,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 }
             }
         }
-    }
-
-    private void createShortcutIcon() {
-        Intent shortcutIntent = new Intent(getApplicationContext(), Splashscreen.class);
-        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        Intent addIntent = new Intent();
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "SmartNavi");
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.drawable.ic_launcher));
-        addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-        getApplicationContext().sendBroadcast(addIntent);
     }
 
     @SuppressLint("HandlerLeak")

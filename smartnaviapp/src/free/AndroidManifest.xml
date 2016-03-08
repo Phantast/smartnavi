@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ilm.sandwich"
     android:installLocation="auto"
-    android:versionCode="26"
-    android:versionName="2.1.0f">
+    android:versionCode="27"
+    android:versionName="2.1.1f">
 
     <uses-feature
         android:glEsVersion="0x00020000"
