@@ -13,6 +13,7 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -32,7 +33,7 @@ public class Splashscreen extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(BuildConfig.debug){
-            Fabric.with(this, new Crashlytics.Builder().core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()).build());
+            Fabric.with(this, new Crashlytics.Builder().core(new CrashlyticsCore.Builder().disabled(BuildConfig.debug).build()).build());
         }else{
             final Fabric fabric = new Fabric.Builder(this)
                     .kits(new Crashlytics())
@@ -55,8 +56,7 @@ public class Splashscreen extends Activity {
                     startMap();
                 }
             }, 1000);
-        } else if (api.isUserResolvableError(code) &&
-                api.showErrorDialogFragment(this, code, REQUEST_GOOGLE_PLAY_SERVICES)) {
+        } else if (api.isUserResolvableError(code) && api.showErrorDialogFragment(this, code, REQUEST_GOOGLE_PLAY_SERVICES)) {
             // wait for onActivityResult call (see below)
         } else {
             String str = GoogleApiAvailability.getInstance().getErrorString(code);

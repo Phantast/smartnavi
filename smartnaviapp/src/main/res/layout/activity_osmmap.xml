@@ -4,30 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabosm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:scaleType="center"
-        android:src="@android:drawable/ic_menu_mylocation"
-        android:visibility="invisible"
-        app:backgroundTint="@android:color/holo_green_dark"
-        app:layout_anchor="@+id/openmapview"
-        app:layout_anchorGravity="bottom|right|end"
-        app:rippleColor="@android:color/holo_green_light" />
-
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/osmmap_actvity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:longClickable="true"
     android:orientation="vertical">
-
-    <include
-        android:id="@+id/toolbar_osm"
-        layout="@layout/toolbar" />
 
     <org.osmdroid.views.MapView
         android:id="@+id/openmapview"
@@ -276,6 +258,22 @@
     </RelativeLayout>
 
 
+        <include
+            android:id="@+id/toolbar_osm"
+            layout="@layout/toolbar" />
 </RelativeLayout>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabosm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:scaleType="center"
+        android:src="@android:drawable/ic_menu_mylocation"
+        android:visibility="invisible"
+        app:backgroundTint="@android:color/holo_green_dark"
+        app:layout_anchor="@+id/openmapview"
+        app:layout_anchorGravity="bottom|right|end"
+        app:rippleColor="@android:color/holo_green_light" />
 </android.support.design.widget.CoordinatorLayout>

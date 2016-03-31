@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="crashlytics-2.5.5">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/smartnaviapp/build/intermediates/exploded-aar/com.crashlytics.sdk.android/crashlytics/2.5.5/res" />
+      <root url="jar://$PROJECT_DIR$/smartnaviapp/build/intermediates/exploded-aar/com.crashlytics.sdk.android/crashlytics/2.5.5/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -38,9 +38,5 @@
         <item name="android:shadowRadius">0.1</item>
     </style>
 
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/ColorPrimary</item>
-        <item name="colorPrimaryDark">@color/ColorPrimaryDark</item>
-    </style>
 
 </resources>

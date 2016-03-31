@@ -521,17 +521,16 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             //Initialize default tile storage path
             File mapsDirectory = new File(Environment.getExternalStorageDirectory(), Config.DEFAULT_OFFLINE_MAPS_FOLDER);
             if (!mapsDirectory.exists()) {
-                boolean geschafft = mapsDirectory.mkdirs();
-                Log.i("ordner", "OSMMap erstellen: " + geschafft);
+                mapsDirectory.mkdirs();
             }
-            OpenStreetMapTileProviderConstants.setOfflineMapsPath(Config.DEFAULT_OFFLINE_MAPS_PATH);
-            OpenStreetMapTileProviderConstants.setCachePath(Config.DEFAULT_OFFLINE_MAPS_PATH);
-            new writeSettings("offlinemapspath", Config.DEFAULT_OFFLINE_MAPS_PATH).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            OpenStreetMapTileProviderConstants.setOfflineMapsPath(Environment.getExternalStorageDirectory() + Config.DEFAULT_OFFLINE_MAPS_FOLDER);
+            OpenStreetMapTileProviderConstants.setCachePath(Environment.getExternalStorageDirectory() + Config.DEFAULT_OFFLINE_MAPS_FOLDER);
+            new writeSettings("offlinemapspath", Environment.getExternalStorageDirectory() + Config.DEFAULT_OFFLINE_MAPS_FOLDER).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else if (offlineMapsPath == null && osmdroidDirectory.exists()) {
             //Already existing directory but not saved yet in SharePreferences
-            OpenStreetMapTileProviderConstants.setOfflineMapsPath("/sdcard/osmdroid/tiles");
-            OpenStreetMapTileProviderConstants.setCachePath("/sdcard/osmdroid/tiles");
-            new writeSettings("offlinemapspath", "/sdcard/osmdroid/tiles").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            OpenStreetMapTileProviderConstants.setOfflineMapsPath(Environment.getExternalStorageDirectory() + "/osmdroid/tiles");
+            OpenStreetMapTileProviderConstants.setCachePath(Environment.getExternalStorageDirectory() + "/osmdroid/tiles");
+            new writeSettings("offlinemapspath", Environment.getExternalStorageDirectory() + "/osmdroid/tiles").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
