@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -132,11 +131,14 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         }
 
         String savedMapSource;
+        ImageView chooseFolderButton = (ImageView) findViewById(R.id.choosefolderbutton);
         if (Config.usingGoogleMaps) {
             savedMapSource = "GoogleMaps";
             TextView offlineMapsPathText = (TextView) findViewById(R.id.offlineMapsTextBelow);
             offlineMapsPathText.setText(getApplicationContext().getResources().getString(R.string.tx_102));
+            chooseFolderButton.setVisibility(View.GONE);
         } else {
+            chooseFolderButton.setVisibility(View.VISIBLE);
             savedMapSource = settings.getString("MapSource", "MapQuestOSM");
         }
         oldMapSource = savedMapSource;
@@ -151,18 +153,12 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
 
         final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
                 .newDirectoryName("")
-                .initialDirectory("/sdcard")
+                .initialDirectory(Environment.getExternalStorageDirectory().getPath())
                 .allowNewDirectoryNameModification(true)
                 .allowNewDirectoryNameModification(true)
                 .build();
         mDialog = DirectoryChooserFragment.newInstance(config);
 
-        ImageView chooseFolderButton = (ImageView) findViewById(R.id.choosefolderbutton);
-        if (Config.usingGoogleMaps) {
-            chooseFolderButton.setClickable(false);
-        } else {
-            chooseFolderButton.setClickable(true);
-        }
         if (chooseFolderButton != null) {
             chooseFolderButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -270,7 +266,6 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         if (offlineMapsPath != null) {
             //Use saved custom tile storage path
             offlineMapsPathText.setText(offlineMapsPath);
-            Log.i("ordner", "existiert schon");
         }
         if (ContextCompat.checkSelfPermission(Settings.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -278,21 +273,20 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
             File osmdroidDirectory = new File(Environment.getExternalStorageDirectory(), "/osmdroid/tiles");
             if (offlineMapsPath == null && !osmdroidDirectory.exists()) {
                 //Initialize default tile storage path
-                Log.i("ordner", "setze auf smartnavi");
                 File mapsDirectory = new File(Environment.getExternalStorageDirectory(), Config.DEFAULT_OFFLINE_MAPS_FOLDER);
                 if (!mapsDirectory.exists()) {
-                    boolean geschafft = mapsDirectory.mkdirs();
-                    Log.i("ordner", "Settings erstellen: " + geschafft);
+                    mapsDirectory.mkdirs();
                 }
-                offlineMapsPathText.setText(Config.DEFAULT_OFFLINE_MAPS_PATH);
-                new writeSettings("offlinemapspath", Config.DEFAULT_OFFLINE_MAPS_PATH).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                offlineMapsPathText.setText(Environment.getExternalStorageDirectory() + Config.DEFAULT_OFFLINE_MAPS_FOLDER);
+                new writeSettings("offlinemapspath", Environment.getExternalStorageDirectory() + Config.DEFAULT_OFFLINE_MAPS_FOLDER).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else if (offlineMapsPath == null && osmdroidDirectory.exists()) {
                 //Already existing directory but not saved yet in SharePreferences
-                Log.i("ordner", "setze auf osmdroid");
-                offlineMapsPathText.setText("/sdcard/osmdroid/tiles");
-                new writeSettings("offlinemapspath", "/sdcard/osmdroid/tiles").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                offlineMapsPathText.setText(Environment.getExternalStorageDirectory() + "/osmdroid/tiles");
+                new writeSettings("offlinemapspath", Environment.getExternalStorageDirectory() + "/osmdroid/tiles").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
+        ImageView chooseFolderButton = (ImageView) findViewById(R.id.choosefolderbutton);
+        chooseFolderButton.setVisibility(View.VISIBLE);
     }
 
     private void setMapSource(String chosenMapSource) {
@@ -303,9 +297,9 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
             TextView sateliteText = (TextView) findViewById(R.id.sateliteText);
             sateliteText.setTextColor(Color.parseColor("#4d4d4d"));
             checkBoxSatellite.setClickable(true);
-            ImageView chooseFolderButton = (ImageView) findViewById(R.id.choosefolderbutton);
             //disable offlineMapsPath Button
-            chooseFolderButton.setClickable(false);
+            ImageView chooseFolderButton = (ImageView) findViewById(R.id.choosefolderbutton);
+            chooseFolderButton.setVisibility(View.GONE);
             TextView offlineMapsPathText = (TextView) findViewById(R.id.offlineMapsTextBelow);
             offlineMapsPathText.setText(getApplicationContext().getResources().getString(R.string.tx_102));
         } else if (chosenMapSource.equalsIgnoreCase("MapQuestOSM")) {

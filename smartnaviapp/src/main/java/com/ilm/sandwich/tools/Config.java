@@ -22,7 +22,6 @@ public class Config {
     //permission integers
     public static final int PERMISSION_REQUEST_FINE_LOCATION = 0;
     public static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 1;
-    public static final String DEFAULT_OFFLINE_MAPS_PATH = "/sdcard/smartnavi";
     public static final String DEFAULT_OFFLINE_MAPS_FOLDER = "/smartnavi";
     public static final int PLACES_SEARCH_QUERY_CHARACTER_LIMIT = 3;
     public static boolean PLACES_API_UNDER_LIMIT = true;
