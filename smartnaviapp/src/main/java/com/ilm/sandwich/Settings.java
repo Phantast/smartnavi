@@ -326,7 +326,7 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
             }
             //enable offlineMapsPath Button
             ImageView chooseFolderButton = (ImageView) findViewById(R.id.choosefolderbutton);
-            chooseFolderButton.setClickable(false);
+            chooseFolderButton.setClickable(true);
             checkOfflineMapsDirectory();
         }
         actualMapSource = chosenMapSource;
