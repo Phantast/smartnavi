@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,7 +46,8 @@ public class BackgroundService extends AppCompatActivity {
     private Analytics mAnalytics;
 
     public static void pauseFakeProvider() {
-        //Log.d("Location-Status","pause Fake Provider");
+        if (BuildConfig.debug)
+            Log.i("Location-Status", "pause Fake Provider");
         try {
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
             geoLocationManager.removeTestProvider(mocLocationProvider);
@@ -55,12 +57,13 @@ public class BackgroundService extends AppCompatActivity {
             geoLocationManager.removeTestProvider(mocLocationNetworkProvider);
             geoLocationManager.clearTestProviderEnabled(mocLocationNetworkProvider);
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
     public static void reactivateFakeProvider() {
-        //Log.d("Location-Status","reactivate Fake Provider");
+        if (BuildConfig.debug)
+            Log.i("Location-Status", "reactivate Fake Provider");
         try {
             mocLocationProvider = LocationManager.GPS_PROVIDER;
             geoLocationManager.addTestProvider(mocLocationProvider, false, false, false, false, true, true, true, 0, 5);
@@ -70,7 +73,7 @@ public class BackgroundService extends AppCompatActivity {
             geoLocationManager.addTestProvider(mocLocationNetworkProvider, false, false, false, false, true, true, true, 1, 5);
             geoLocationManager.setTestProviderEnabled(mocLocationNetworkProvider, true);
         } catch (Exception e) {
-            //	e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -95,15 +98,15 @@ public class BackgroundService extends AppCompatActivity {
             try {
                 loc.setElapsedRealtimeNanos(System.currentTimeMillis());
             } catch (NoSuchMethodError e) {
-                //e.printStackTrace();
+                e.printStackTrace();
             }
         } catch (Exception e) {
-            //egal
+            e.printStackTrace();
         }
         try {
             geoLocationManager.setTestProviderLocation(mocLocationProvider, loc);
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
 
         //Network
@@ -120,19 +123,19 @@ public class BackgroundService extends AppCompatActivity {
             try {
                 loc2.setElapsedRealtimeNanos(System.currentTimeMillis());
             } catch (NoSuchMethodError e) {
-                //e.printStackTrace();
+                e.printStackTrace();
             }
         } catch (Exception e) {
-            //egal
+            e.printStackTrace();
         }
         try {
             geoLocationManager.setTestProviderLocation(mocLocationNetworkProvider, loc2);
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
 
         if (BuildConfig.debug) {
-            //Log.i("Frequenzen", loc.toString());
+            Log.i("Location-Status", "New Fake Position: " + loc.toString());
         }
     }
 

@@ -170,7 +170,7 @@ public class TutorialFragment extends Fragment {
                         }
                     } catch (NumberFormatException e) {
                         if (BuildConfig.debug)
-                        Toast.makeText(fragmentView.getContext(), fragmentView.getContext().getResources().getString(R.string.tx_32), Toast.LENGTH_LONG).show();
+                            Toast.makeText(fragmentView.getContext(), fragmentView.getContext().getResources().getString(R.string.tx_32), Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Toast.makeText(fragmentView.getContext(), fragmentView.getContext().getResources().getString(R.string.tx_10), Toast.LENGTH_LONG).show();

@@ -33,14 +33,16 @@ public class PlacesAutoComplete extends AsyncTask<String, String, StringBuilder>
         StringBuilder jsonResults = new StringBuilder();
 
         try {
-
             StringBuilder sb = new StringBuilder(Config.PLACES_API_URL + TYPE_AUTOCOMPLETE + OUT_JSON);
             sb.append("?sensor=true&key=" + Config.PLACES_API_KEY);
-            sb.append("&components=country:" + Locale.getDefault().getLanguage());
+            sb.append("&language=" + Locale.getDefault().getLanguage());
             sb.append("&location=" + Core.startLat + "," + Core.startLon);
             sb.append("&radius=1000");
             sb.append("&input=" + URLEncoder.encode(input[0], "utf8"));
-
+            if (BuildConfig.debug) {
+                Log.i(LOG_TAG, "Places Autocomplete for: " + input[0]);
+                Log.i(LOG_TAG, "Places Autocomplete for: " + sb.toString());
+            }
             URL url = new URL(sb.toString());
             conn = (HttpURLConnection) url.openConnection();
             try {
@@ -82,7 +84,6 @@ public class PlacesAutoComplete extends AsyncTask<String, String, StringBuilder>
                 conn.disconnect();
             }
         }
-
         return jsonResults;
     }
 
@@ -92,14 +93,14 @@ public class PlacesAutoComplete extends AsyncTask<String, String, StringBuilder>
             // Create a JSON object hierarchy from the results
             JSONObject jsonObj = new JSONObject(jsonResults.toString());
             JSONArray predsJsonArray = jsonObj.getJSONArray("predictions");
-
+            if (BuildConfig.debug)
+                Log.i(LOG_TAG, "Places Autocomplete Result: " + jsonObj.toString());
             // builds MatrixCursor for autocomplete search view
             MatrixCursor cursor = new MatrixCursor(Config.COLUMNS);
             for (int i = 0; i < predsJsonArray.length(); i++) {
                 int pos = i + 1;
                 cursor.addRow(new String[]{"" + pos, predsJsonArray.getJSONObject(i).getString("description")});
             }
-
             if (Config.usingGoogleMaps) {
                 try {
                     GoogleMap.cursor = cursor;
@@ -114,6 +115,7 @@ public class PlacesAutoComplete extends AsyncTask<String, String, StringBuilder>
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Cannot process JSON results", e);
+            e.printStackTrace();
         }
     }
 }

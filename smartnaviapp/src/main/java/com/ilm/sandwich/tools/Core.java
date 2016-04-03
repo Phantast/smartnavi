@@ -58,6 +58,7 @@ public class Core implements SensorEventListener {
     public static int units = 0;
     static File posFile;
     static File sensorFile;
+    private static double oldAzimuth = 0;
     private static float frequency;
     private static boolean stepBegin = false;
     private static float[] iMatrix = new float[9];
@@ -265,7 +266,6 @@ public class Core implements SensorEventListener {
     }
 
     public void startSensors() {
-        // Log.d("Location-Status", "Sensors started.");
         aclUnits = 0;
         magnUnits = 0;
         startTime = System.nanoTime();
@@ -280,7 +280,6 @@ public class Core implements SensorEventListener {
     }
 
     public void reactivateSensors() {
-        // Log.d("Location-Status", "Sensors reactivated.");
         if (mSensorManager != null) {
             mSensorManager.unregisterListener(Core.this);
             mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
@@ -515,6 +514,7 @@ public class Core implements SensorEventListener {
         // herausgestellt
         // }
 
+        //Filtering was already done with source values of magnetic sensor and accelerometer
         azimuth = azimuthUnfilteredUncorrected;
 
         if (export && BuildConfig.debug) {
@@ -528,6 +528,14 @@ public class Core implements SensorEventListener {
             // Introduction of a step
             initialStep = false;
             stepBegin = true;
+        } else if (!stepBegin) {
+            //invoke step (only interface, not a real step), because orientation of user has changed more than X degree
+            //so a step is necessary to update users position marker and respective orientation
+            //at this position in code it means: no step is being awaited and therefore check orientation change
+            if (oldAzimuth - azimuth > 5 || oldAzimuth - azimuth < -5) {
+                stepUpdateListener.onStepUpdate(0);
+                oldAzimuth = azimuth;
+            }
         }
         if (stepBegin && iStep / frequency >= 0.24f && iStep / frequency <= 0.8f) {
             // Timeframe for step between minTime and maxTime
@@ -540,6 +548,8 @@ public class Core implements SensorEventListener {
                 initialStep = true;
                 newStep(azimuth);
                 newStepDetected = true;
+                //save old azimith for possibly necessary orientation change, in case no steps are detected and users orientation changes strong enough
+                oldAzimuth = azimuth;
                 if (export) {
                     positionOutput();
                 }
@@ -561,7 +571,7 @@ public class Core implements SensorEventListener {
     private void newStep(double winkel) {
         double winkel2 = winkel * 0.01745329252;
         if (BuildConfig.debug) {
-            Log.d("Location-Status", "Step: " + Core.startLon);
+            Log.i("Location-Status", "Step: " + Core.startLon);
         }
         deltaLat = Math.cos(winkel2) * 0.000008984725966 * stepLength;
         // 100cm for a step will be calculated according to angle on lat
@@ -717,7 +727,6 @@ public class Core implements SensorEventListener {
             // is always the case
         }
         closeLogFile();
-        // finish();
     }
 
     @Override
@@ -763,8 +772,10 @@ public class Core implements SensorEventListener {
                     if (!alreadyWaitingForAutoCorrect) {
                         alreadyWaitingForAutoCorrect = true;
                         stepsToWait = stepCounter + 75 * autoCorrectFactor;
-                        if (BuildConfig.debug)
-                            Log.d("Location-Status", Core.stepCounter + " von " + stepsToWait);
+                        if (BuildConfig.debug) {
+                            stepsToWait = stepCounter + 10;
+                            Log.i("Location-Status", Core.stepCounter + " von " + stepsToWait);
+                        }
                     }
                     if (stepCounter >= stepsToWait) {
                         if (Config.backgroundServiceActive) {
@@ -774,7 +785,7 @@ public class Core implements SensorEventListener {
                         stepUpdateListener.onStepUpdate(1); //start Autocorrect
                         alreadyWaitingForAutoCorrect = false;
                         if (BuildConfig.debug)
-                            Log.d("Location-Status", "Steps reached for Autocorrect!");
+                            Log.i("Location-Status", "Steps reached for Autocorrect!");
                     }
                 }
                 break;

@@ -120,6 +120,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     private boolean listIsVisible = false;
     private boolean autoCorrect = false;
     private boolean backgroundServiceShallBeOn = false;
+    private boolean routeHasBeenDrawn = false;
     private Toolbar toolbar;
     private Analytics mAnalytics;
     private FloatingActionButton fab;
@@ -307,6 +308,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                     map.invalidate();
                     mapController.animateTo(longPressedGeoPoint);
                     setFollowOn();
+                    positionUpdate();
                 } else {
                     showRouteInfo(true);
                     mAnalytics.trackEvent("OSM_LongPress_Action", "Set_Destination");
@@ -321,23 +323,18 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         // Set Marker
         if (firstPositionFound == false) {
             if (BuildConfig.debug) {
-                Log.d("Location-Status", "Set FIRST Position: " + Core.startLat + " and " + Core.startLon + " Error: " + Core.lastErrorGPS);
+                Log.i("Location-Status", "Set FIRST Position: " + Core.startLat + " and " + Core.startLon + " Error: " + Core.lastErrorGPS);
             }
             if (Core.lastErrorGPS < 100) {
                 mapController.setZoom(19);
-                // Log.d("Location-Status", "zoom:" + 18);
             } else if (Core.lastErrorGPS < 231) {
                 mapController.setZoom(18);
-                // Log.d("Location-Status", "zoom:" + 17);
             } else if (Core.lastErrorGPS < 401) {
                 mapController.setZoom(17);
-                // Log.d("Location-Status", "zoom:" + 16);
             } else if (Core.lastErrorGPS < 801) {
                 mapController.setZoom(16);
-                // Log.d("Location-Status", "zoom:" + 15);
             } else if (Core.lastErrorGPS < 1501) {
                 mapController.setZoom(15);
-                // Log.d("Location-Status", "zoom:" + 14);
             }
 
             OverlayManager om = map.getOverlayManager();
@@ -367,12 +364,12 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         int lonE6 = (int) (Core.startLon * 1E6);
         if (firstPositionFound == false) {
             if (BuildConfig.debug) {
-                Log.d("Location-Status", "FirstPosition: " + latE6 + " and " + lonE6);
+                Log.i("Location-Status", "FirstPosition: " + latE6 + " and " + lonE6);
             }
             setFirstPosition();
         } else {
             if (BuildConfig.debug) {
-                Log.d("Location-Status", "Set Position: " + latE6 + " and " + lonE6);
+                Log.i("Location-Status", "Set Position: " + latE6 + " and " + lonE6);
             }
 
             myLocationOverlay.setLocation(new GeoPoint(latE6, lonE6));
@@ -380,19 +377,14 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             if (zoom == true) {
                 if (Core.lastErrorGPS < 100) {
                     mapController.setZoom(19);
-                    // Log.d("Location-Status", "zoom:" + 18);
                 } else if (Core.lastErrorGPS < 231) {
                     mapController.setZoom(18);
-                    // Log.d("Location-Status", "zoom:" + 17);
                 } else if (Core.lastErrorGPS < 401) {
                     mapController.setZoom(17);
-                    // Log.d("Location-Status", "zoom:" + 16);
                 } else if (Core.lastErrorGPS < 801) {
                     mapController.setZoom(16);
-                    // Log.d("Location-Status", "zoom:" + 15);
                 } else if (Core.lastErrorGPS < 1501) {
                     mapController.setZoom(15);
-                    // Log.d("Location-Status", "zoom:" + 14);
                 }
             }
         }
@@ -603,8 +595,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
 
     @Override
     protected void onDestroy() {
-        if (mCore != null)
+        if (mCore != null) {
             mCore.pauseSensors();
+            mCore.shutdown(this);
+        }
         listHandler.removeCallbacksAndMessages(null);
         Statistics mStatistics = new Statistics();
         mStatistics.check(this);
@@ -969,6 +963,23 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         };
     }
 
+    @Override
+    public void onBackPressed() {
+        if (routeHasBeenDrawn) {
+            //Remove Route if drawn
+            OverlayManager om = map.getOverlayManager();
+            //remove all current polylines or road"step"markers
+            do {
+                om.remove(1);
+            } while (om.size() > 1);
+            setNewPositionMarker();
+            setFollowOn();
+            showRouteInfo(false);
+            routeHasBeenDrawn = false;
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     private void showRouteInfo(boolean show) {
         TextView mapText = (TextView) findViewById(R.id.mapTextOsm);
@@ -1167,8 +1178,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 roadMarkers.add(nodeMarker);
             }
             map.getOverlays().add(roadMarkers);
+            routeHasBeenDrawn = true;
             setNewPositionMarker();
             map.invalidate();
+            mAnalytics.trackEvent("Route", "Created_on_OsmMap");
         }
     }
 

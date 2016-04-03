@@ -35,7 +35,7 @@ public class Locationer implements LocationListener {
     private int satellitesInRange = 0;
     private Handler mHandler = new Handler();
     ;
-    private int erlaubterErrorGPS = 10;
+    private int allowedErrorGps = 10;
     private boolean autoCorrectSuccess = true;
     private int additionalSecondsAutocorrect = 0;
     private boolean giveGpsMoreTime = true;
@@ -65,14 +65,15 @@ public class Locationer implements LocationListener {
                 startLat = location.getLatitude();
                 startLon = location.getLongitude();
                 errorGPS = location.getAccuracy();
-                if (errorGPS <= erlaubterErrorGPS) {
-                    // Log.d("Location-Status", "Autocorrect GPS: " +
-                    // location.getProvider() + " "
-                    // + location.getAccuracy());
+                if (errorGPS <= allowedErrorGps) {
+                    if(BuildConfig.debug)
+                     Log.i("Location-Status", "Autocorrect GPS: " +
+                     location.getProvider() + " "
+                     + location.getAccuracy());
 
                     locationListener.onLocationUpdate(8);
 
-                    erlaubterErrorGPS = 10;
+                    allowedErrorGps = 10;
                     autoCorrectSuccess = true;
                     additionalSecondsAutocorrect = 0;
                 } else {
@@ -84,10 +85,10 @@ public class Locationer implements LocationListener {
                                 10000 + additionalSecondsAutocorrect * 1000);
                         giveGpsMoreTime = false;
                     }
-                    // Log.d("Location-Status",
-                    // "DISCARDED: Autocorrect GPS: " + location.getProvider() +
-                    // " "
-                    // + location.getAccuracy());
+                    if(BuildConfig.debug)
+                     Log.i("Location-Status",
+                     "DISCARDED: Autocorrect GPS: " + location.getProvider() + " "
+                     + location.getAccuracy());
                 }
             }
         }
@@ -111,8 +112,9 @@ public class Locationer implements LocationListener {
         public void run() {
             if (satellitesInRange < 5) {
                 stopAutocorrect();
-                // Log.d("Location-Status", "Not enough satelites in range: " +
-                // satellitesInRange);
+                if(BuildConfig.debug)
+                 Log.i("Location-Status", "Not enough satelites in range: " +
+                 satellitesInRange);
             }
         }
     };
@@ -162,7 +164,8 @@ public class Locationer implements LocationListener {
             it.next();
             i += 1;
         }
-        // Log.d("Location-Status", "Satelites in range: " + i);
+        if(BuildConfig.debug)
+         Log.i("Location-Status", "Satelites in range: " + i);
         satellitesInRange = i;
     }
 
@@ -237,10 +240,10 @@ public class Locationer implements LocationListener {
             autoCorrectSuccess = false;
         } else if (additionalSecondsAutocorrect <= 30) {
             additionalSecondsAutocorrect = additionalSecondsAutocorrect + 7;
-            erlaubterErrorGPS = erlaubterErrorGPS + 8;
-            // Log.d("Location-Status", "Time for request:" +
-            // additionalTimeForGPS + " and allowed Error: " +
-            // allowedErrorGps);
+            allowedErrorGps = allowedErrorGps + 8;
+            if(BuildConfig.debug)
+            Log.i("Location-Status", "Time for request:" + additionalSecondsAutocorrect + " and allowed Error: " +
+             allowedErrorGps);
         }
 
         try {
@@ -262,7 +265,8 @@ public class Locationer implements LocationListener {
             mLocationManager.removeUpdates(gpsAutocorrectLocationListener);
             mHandler.removeCallbacks(autoStopTask);
             mHandler.removeCallbacks(satelitesInRangeTest);
-            // Log.d("Location-Status", "shutdown Autocorrect");
+            if(BuildConfig.debug)
+             Log.i("Location-Status", "shutdown Autocorrect");
 
             if (GoogleMap.backgroundServiceShallBeOnAgain == true) {
                 Config.backgroundServiceActive = true;

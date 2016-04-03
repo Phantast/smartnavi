@@ -173,27 +173,19 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             if (BuildConfig.debug)
                 e.printStackTrace();
         }
-        // Log.d("Location-Status", "setPosition:");
         if (follow) {
             if (Core.lastErrorGPS < 100) {
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 18.0F)));
-                // Log.d("Location-Status", "zoom auf:" + 18);
             } else if (Core.lastErrorGPS < 231) {
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 17.0F)));
-                // Log.d("Location-Status", "zoom auf:" + 17);
             } else if (Core.lastErrorGPS < 401) {
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 16.0F)));
-                // Log.d("Location-Status", "zoom auf:" + 16);
             } else if (Core.lastErrorGPS < 801) {
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 15.0F)));
-                // Log.d("Location-Status", "zoom auf:" + 15);
             } else if (Core.lastErrorGPS < 1501) {
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 14.0F)));
-                // Log.d("Location-Status", "zoom auf:" + 14);
             } else {
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, map.getCameraPosition().zoom)));
-                // Log.d("Location-Status", "zoom auf:" +
-                // map.getCameraPosition().zoom);
             }
         }
     }
@@ -418,6 +410,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                     list.setVisibility(View.INVISIBLE);
                     listVisible = false;
                     longPressMarker.remove();
+                    positionUpdate();
                 } else {
                     fingerDestination(longpressLocation);
                     mAnalytics.trackEvent("Google_LongPress_Action", "Set_Destination");
@@ -633,7 +626,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 }
                 destLatLng = new LatLng(destLat, destLon);
                 listHandler.removeCallbacksAndMessages(null);
-                // Log.d("Location-Status","Positionstask AUS    weil foreignIntent");
                 map.stopAnimation();
                 setPosition(false);
                 drawableDest = BitmapFactory.decodeResource(getResources(), R.drawable.finish2);
@@ -1106,6 +1098,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     }
 
     public void routeStartAnimation(LatLng northeast, LatLng southwest) {
+        mAnalytics.trackEvent("Route", "Created_on_GoogleMap");
         LatLngBounds grenzen = new LatLngBounds(southwest, northeast);
         map.animateCamera(CameraUpdateFactory.newLatLngBounds(grenzen, 100));
         listHandler.sendEmptyMessageDelayed(11, 3000);
@@ -1147,7 +1140,8 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         // Increment launch counter
         int launch_count = prefs.getInt("launch_count", 0) + 1;
         editor.putInt("launch_count", launch_count);
-        // Log.d("Location-Status", "Launch-Count: " + launch_count);
+        if (BuildConfig.debug)
+            Log.i("RateDialog", "Launch-Count: " + launch_count);
 
         // Get date of first launch
         Long date_firstLaunch = prefs.getLong("date_firstlaunch", 0);
@@ -1226,7 +1220,8 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult arg0) {
-        // Log.d("Location-Status","LocationClient: Connection FAILED" + arg0.getErrorCode());
+        if (BuildConfig.debug)
+            Log.i("Location-Status", "LocationClient: Connection FAILED" + arg0.getErrorCode());
         startActivity(new Intent(GoogleMap.this, OsmMap.class));
         finish();
     }
@@ -1249,7 +1244,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     }
 
     private void showGPSDialog() {
-        Log.d("Location-Status", "hier ich bins");
         final Dialog dialogGPS = new Dialog(GoogleMap.this);
         if (!dialogGPS.isShowing()) {
             dialogGPS.setContentView(R.layout.dialog3);
@@ -1367,7 +1361,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                         // get suggestions
                         new PlacesAutoComplete().execute(query);
                         suggestionsInProgress = true;
-                        // Log.e("OnQueryTextChange", "request was sent");
                     }
                 } else {
                     // clear suggestion list
@@ -1423,6 +1416,33 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     @Override
     public void onConnected(Bundle bundle) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (routeHasBeenDrawn) {
+            //Remove Route if drawn
+            if (destMarker != null) {
+                if (destMarker.isVisible()) {
+                    destMarker.setVisible(false);
+                }
+            }
+            for (int a = 0; a <= routeParts; a++) {
+                completeRoute[a].remove();
+            }
+            routeHasBeenDrawn = false;
+            setFollowOn();
+            View viewLine = findViewById(R.id.view156);
+            if (viewLine != null) {
+                viewLine.setVisibility(View.INVISIBLE);
+            }
+            TextView mapText = (TextView) findViewById(R.id.mapText);
+            if (mapText != null) {
+                mapText.setVisibility(View.INVISIBLE);
+            }
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -1554,13 +1574,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 routeStartAnimation(northeastLatLng, southwestLatLng);
             }
             makeInfo(endAddress, firstDistance);
-            // setPosition(false);
         }
 
         public void drawPath() {
             if (routeHasBeenDrawn) {
-                // Log.d("Location-Status", "Route has been drawn = " +
-                // routeHasBeenDrawn);
                 for (int a = 0; a <= routeParts; a++) {
                     completeRoute[a].remove();
                     routeHasBeenDrawn = false;
@@ -1612,9 +1629,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
 
         @Override
         protected void onPostExecute(JSONObject destination) {
-
             super.onPostExecute(destination);
-
             // no results from api
             if (destination == null) {
                 Toast.makeText(GoogleMap.this, getApplicationContext().getResources().getString(R.string.tx_77), Toast.LENGTH_LONG).show();
@@ -1626,8 +1641,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                     destLatLng = new LatLng(destLat, destLon);
                     listHandler.removeCallbacksAndMessages(null);
                     map.stopAnimation();
-                    followMe = false;
-                    // Log.d("Location-Status","Positionstask OFF    placesTextSearch");
+                    setFollowOff();
                     setPosition(false);
                     setDestPosition(destLatLng);
                     showRouteInfo();

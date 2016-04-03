@@ -41,9 +41,10 @@ public class PlacesTextSearch {
 
             StringBuilder sb = new StringBuilder(Config.PLACES_API_URL + TYPE + FORMAT);
             sb.append("?sensor=true&key=" + Config.PLACES_API_KEY);
-            sb.append("&components=country:" + Locale.getDefault().getLanguage());
+            sb.append("&language=" + Locale.getDefault().getLanguage());
             sb.append("&query=" + URLEncoder.encode(input, "utf8"));
-
+            if (BuildConfig.debug)
+                Log.i(LOG_TAG, "Places Autocomplete for: " + input);
             URL url = new URL(sb.toString());
             conn = (HttpURLConnection) url.openConnection();
             try {
@@ -68,6 +69,8 @@ public class PlacesTextSearch {
             location = results.getJSONObject(0).getJSONObject("geometry").getJSONObject("location");
 
             JSONArray types = results.getJSONObject(0).getJSONArray("types");
+            if (BuildConfig.debug)
+                Log.i(LOG_TAG, "Places Autocomplete Result: " + results.toString());
 
             for (int i = 0; i < types.length(); i++) {
                 if (types.get(i).equals("street_address") || types.get(i).equals("locality")) {

@@ -94,6 +94,14 @@ public class Statistics {
                 }
                 //Number of steps
                 usageData.put("stepCounter", Core.stepCounter);
+
+                usageData.put("meanAclFreq", 0);
+                usageData.put("meanMagnFreq", 0);
+                usageData.put("serviceUsage", 0);
+                usageData.put("autocorrect", 0);
+                usageData.put("gpstimer", 0);
+                usageData.put("time", 0);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -103,6 +111,22 @@ public class Statistics {
                 // keep in mind that uid is a random number
                 usageData.put("uid", settings.getString("uid", "0"));
                 usageData.put("appVersion", appVersion);
+                // set all usage data empty or zero
+                usageData.put("deviceName", "");
+                usageData.put("productName", "");
+                usageData.put("modelName", "");
+                usageData.put("androidVersion", 0);
+                usageData.put("aclName", "");
+                usageData.put("magnName", "");
+                usageData.put("gyroName", "");
+                usageData.put("mapSource", "");
+                usageData.put("stepCounter", 0);
+                usageData.put("meanAclFreq", 0);
+                usageData.put("meanMagnFreq", 0);
+                usageData.put("serviceUsage", 0);
+                usageData.put("autocorrect", 0);
+                usageData.put("gpstimer", 0);
+                usageData.put("time", 0);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -136,11 +160,11 @@ public class Statistics {
                 out.close();
                 int respCode = httpCon.getResponseCode();
                 if (BuildConfig.debug) {
-                    Log.d("UsageData", "Server-Response: " + respCode);
+                    Log.i("UsageData", "Server-Response: " + respCode);
                 }
                 httpCon.disconnect();
             } catch (Exception e) {
-                    e.printStackTrace();
+                e.printStackTrace();
             }
             return null;
         }
