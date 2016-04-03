@@ -2,14 +2,20 @@ package com.ilm.sandwich.tools;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.GeomagneticField;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.opengl.Matrix;
 import android.os.Environment;
 import android.util.Log;
 
+import com.ilm.sandwich.BackgroundService;
 import com.ilm.sandwich.BuildConfig;
+import com.ilm.sandwich.GoogleMap;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,7 +35,7 @@ import java.util.TimeZone;
  * @author Christian Henke
  *         www.smartnavi-app.com
  */
-public class Core {
+public class Core implements SensorEventListener {
 
     public static float[] gravity = new float[3];
     public static float[] linear = new float[4];
@@ -47,8 +53,9 @@ public class Core {
     public static float stepLength;
     public static boolean export;
     public static double korr;
-    public static int version;
+    public static String version;
     public static float lastErrorGPS;
+    public static int units = 0;
     static File posFile;
     static File sensorFile;
     private static float frequency;
@@ -85,13 +92,31 @@ public class Core {
     private static boolean newStepDetected = false;
     private static boolean startedToExport = false;
     private static double azimuthUnfilteredUncorrected;
+    private static long startTime;
+    private SensorManager mSensorManager;
+    private Context context;
+    private boolean alreadyWaitingForAutoCorrect = false;
+    private int stepsToWait = 0;
+    private int autoCorrectFactor = 1;
+    private int magnUnits;
+    private int aclUnits;
+    private boolean autoCorrect = false;
+    private SharedPreferences settings;
+    private onStepUpdateListener stepUpdateListener;
 
 
-    // -----------------------------------------------------------------------------------------------------------------
-    // ------ONCREATE-------------------------------------------------------------------------------------------------
-    // -----------------------------------------------------------------------------------------------------------------
+    public Core(Context context) {
+        this.context = context;
 
-    public Core() {
+        if (context instanceof onStepUpdateListener) {
+            stepUpdateListener = (onStepUpdateListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+
+        settings = context.getApplicationContext().getSharedPreferences(context.getApplicationContext().getPackageName() + "_preferences", Context.MODE_PRIVATE);
+        autoCorrect = settings.getBoolean("autocorrect", false);
 
         positionsFileNotExisting = true;
         sensorFileNotExisting = true;
@@ -105,11 +130,11 @@ public class Core {
         tpA[0] = tpM[0] = 0.9273699683f;
         tpA[1] = tpM[1] = -2.8520278186f;
         tpA[2] = tpM[2] = 2.9246062355f;
-    }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    // ------END ONCREATE----------------------------------------------------------------------------------------
-    // -----------------------------------------------------------------------------------------------------------------
+        version = BuildConfig.VERSION_NAME;
+
+        mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+    }
 
     /**
      * Initializing
@@ -118,22 +143,15 @@ public class Core {
      * @param startLon
      * @param distanceLongitude
      */
-    public static void initialize(double startLat, double startLon, double distanceLongitude, double altitude, float lastError) {
+    public static void initialize(double startLat, double startLon, double distanceLongitude, double altitude, float lastErrorGPS) {
         Core.startLat = startLat;
         Core.startLon = startLon;
         Core.distanceLongitude = distanceLongitude;
         Core.altitude = (int) altitude;
-        Core.lastErrorGPS = lastError;
+        Core.lastErrorGPS = lastErrorGPS;
         trueNorth();
-
     }
 
-    /**
-     * Set actual position
-     *
-     * @param lat
-     * @param lon
-     */
     public static void setLocation(double lat, double lon) {
         startLat = lat;
         startLon = lon;
@@ -244,6 +262,62 @@ public class Core {
         } catch (IOException e) {
             // e.printStackTrace();
         }
+    }
+
+    public void startSensors() {
+        // Log.d("Location-Status", "Sensors started.");
+        aclUnits = 0;
+        magnUnits = 0;
+        startTime = System.nanoTime();
+        try {
+            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
+            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
+            if (BuildConfig.debug)
+                Log.i("Sensors", "Sensors activated");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void reactivateSensors() {
+        // Log.d("Location-Status", "Sensors reactivated.");
+        if (mSensorManager != null) {
+            mSensorManager.unregisterListener(Core.this);
+            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
+            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
+            if (BuildConfig.debug)
+                Log.i("Sensors", "Sensors activated!");
+        }
+    }
+
+    public void pauseSensors() {
+        try {
+            mSensorManager.unregisterListener(this);
+            if (BuildConfig.debug)
+                Log.i("Sensors", "Sensors deactivated!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void enableAutocorrect() {
+        autoCorrect = settings.getBoolean("autocorrect", false);
+        //First look if AutoCorrect should be activated, because closeLocationer relies on that
+        if (autoCorrect) {
+            int i = settings.getInt("gpstimer", 1);
+            if (i == 0) { //save as much battery as possible
+                autoCorrectFactor = 4;
+            } else if (i == 1) { // balanced
+                autoCorrectFactor = 2;
+            } else if (i == 2) { // high accuracy
+                autoCorrectFactor = 1;
+            }
+            alreadyWaitingForAutoCorrect = false;
+        }
+    }
+
+    public void disableAutocorrect() {
+        autoCorrect = settings.getBoolean("autocorrect", false);
     }
 
     public void writeLog(boolean sollich) {
@@ -522,6 +596,7 @@ public class Core {
             // Movement towards west
             startLon -= deltaLon;
         }
+        stepUpdateListener.onStepUpdate(0);
     }
 
     public void changeDelay(int freq, int sensor) {
@@ -626,6 +701,9 @@ public class Core {
     }
 
     public void shutdown(Context mContext) {
+        mSensorManager.unregisterListener(this);
+        if (BuildConfig.debug)
+            Log.i("Sensors", "Sensors deactivated");
         try {
             //Show new files with MTP for Windows immediatly
             mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(sensorFile)));
@@ -642,4 +720,72 @@ public class Core {
         // finish();
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        switch (event.sensor.getType()) {
+
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                imbaMagnetic(event.values.clone());
+                if (BuildConfig.debug) {
+                    Core.origMagn = event.values.clone();
+                }
+                magnUnits++;
+                break;
+
+            case Sensor.TYPE_ACCELEROMETER:
+                if (BuildConfig.debug) {
+                    Core.origAcl = event.values.clone();
+                }
+
+                if (Config.backgroundServiceActive && units % 50 == 0) {
+                    BackgroundService.newFakePosition();
+                }
+
+                long timePassed = System.nanoTime() - startTime;
+                aclUnits++;
+                units++;
+
+                if (timePassed >= 2000000000) { // every 2sek
+                    changeDelay(aclUnits / 2, 0);
+                    changeDelay(magnUnits / 2, 1);
+
+                    startTime = System.nanoTime();
+                    aclUnits = magnUnits = 0;
+                }
+
+                imbaGravity(event.values.clone());
+                imbaLinear(event.values.clone());
+                calculate();
+                stepDetection();
+
+                // AutoCorrect (dependent on Factor, i.e. number of steps)
+                if (autoCorrect) {
+                    if (!alreadyWaitingForAutoCorrect) {
+                        alreadyWaitingForAutoCorrect = true;
+                        stepsToWait = stepCounter + 75 * autoCorrectFactor;
+                        if (BuildConfig.debug)
+                            Log.d("Location-Status", Core.stepCounter + " von " + stepsToWait);
+                    }
+                    if (stepCounter >= stepsToWait) {
+                        if (Config.backgroundServiceActive) {
+                            GoogleMap.backgroundServiceShallBeOnAgain = true;
+                            BackgroundService.pauseFakeProvider();
+                        }
+                        stepUpdateListener.onStepUpdate(1); //start Autocorrect
+                        alreadyWaitingForAutoCorrect = false;
+                        if (BuildConfig.debug)
+                            Log.d("Location-Status", "Steps reached for Autocorrect!");
+                    }
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    public interface onStepUpdateListener {
+        void onStepUpdate(int event);
+    }
 }

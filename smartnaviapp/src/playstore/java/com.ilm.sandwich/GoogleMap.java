@@ -14,8 +14,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -95,8 +93,8 @@ import java.util.Locale;
  * @author Christian Henke
  *         www.smartnavi-app.com
  */
-public class GoogleMap extends AppCompatActivity implements SensorEventListener, Locationer.onLocationUpdateListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, TutorialFragment.onTutorialFinishedListener {
+public class GoogleMap extends AppCompatActivity implements Locationer.onLocationUpdateListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, TutorialFragment.onTutorialFinishedListener, Core.onStepUpdateListener {
 
     public static double destLat;
     public static double destLon;
@@ -105,7 +103,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     public static boolean satelliteView;
     public static Bitmap drawableDest;
     public static Core mCore;
-    public static int units = 0;
     public static boolean backgroundServiceShallBeOnAgain = false;
     public static String uid;
     public static boolean userHasSetByTouch = false;
@@ -115,13 +112,11 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     public static boolean suggestionsInProgress = false;
     public static MatrixCursor cursor = new MatrixCursor(Config.COLUMNS);
     public static Handler changeSuggestionAdapter;
-    static SensorManager mSensorManager;
     static boolean uTaskIsOn;
     static LatLng longpressLocation;
     static ListView list;
     private static int stepCounterOld = 1;
     private static int now = 0;
-    private static long startTime;
     private static int geoCodeTry = 0;
     private static LatLng startLatLng;
     private static LatLng destLatLng;
@@ -135,7 +130,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     private static int routeParts = 0;
     private static Marker longPressMarker;
     private static boolean userSwitchedGps = false;
-    private final long POS_UPDATE_FREQ = 500;
     public double[] gp2Latk = new double[31];
     public double[] gp2Lonk = new double[31];
     public boolean waitedAtStart = false;
@@ -152,20 +146,15 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     private com.google.android.gms.maps.GoogleMap map;
     private String[] html_instructions = new String[31];
     private String[] polylineArray = new String[31];
-    private int magnUnits;
-    private int aclUnits;
     private Locationer mLocationer;
     private boolean knownReasonForBreak = false;
     private boolean finishedTalking = false;
-    private int autoCorrectFactor = 1;
-    private boolean autoCorrect = false;
-    private boolean alreadyWaitingForAutoCorrect = false;
-    private int stepsToWait = 0;
     private boolean listVisible = false;
     private Polyline[] completeRoute = new Polyline[31];
     private Toolbar toolbar;
     private Analytics mAnalytics;
     private FloatingActionButton fab;
+    private SensorManager mSensorManager;
 
     public static double computeDistanz(double lat, double lon) {
         // Entfernung bzw. Distanz zur eigenen aktuellen Position
@@ -217,7 +206,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         toolbar = (Toolbar) findViewById(R.id.toolbar_googlemap); // Attaching the layout to the toolbar object
         setSupportActionBar(toolbar);                   // Setting toolbar as the ActionBar with setSupportActionBar() call
-
 
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
@@ -334,12 +322,12 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
 
         map.setIndoorEnabled(true);
 
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         startHandler();
 
         //Check if magnetic sensor is existing. If not: Warn user!
         try {
+            mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
             mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD).getName();
         } catch (Exception e) {
             View viewLine = findViewById(R.id.view156);
@@ -354,13 +342,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                 mapText.setText(getResources().getString(R.string.tx_43));
             }
         }
-
-        /*
-        Core of SmartNavi
-        does all the step-detection and orientation estimations
-        as well as export feature
-        */
-        mCore = new Core();
 
         // if offline, Toast Message will appear automatically
         isOnline();
@@ -457,7 +438,9 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     public void startHandler() {
         listHandler = new Handler() {
             public void handleMessage(Message msg) {
-                if (msg.what == 2) {
+                if (msg.what == 1) {
+                    followMe = true;
+                } else if (msg.what == 2) {
                     list.setVisibility(View.VISIBLE);
                     //Set this variable after some time has passed
                     // so that the LongclickList will not be removed by random
@@ -470,57 +453,38 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                     }, 1200);
                 } else if (msg.what == 3) {
                     finish(); // used by Settings to change to OsmMap
-                } else if (msg.what == 4) {
-                    listHandler.removeMessages(4);
-                    positionUpdate();
-                    // Log.d("Location-Status","Positionstask ACTIVATED (listHandler 4)");
                 } else if (msg.what == 6) {
                     // initialize Autocorrect oder restart new
                     // after activity_settings changed if necessary
-                    SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-                    autoCorrect = settings.getBoolean("autocorrect", false);
-                    //First look if AutoCorrect should be activated, because closeLocationer relies on that
-                    if (autoCorrect) {
-                        int i = settings.getInt("gpstimer", 1);
-                        if (i == 0) { //save as much battery as possible
-                            autoCorrectFactor = 4;
-                        } else if (i == 1) { // balanced
-                            autoCorrectFactor = 2;
-                        } else if (i == 2) { // high accuracy
-                            autoCorrectFactor = 1;
-                        }
-                        alreadyWaitingForAutoCorrect = false;
-                    }
+                    if (mCore != null)
+                        mCore.enableAutocorrect();
                 } else if (msg.what == 7) {
-                    autoCorrect = false;
+                    if (mCore != null)
+                        mCore.disableAutocorrect();
                     mLocationer.stopAutocorrect();
                 } else if (msg.what == 9) {
+                    //Reactivate sensors regularly because app is in background mode
+                    //and other apps might cause sensors to stop
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         public void run() {
-                            restartListenerLight();
+                            if (mCore != null)
+                                mCore.reactivateSensors();
                             listHandler.sendEmptyMessageDelayed(9, 5000);
                         }
                     }, 5000);
                 } else if (msg.what == 10) {
-                    restartListenerLight();
+                    //BackgroundService is created, so dont stop sensors
+                    if (mCore != null)
+                        mCore.reactivateSensors();
                 } else if (msg.what == 11) {
                     setFollowOn();
-                    try {
-                        listHandler.removeMessages(4);
-                        // Log.d("Location-Status",
-                        // "Positionstask OFF     listHandler 11");
-                    } catch (Exception e) {
-                        if (BuildConfig.debug)
-                            e.printStackTrace();
-                    }
                     startLatLng = new LatLng(Core.startLat, Core.startLon);
                     // Turn Camera towards North
                     CameraPosition currentPlace = new CameraPosition.Builder().target(startLatLng).bearing(0.0F).tilt(0.0F).zoom(19).build();
                     map.animateCamera(CameraUpdateFactory.newCameraPosition(currentPlace));
-                    // Restart PositionTask
-                    listHandler.sendEmptyMessageDelayed(4, 1500);
-                    // Log.d("Location-Status", "ListeHandler 11  ruft auf");
+                    // Restart FollowMe
+                    listHandler.sendEmptyMessageDelayed(1, 1500);
                 } else if (msg.what == 15) {
                     onMapTouch();
                 }
@@ -529,6 +493,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         };
     }
 
+
     @Override
     public void onLocationUpdate(int event) {
         switch (event) {
@@ -536,7 +501,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                 // First Position from the Locationer
                 startLatLng = new LatLng(Core.startLat, Core.startLon);
                 setFirstPosition();
-                restartListener();
                 foreignIntent();
                 // start Autocorrect if user wants it
                 listHandler.sendEmptyMessage(6);
@@ -669,7 +633,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                 }
                 destLatLng = new LatLng(destLat, destLon);
                 listHandler.removeCallbacksAndMessages(null);
-                listHandler.removeMessages(4);
                 // Log.d("Location-Status","Positionstask AUS    weil foreignIntent");
                 map.stopAnimation();
                 setPosition(false);
@@ -687,24 +650,16 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     public void setFollowOn() {
         followMe = true;
         stepCounterOld = stepCounterOld - 1;
-        try {
-            if(listHandler != null){
-                listHandler.removeMessages(4);
-                listHandler.sendEmptyMessageDelayed(4, 1500);
+        if (map != null) {
+            LatLng newPos = new LatLng(Core.startLat, Core.startLon);
+            float zoomLevel;
+            if (map.getCameraPosition().zoom < 15) {
+                zoomLevel = 17.0F;
+            } else {
+                zoomLevel = map.getCameraPosition().zoom;
             }
-            if(map != null){
-                LatLng newPos = new LatLng(Core.startLat, Core.startLon);
-                float zoomLevel;
-                if(map.getCameraPosition().zoom < 15){
-                    zoomLevel = 17.0F;
-                }else{
-                    zoomLevel = map.getCameraPosition().zoom;
-                }
-                CameraPosition followPosition = new CameraPosition.Builder().target(newPos).bearing(0.0F).tilt(0.0F).zoom(zoomLevel).build();
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(followPosition));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            CameraPosition followPosition = new CameraPosition.Builder().target(newPos).bearing(0.0F).tilt(0.0F).zoom(zoomLevel).build();
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(followPosition));
         }
         fab.hide();
     }
@@ -756,11 +711,11 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                     brightPoint = true;
                 }
             }
-            actualMarker[0].setRotation(actualMarker[0].getRotation()*(-1));
+            actualMarker[0].setRotation(actualMarker[0].getRotation() * (-1));
             float rotation = (float) Core.azimuth;
             actualMarker[0].setRotation(rotation);
         } catch (Exception e) {
-                e.printStackTrace();
+            e.printStackTrace();
         }
         if (followMe) {
             if (now % 2 != 0) {
@@ -773,12 +728,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         if (segmentCounter < (phases - 1) && waitedAtStart) {
             segmentControl();
         }
-        // Log.d("Location-Status"," - neuer Task - ");
-        listHandler.sendEmptyMessageDelayed(4, 500);
     }
-
-    // ****************************************************************
-    // ************* ROUTE-TASK **************************************
 
     public void setFirstPosition() {
         startLatLng = new LatLng(Core.startLat, Core.startLon);
@@ -810,12 +760,18 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         } else {
             map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 13.0F)));
         }
-        // start positionTask
-        listHandler.sendEmptyMessageDelayed(4, POS_UPDATE_FREQ);
+        followMe = true;
+        /*
+        Initialize core of SmartNavi that does all the step-detection and orientation estimations
+        as well as export feature
+        */
+        new Thread(new Runnable() {
+            public void run() {
+                mCore = new Core(GoogleMap.this);
+                mCore.startSensors();
+            }
+        }).start();
     }
-
-    // ****************** END ROUTE-TASK *******************************
-    // ********************************************************************
 
     private List<LatLng> decodePoly(String encoded) {
 
@@ -945,11 +901,9 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         if (status != ConnectionResult.SUCCESS) {
             new changeSettings("MapSource", "MapQuestOSM").execute();
         } else if (!userSwitchedGps) {
-            if (listHandler != null) {
-                // Log.d("Location-Status","Positionstask ACTIVATED because onResume 1");
-                listHandler.sendEmptyMessageDelayed(4, POS_UPDATE_FREQ);
+            if (mCore != null) {
+                mCore.reactivateSensors();
             }
-            restartListenerLight();
             if (knownReasonForBreak) {
                 //User is coming from Settings, Background Service or About
                 knownReasonForBreak = false;
@@ -967,9 +921,8 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             }
             setFollowOn();
             SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-            autoCorrect = settings.getBoolean("autocorrect", false);
             // Export
-            if(mCore != null){
+            if (mCore != null) {
                 boolean export = settings.getBoolean("export", false);
                 mCore.writeLog(export);
             }
@@ -985,8 +938,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             // Vibration
             vibration = settings.getBoolean("vibration", true);
             stepCounterOld = Core.stepCounter - 1;
-        }
-        else{
+        } else {
             if (mLocationer != null) {
                 mLocationer.startLocationUpdates();
             }
@@ -1003,38 +955,16 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         if (mProgressBar != null) {
             mProgressBar.setVisibility(View.GONE);
         }
-        try {
-            listHandler.removeMessages(4);
-            // Log.d("Location-Status", "Positionstask OFF    onPause");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            mSensorManager.unregisterListener(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // Log.d("Location-Status", "Sensors stopped.");
+        if (mCore != null)
+            mCore.pauseSensors();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
         routeHasBeenDrawn = false;
-        // // Log.d("Location-Status",
-        // "SmartNavi closed! Sensors off.");
         try {
-            listHandler.removeMessages(1);
-            listHandler.removeMessages(2);
-            listHandler.removeMessages(3);
-            listHandler.removeMessages(4);
-            listHandler.removeMessages(5);
-            listHandler.removeMessages(6);
-            listHandler.removeMessages(7);
-            listHandler.removeMessages(8);
-            listHandler.removeMessages(9);
-            listHandler.removeMessages(10);
-            listHandler.removeMessages(11);
+            listHandler.removeCallbacksAndMessages(null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1043,9 +973,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         if (status == ConnectionResult.SUCCESS) {
             if (map != null) {
                 map.clear();
-            }
-            if (mSensorManager != null) {
-                mSensorManager.unregisterListener(this);
             }
             if (uTaskIsOn) {
                 waitedAtStart = true;
@@ -1139,7 +1066,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                     map.getUiSettings().setAllGesturesEnabled(false);
                     tutorialFragment = new TutorialFragment();
                     fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment).commit();
-                }else{
+                } else {
                     tutorialFragment = new TutorialFragment();
                     fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment);
                     fragmentTransaction.commit();
@@ -1159,92 +1086,6 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         }
     }
 
-    private void restartListener() {
-        // // Log.d("Location-Status", "Sensors started.");
-        aclUnits = 0;
-        magnUnits = 0;
-        startTime = System.nanoTime();
-        try {
-            mSensorManager.registerListener(GoogleMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
-            mSensorManager.registerListener(GoogleMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void restartListenerLight() {
-        // Log.d("Location-Status", "Sensors reactivated.");
-        if(mSensorManager != null){
-            mSensorManager.unregisterListener(GoogleMap.this);
-            mSensorManager.registerListener(GoogleMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
-            mSensorManager.registerListener(GoogleMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-
-        switch (event.sensor.getType()) {
-
-            case Sensor.TYPE_MAGNETIC_FIELD:
-                mCore.imbaMagnetic(event.values.clone());
-                if (BuildConfig.debug) {
-                    Core.origMagn = event.values.clone();
-                }
-                magnUnits++;
-                break;
-
-            case Sensor.TYPE_ACCELEROMETER:
-                if (BuildConfig.debug) {
-                    Core.origAcl = event.values.clone();
-                }
-
-                if (Config.backgroundServiceActive && units % 50 == 0) {
-                    BackgroundService.newFakePosition();
-                }
-
-                long timePassed = System.nanoTime() - startTime;
-                aclUnits++;
-                units++;
-
-                if (timePassed >= 2000000000) { // every 2sek
-                    mCore.changeDelay(aclUnits / 2, 0);
-                    mCore.changeDelay(magnUnits / 2, 1);
-
-                    startTime = System.nanoTime();
-                    aclUnits = magnUnits = 0;
-                }
-
-                mCore.imbaGravity(event.values.clone());
-                mCore.imbaLinear(event.values.clone());
-                mCore.calculate();
-                mCore.stepDetection();
-
-                // AutoCorrect (dependent on Factor, i.e. number of steps)
-                if (autoCorrect) {
-                    if (!alreadyWaitingForAutoCorrect) {
-                        alreadyWaitingForAutoCorrect = true;
-                        stepsToWait = Core.stepCounter + 75 * autoCorrectFactor;
-                        // // Log.d("Location-Status", Core.stepCounter +
-                        // " von " + stepsToWait);
-                    }
-                    if (Core.stepCounter >= stepsToWait) {
-                        if (Config.backgroundServiceActive) {
-                            backgroundServiceShallBeOnAgain = true;
-                            BackgroundService.pauseFakeProvider();
-                        }
-                        mLocationer.starteAutocorrect();
-                        alreadyWaitingForAutoCorrect = false;
-                    }
-                }
-                break;
-        }
-    }
 
     public void fingerDestination(LatLng g) {
         destLat = g.latitude;// getLatitudeE6() / 1E6;
@@ -1410,7 +1251,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
     private void showGPSDialog() {
         Log.d("Location-Status", "hier ich bins");
         final Dialog dialogGPS = new Dialog(GoogleMap.this);
-        if(!dialogGPS.isShowing()){
+        if (!dialogGPS.isShowing()) {
             dialogGPS.setContentView(R.layout.dialog3);
             dialogGPS.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
             dialogGPS.setCanceledOnTouchOutside(false);
@@ -1592,6 +1433,17 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         fragmentTransaction.remove(tutorialFragment).commit();
     }
 
+    @Override
+    public void onStepUpdate(int event) {
+        if (event == 0) {
+            //New step detected, change position
+            positionUpdate();
+        } else {
+            //Threshold reached for Autocorrection
+            mLocationer.starteAutocorrect();
+        }
+    }
+
 
     private class routeTask extends AsyncTask<String, Void, Void> {
 
@@ -1698,10 +1550,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
         protected void onPostExecute(Void void1) {
             if (getPathSuccess) {
                 drawPath();
-                listHandler.removeMessages(4);
-                // Log.d("Location-Status",
-                // "Positionstask OFF    because routeTask");
-                //PositionTask shall NOT run. After routeStartAnimation in listHandler it shall start again.
+                followMe = false;
                 routeStartAnimation(northeastLatLng, southwestLatLng);
             }
             makeInfo(endAddress, firstDistance);
@@ -1777,7 +1626,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
                     destLatLng = new LatLng(destLat, destLon);
                     listHandler.removeCallbacksAndMessages(null);
                     map.stopAnimation();
-                    listHandler.removeMessages(4);
+                    followMe = false;
                     // Log.d("Location-Status","Positionstask OFF    placesTextSearch");
                     setPosition(false);
                     setDestPosition(destLatLng);
@@ -1864,8 +1713,7 @@ public class GoogleMap extends AppCompatActivity implements SensorEventListener,
             if (geocodeSuccess) {
                 listHandler.removeCallbacksAndMessages(null);
                 map.stopAnimation();
-                listHandler.removeMessages(4);
-                // Log.d("Location-Status","Positionstask OFF    geoCodeTask");
+                followMe = false;
                 geoCodeTry = 0;
                 // destLat and destLon are already set in onDoInBackground
                 // at List<Address>...

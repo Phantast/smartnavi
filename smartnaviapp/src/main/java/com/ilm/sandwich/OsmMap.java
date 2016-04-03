@@ -14,8 +14,6 @@ import android.database.MatrixCursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -89,11 +87,12 @@ import java.util.ArrayList;
 
 /**
  * MapActvitiy for OpenStreetMaps
+ *
  * @author Christian Henke
  *         www.smartnavi-app.com
  */
 
-public class OsmMap extends AppCompatActivity implements Locationer.onLocationUpdateListener, SensorEventListener, MapEventsReceiver, TutorialFragment.onTutorialFinishedListener {
+public class OsmMap extends AppCompatActivity implements Locationer.onLocationUpdateListener, MapEventsReceiver, TutorialFragment.onTutorialFinishedListener, Core.onStepUpdateListener {
 
     public static Handler listHandler;
     public static SearchView searchView;
@@ -117,18 +116,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     private Locationer mLocationer;
     private boolean userSwitchesGPS;
     private boolean knownReasonForBreak;
-    private int units;
-    private int aclUnits;
-    private int magnUnits;
-    private long startTime;
-    private long timePassed;
     private boolean followMe = true;
     private boolean listIsVisible = false;
-    private long POS_UPDATE_FREQ = 2200;
     private boolean autoCorrect = false;
-    private int autoCorrectFaktor = 1;
-    private boolean alreadyWaitingForAutoCorrect;
-    private int stepsToWait = 0;
     private boolean backgroundServiceShallBeOn = false;
     private Toolbar toolbar;
     private Analytics mAnalytics;
@@ -260,17 +250,11 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         mapController.setZoom(3);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
         try {
             mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD).getName();
         } catch (Exception e) {
             Toast.makeText(this, getResources().getString(R.string.tx_43), Toast.LENGTH_LONG).show();
         }
-
-        //Core of SmartNavi
-        //does all the step-detection and orientation estimations
-        //as well as export feature
-        mCore = new Core();
 
         new writeSettings("follow", true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -310,7 +294,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
 
         list = (ListView) findViewById(R.id.listeOsm);
         if (list.getVisibility() == View.VISIBLE)
-        list.setVisibility(View.INVISIBLE);
+            list.setVisibility(View.INVISIBLE);
         listIsVisible = false;
         list.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -322,8 +306,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                     setFollowOn();
                     map.invalidate();
                     mapController.animateTo(longPressedGeoPoint);
-                    // Positionstask reactivate
-                    listHandler.sendEmptyMessageDelayed(4, 50);
+                    setFollowOn();
                 } else {
                     showRouteInfo(true);
                     mAnalytics.trackEvent("OSM_LongPress_Action", "Set_Destination");
@@ -334,13 +317,11 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         });
     }
 
-    private void setOwnLocationMarker() {
+    private void setFirstPosition() {
         // Set Marker
         if (firstPositionFound == false) {
-            {
-                if (BuildConfig.debug) {
-                    Log.d("Location-Status", "Set FIRST Position: " + Core.startLat + " and " + Core.startLon + " Error: " + Core.lastErrorGPS);
-                }
+            if (BuildConfig.debug) {
+                Log.d("Location-Status", "Set FIRST Position: " + Core.startLat + " and " + Core.startLon + " Error: " + Core.lastErrorGPS);
             }
             if (Core.lastErrorGPS < 100) {
                 mapController.setZoom(19);
@@ -368,6 +349,16 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             int lonE6 = (int) (Core.startLon * 1E6);
             myLocationOverlay.setLocation(new GeoPoint(latE6, lonE6));
             firstPositionFound = true;
+
+            //Core of SmartNavi
+            //does all the step-detection and orientation estimations
+            //as well as export feature
+            new Thread(new Runnable() {
+                public void run() {
+                    mCore = new Core(OsmMap.this);
+                    mCore.startSensors();
+                }
+            }).start();
         }
     }
 
@@ -375,12 +366,12 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         int latE6 = (int) (Core.startLat * 1E6);
         int lonE6 = (int) (Core.startLon * 1E6);
         if (firstPositionFound == false) {
-            {
+            if (BuildConfig.debug) {
                 Log.d("Location-Status", "FirstPosition: " + latE6 + " and " + lonE6);
             }
-            setOwnLocationMarker();
+            setFirstPosition();
         } else {
-            {
+            if (BuildConfig.debug) {
                 Log.d("Location-Status", "Set Position: " + latE6 + " and " + lonE6);
             }
 
@@ -414,38 +405,27 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             public void handleMessage(Message msg) {
                 if (msg.what == 3) {
                     finish(); // used by Settings to change to GoogleMap
-                } else if (msg.what == 4) {
-                    positionUpdate();
                 } else if (msg.what == 6) {
-                    // initialize Autocorrect or start new because of activity_settings change
-                    SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-                    autoCorrect = settings.getBoolean("autocorrect", false);
-                    //First look if AutoCorrect should really be activated - important because
-                    //stopLocationer relies on that
-                    if (autoCorrect) {
-                        int i = settings.getInt("gpstimer", 1);
-                        if (i == 0) { //priority on energy saving
-                            autoCorrectFaktor = 4;
-                        } else if (i == 1) { // balanced
-                            autoCorrectFaktor = 2;
-                        } else if (i == 2) { // high accuracy
-                            autoCorrectFaktor = 1;
-                        }
-                        alreadyWaitingForAutoCorrect = false;
-                    }
+                    if (mCore != null)
+                        mCore.enableAutocorrect();
                 } else if (msg.what == 7) {
                     autoCorrect = false;
                     mLocationer.stopAutocorrect();
                 } else if (msg.what == 9) {
+                    //Reactivate sensors regularly because app is in background mode
+                    //and other apps might cause sensors to stop
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         public void run() {
-                            restartListenerLight();
+                            if (mCore != null)
+                                mCore.reactivateSensors();
                             listHandler.sendEmptyMessageDelayed(9, 5000);
                         }
                     }, 5000);
                 } else if (msg.what == 10) {
-                    restartListenerLight();
+                    //BackgroundService is created so restart sensors
+                    if (mCore != null)
+                        mCore.reactivateSensors();
                 } else if (msg.what == 11) {
                     try {
                         list = (ListView) findViewById(R.id.listeOsm);
@@ -466,10 +446,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     public void onLocationUpdate(int event) {
         switch (event) {
             case 0:
-                setOwnLocationMarker();
+                setFirstPosition();
                 setPosition(true);
                 positionUpdate();
-                restartListener();
                 // foreignIntent();
                 // starte Autocorrect if wanted
                 listHandler.sendEmptyMessage(6);
@@ -504,8 +483,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 mapController.animateTo(new GeoPoint(latE6, lonE6));
             }
         }
-        listHandler.removeMessages(4);
-        listHandler.sendEmptyMessageDelayed(4, POS_UPDATE_FREQ);
     }
 
 
@@ -541,9 +518,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         autoCorrect = settings.getBoolean("autocorrect", false);
         Config.usingGoogleMaps = false;
         setFollowOn();
-        positionUpdate();
         if (userSwitchesGPS == false) {
-            restartListener();
+            if (mCore != null)
+                mCore.reactivateSensors();
 
             if (knownReasonForBreak == true) {
                 checkOfflineMapsDirectory();
@@ -605,12 +582,8 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         } catch (Exception e) {
             //nothing
         }
-        if (listHandler != null) {
-            listHandler.removeMessages(4);
-        }
-        if (mSensorManager != null) {
-            mSensorManager.unregisterListener(this);
-        }
+        if (mCore != null)
+            mCore.pauseSensors();
         super.onPause();
     }
 
@@ -628,27 +601,11 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         fab.show();
     }
 
-    private void restartListener() {
-        units = 0;
-        aclUnits = 0;
-        magnUnits = 0;
-        startTime = System.nanoTime();
-        try {
-            mSensorManager.registerListener(OsmMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
-            mSensorManager.registerListener(OsmMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-    }
-
     @Override
     protected void onDestroy() {
-        mSensorManager.unregisterListener(this);
-        listHandler.removeMessages(0);
+        if (mCore != null)
+            mCore.pauseSensors();
+        listHandler.removeCallbacksAndMessages(null);
         Statistics mStatistics = new Statistics();
         mStatistics.check(this);
         super.onDestroy();
@@ -660,104 +617,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         super.onStop();
     }
 
-    private void restartListenerLight() {
-        try {
-            mSensorManager.unregisterListener(OsmMap.this);
-            mSensorManager.registerListener(OsmMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
-            mSensorManager.registerListener(OsmMap.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        //sensor warning
-        //If sensors are inaccurate, tell the user to rotate his device
-        //Commented out, because the accuracy data is useless on some devices :(
-//        if (event.accuracy < 1){
-//            sensorUnreliabilityCounter++;
-//            if(sensorUnreliabilityCounter > 200 && sensorWarningShown == false){
-//                SharedPreferences activity_settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-//                boolean longPressHasBeenShown = activity_settings.getBoolean("longPressWasShown", false);
-//                if(longPressHasBeenShown){
-//                    sensorWarningShown = true;
-//                    View sensorWarning = findViewById(R.id.sensorWarningOsm);
-//                    sensorWarning.setVisibility(View.VISIBLE);
-//                    Button sensorWarningButton = (Button) findViewById(R.id.sensorWarningButtonOsm);
-//                    sensorWarningButton.setOnClickListener(new OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            View sensorWarning = findViewById(R.id.sensorWarningOsm);
-//                            sensorWarning.setVisibility(View.GONE);
-//                        }
-//                    });
-//                }
-//            }
-//        }
-        //end of sensor warning
-
-        switch (event.sensor.getType()) {
-
-            case Sensor.TYPE_MAGNETIC_FIELD:
-                mCore.imbaMagnetic(event.values.clone());
-            {
-                Core.origMagn = event.values.clone();
-            }
-            magnUnits++;
-            break;
-
-            case Sensor.TYPE_ACCELEROMETER: {
-                Core.origAcl = event.values.clone();
-            }
-            timePassed = System.nanoTime() - startTime;
-            aclUnits++;
-            units++;
-
-            if (timePassed >= 2000000000) {
-                mCore.changeDelay(aclUnits / 2, 0);
-                mCore.changeDelay(magnUnits / 2, 1);
-
-                aclUnits = magnUnits = 0;
-                startTime = System.nanoTime();
-            }
-
-            if (Config.backgroundServiceActive == true && units % 50 == 0) {
-                BackgroundService.newFakePosition();
-            }
-
-            mCore.imbaGravity(event.values.clone());
-            mCore.imbaLinear(event.values.clone());
-            mCore.calculate();
-            mCore.stepDetection();
-
-            // Autokorrektur dependent on stepCounter
-            if (autoCorrect) {
-                if (alreadyWaitingForAutoCorrect == false) {
-                    alreadyWaitingForAutoCorrect = true;
-                    stepsToWait = Core.stepCounter + 75 * autoCorrectFaktor;
-                }
-                if (Core.stepCounter >= stepsToWait) {
-                    if (Config.backgroundServiceActive == true) {
-                        backgroundServiceShallBeOn = true;
-                        BackgroundService.pauseFakeProvider();
-                    }
-                    mLocationer.starteAutocorrect();
-                    alreadyWaitingForAutoCorrect = false;
-                }
-            }
-            break;
-        }
-    }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            listHandler.removeMessages(4);
-        }
-
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
             if (followMe == true) {
                 setFollowOff();
@@ -767,11 +629,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         //if not, it my happen, that the list will be made invisible, BEFORE the buttonListener of the list
         //can react
         listHandler.sendEmptyMessageDelayed(11, 250);
-
         if (event.getAction() == MotionEvent.ACTION_UP) {
             listHandler.sendEmptyMessage(4);
         }
-
         return super.dispatchTouchEvent(event);
     }
 
@@ -839,7 +699,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         Toast.makeText(this, getResources().getString(R.string.tx_82), Toast.LENGTH_SHORT).show();
     }
 
-    private void showLongPressDialog() {
+   /* private void showLongPressDialog() {
         try {
             myItemizedOverlay[0].getItem(0).getDrawable().setVisible(false, true);
         } catch (Exception e) {
@@ -863,6 +723,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         // Remember that longPress was shown
         new writeSettings("longPressWasShown", true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
+    */
 
     public void clickOnStars(final View view) {
         new writeSettings("not_rated", 999).execute();
@@ -889,7 +750,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 // if off, longPressMenu will be made invisible
                 list = (ListView) findViewById(R.id.listeOsm);
                 if (list.getVisibility() == View.VISIBLE)
-                list.setVisibility(View.INVISIBLE);
+                    list.setVisibility(View.INVISIBLE);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -905,10 +766,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         try {
             list = (ListView) findViewById(R.id.listeOsm);
             if (list.getVisibility() == View.VISIBLE)
-            list.setVisibility(View.INVISIBLE);
+                list.setVisibility(View.INVISIBLE);
         } catch (Exception e) {
             if (BuildConfig.debug)
-            e.printStackTrace();
+                e.printStackTrace();
         }
 
         switch (item.getItemId()) {
@@ -993,10 +854,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 try {
                     list = (ListView) findViewById(R.id.listeOsm);
                     if (list.getVisibility() == View.VISIBLE)
-                    list.setVisibility(View.INVISIBLE);
+                        list.setVisibility(View.INVISIBLE);
                 } catch (Exception e) {
                     if (BuildConfig.debug)
-                    e.printStackTrace();
+                        e.printStackTrace();
                 }
             }
         });
@@ -1135,6 +996,17 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.remove(tutorialFragment).commit();
+    }
+
+    @Override
+    public void onStepUpdate(int event) {
+        if (event == 0) {
+            //New step detected, change position
+            positionUpdate();
+        } else {
+            //Threshold reached for Autocorrection
+            mLocationer.starteAutocorrect();
+        }
     }
 
     private class writeSettings extends AsyncTask<Void, Void, Void> {
