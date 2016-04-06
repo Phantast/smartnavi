@@ -753,16 +753,8 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 13.0F)));
         }
         followMe = true;
-        /*
-        Initialize core of SmartNavi that does all the step-detection and orientation estimations
-        as well as export feature
-        */
-        new Thread(new Runnable() {
-            public void run() {
-                mCore = new Core(GoogleMap.this);
-                mCore.startSensors();
-            }
-        }).start();
+        mCore = new Core(GoogleMap.this);
+        mCore.startSensors();
     }
 
     private List<LatLng> decodePoly(String encoded) {

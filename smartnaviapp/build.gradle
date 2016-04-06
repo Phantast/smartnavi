@@ -20,6 +20,10 @@ android {
     }
     productFlavors {
         playstore {
+            repositories {
+                maven { url 'https://maven.fabric.io/public' }
+                maven { url 'http://guardian.github.com/maven/repo-releases' }
+            }
         }
         free {
         }
@@ -31,8 +35,6 @@ android {
 
 repositories {
     mavenCentral()
-    maven { url 'https://maven.fabric.io/public' }
-    maven { url 'http://guardian.github.com/maven/repo-releases' }
 }
 
 
