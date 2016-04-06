@@ -16,7 +16,6 @@ import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -50,6 +49,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ilm.sandwich.fragments.RatingFragment;
 import com.ilm.sandwich.fragments.TutorialFragment;
 import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
@@ -92,7 +92,7 @@ import java.util.ArrayList;
  *         www.smartnavi-app.com
  */
 
-public class OsmMap extends AppCompatActivity implements Locationer.onLocationUpdateListener, MapEventsReceiver, TutorialFragment.onTutorialFinishedListener, Core.onStepUpdateListener {
+public class OsmMap extends AppCompatActivity implements Locationer.onLocationUpdateListener, MapEventsReceiver, TutorialFragment.onTutorialFinishedListener, Core.onStepUpdateListener, RatingFragment.onRatingFinishedListener {
 
     public static Handler listHandler;
     public static SearchView searchView;
@@ -107,6 +107,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     public Context sbContext;
     protected DirectedLocationOverlay myLocationOverlay;
     TutorialFragment tutorialFragment;
+    RatingFragment ratingFragment;
     private MapView map;
     private IMapController mapController;
     private MyItemizedOverlay[] myItemizedOverlay = new MyItemizedOverlay[10];
@@ -157,19 +158,17 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             });
         }
 
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     Config.PERMISSION_REQUEST_FINE_LOCATION);
         } else {
-            checkOfflineMapsDirectory();
-            proceedOnCreate();
+            checkWriteStoragePermission();
         }
     }
 
     private void checkWriteStoragePermission() {
+
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -195,6 +194,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                     mAnalytics.trackEvent("Location_Permission", "Denied_OSM");
                     finish();
                 }
+                break;
             }
             case Config.PERMISSION_WRITE_EXTERNAL_STORAGE: {
                 if (grantResults.length > 0
@@ -206,11 +206,13 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                     mAnalytics.trackEvent("Storage_Permission", "Denied_OSM");
                     finish();
                 }
+                break;
             }
         }
     }
 
     private void proceedOnCreate() {
+        checkOfflineMapsDirectory();
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         map = (MapView) findViewById(R.id.openmapview);
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this, this);
@@ -288,7 +290,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             tutorialFragment = new TutorialFragment();
             fragmentTransaction.add(R.id.osmmap_actvity_layout, tutorialFragment);
-            fragmentTransaction.commit();
+            fragmentTransaction.commitAllowingStateLoss();
         }
 
         positionUpdate();
@@ -350,12 +352,8 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             //Core of SmartNavi
             //does all the step-detection and orientation estimations
             //as well as export feature
-            new Thread(new Runnable() {
-                public void run() {
-                    mCore = new Core(OsmMap.this);
-                    mCore.startSensors();
-                }
-            }).start();
+            mCore = new Core(OsmMap.this);
+            mCore.startSensors();
         }
     }
 
@@ -503,8 +501,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         }
     }
 
-    @Override
-    protected void onResume() {
+    private void proceedOnResume() {
         firstPositionFound = false;
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         autoCorrect = settings.getBoolean("autocorrect", false);
@@ -514,7 +511,7 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             if (mCore != null)
                 mCore.reactivateSensors();
 
-            if (knownReasonForBreak == true) {
+            if (knownReasonForBreak) {
                 checkOfflineMapsDirectory();
                 // User is coming from Settings, Background Service or About
                 knownReasonForBreak = false;
@@ -523,7 +520,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 // get Position and go on
                 mLocationer.startLocationUpdates();
                 ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBarOsm);
-                mProgressBar.setVisibility(View.VISIBLE);
+                if (mProgressBar != null) {
+                    mProgressBar.setVisibility(View.VISIBLE);
+                }
             }
             if (Core.startLat != 0) {
                 listHandler.sendEmptyMessage(0);
@@ -537,12 +536,14 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 e.printStackTrace();
             }
 
-        } else if (userSwitchesGPS == true) {
+        } else if (userSwitchesGPS) {
             // User has been sent by SmartNavi into his activity_settings to check GPS etc.
             //so start getting a new location
             mLocationer.startLocationUpdates();
             ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBarOsm);
-            mProgressBar.setVisibility(View.VISIBLE);
+            if (mProgressBar != null) {
+                mProgressBar.setVisibility(View.VISIBLE);
+            }
         }
 
         String tileProviderName = settings.getString("MapSource", "MapQuestOSM");
@@ -559,7 +560,16 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 map.setTileSource(TileSourceFactory.MAPNIK);
             }
         }
+    }
 
+    @Override
+    protected void onResume() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            if (map != null) {
+                proceedOnResume();
+            }
+        }
         super.onResume();
     }
 
@@ -599,7 +609,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             mCore.pauseSensors();
             mCore.shutdown(this);
         }
-        listHandler.removeCallbacksAndMessages(null);
+        if (listHandler != null) {
+            listHandler.removeCallbacksAndMessages(null);
+        }
         Statistics mStatistics = new Statistics();
         mStatistics.check(this);
         super.onDestroy();
@@ -607,7 +619,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
 
     @Override
     protected void onStop() {
-        map.getTileProvider().clearTileCache();
+        if (map != null) {
+            map.getTileProvider().clearTileCache();
+        }
         super.onStop();
     }
 
@@ -670,12 +684,17 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     }
 
     public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable() && cm.getActiveNetworkInfo().isConnected()) {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable() && cm.getActiveNetworkInfo().isConnected()) {
+                return true;
+            } else {
+                Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_47), Toast.LENGTH_LONG).show();
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return true;
-        } else {
-            Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_47), Toast.LENGTH_LONG).show();
-            return false;
         }
     }
 
@@ -718,14 +737,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         new writeSettings("longPressWasShown", true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
     */
-
-    public void clickOnStars(final View view) {
-        new writeSettings("not_rated", 999).execute();
-        final View appRateDialog = findViewById(R.id.appRateDialogOsm);
-        appRateDialog.setVisibility(View.INVISIBLE);
-        new writeSettings("dontshowagain", true).execute();
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + Config.APP_PNAME)));
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -1018,6 +1029,13 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             //Threshold reached for Autocorrection
             mLocationer.starteAutocorrect();
         }
+    }
+
+    @Override
+    public void onRatingFinished() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.remove(ratingFragment).commit();
     }
 
     private class writeSettings extends AsyncTask<Void, Void, Void> {

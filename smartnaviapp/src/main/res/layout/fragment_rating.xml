@@ -1,0 +1,101 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.RatingFragment">
+
+    <!-- AppRateDialog -->
+    <!-- AppRateDialog -->
+    <!-- AppRateDialog -->
+
+    <RelativeLayout
+        android:id="@+id/appRateDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="110dp"
+        android:background="#f54b4b4b">
+
+        <TextView
+            android:id="@+id/appRateTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="10dp"
+            android:text="@string/tx_34"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#aee844" />
+
+        <View
+            android:id="@+id/appRateLine"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_below="@+id/appRateTitle"
+            android:layout_marginTop="10dp"
+            android:background="#aee844" />
+
+        <TextView
+            android:id="@+id/appRateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/appRateLine"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="@string/tx_31"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/stars"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/appRateText"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:clickable="true"
+            android:contentDescription="@string/tx_34"
+            android:src="@drawable/stars" />
+
+        <Button
+            android:id="@+id/rateButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/stars"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button_dark"
+            android:minWidth="170dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/tx_39" />
+
+        <Button
+            android:id="@+id/rateButton2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rateButton"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="9dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/tx_40"
+            android:textColor="#F5F5F5"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/appRateLine2"
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:layout_below="@+id/rateButton2" />
+    </RelativeLayout>
+
+</FrameLayout>

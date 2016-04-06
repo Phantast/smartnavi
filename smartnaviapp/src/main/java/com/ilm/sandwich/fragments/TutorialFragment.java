@@ -46,7 +46,7 @@ public class TutorialFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         fragmentView = view;
-        SharedPreferences settings = this.getActivity().getSharedPreferences(this.getActivity().getPackageName() + "_preferences", this.getActivity().MODE_PRIVATE);
+        SharedPreferences settings = this.getActivity().getSharedPreferences(this.getActivity().getPackageName() + "_preferences", Context.MODE_PRIVATE);
         boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
         mAnalytics = new Analytics(trackingAllowed);
         startTutorial();
@@ -96,7 +96,7 @@ public class TutorialFragment extends Fragment {
             }
         });
 
-        SharedPreferences settings = this.getActivity().getSharedPreferences(this.getActivity().getPackageName() + "_preferences", this.getActivity().MODE_PRIVATE);
+        SharedPreferences settings = this.getActivity().getSharedPreferences(this.getActivity().getPackageName() + "_preferences", Context.MODE_PRIVATE);
         String stepLengthString = settings.getString("step_length", null);
         Spinner spinner = (Spinner) fragmentView.findViewById(R.id.tutorialSpinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -111,11 +111,11 @@ public class TutorialFragment extends Fragment {
                 int savedBodyHeight = Integer.parseInt(stepLengthString);
                 if (savedBodyHeight < 241 && savedBodyHeight > 119) {
                     EditText editText = (EditText) fragmentView.findViewById(R.id.tutorialEditText);
-                    editText.setText("" + savedBodyHeight);
+                    editText.setText(savedBodyHeight);
                     spinner.setSelection(0);
                 } else if (savedBodyHeight < 95 && savedBodyHeight > 45) {
                     EditText editText = (EditText) fragmentView.findViewById(R.id.tutorialEditText);
-                    editText.setText("" + savedBodyHeight);
+                    editText.setText(savedBodyHeight);
                     spinner.setSelection(1);
                 }
             } catch (Exception e) {
@@ -155,14 +155,14 @@ public class TutorialFragment extends Fragment {
                 if (op != 0) {
                     try {
                         number = Float.valueOf(heightField.getText().toString());
-                        if (number < 241 && number > 119 && metricUnits == true) {
+                        if (number < 241 && number > 119 && metricUnits) {
                             String numberString = df0.format(number);
-                            fragmentView.getContext().getSharedPreferences(fragmentView.getContext().getPackageName() + "_preferences", fragmentView.getContext().MODE_PRIVATE).edit().putString("step_length", numberString).commit();
+                            fragmentView.getContext().getSharedPreferences(fragmentView.getContext().getPackageName() + "_preferences", Context.MODE_PRIVATE).edit().putString("step_length", numberString).commit();
                             Core.stepLength = (number / 222);
                             tutorialDone = true;
-                        } else if (number < 95 && number > 45 && metricUnits == false) {
+                        } else if (number < 95 && number > 45 && !metricUnits) {
                             String numberString = df0.format(number);
-                            fragmentView.getContext().getSharedPreferences(fragmentView.getContext().getPackageName() + "_preferences", fragmentView.getContext().MODE_PRIVATE).edit().putString("step_length", numberString).commit();
+                            fragmentView.getContext().getSharedPreferences(TutorialFragment.this.getActivity().getPackageName() + "_preferences", Context.MODE_PRIVATE).edit().putString("step_length", numberString).apply();
                             Core.stepLength = (float) (number * 2.54 / 222);
                             tutorialDone = true;
                         } else {

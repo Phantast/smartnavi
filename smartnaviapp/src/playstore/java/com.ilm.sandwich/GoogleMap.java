@@ -18,7 +18,6 @@ import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -68,6 +67,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.ilm.sandwich.fragments.RatingFragment;
 import com.ilm.sandwich.fragments.TutorialFragment;
 import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
@@ -94,7 +94,7 @@ import java.util.Locale;
  *         www.smartnavi-app.com
  */
 public class GoogleMap extends AppCompatActivity implements Locationer.onLocationUpdateListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, TutorialFragment.onTutorialFinishedListener, Core.onStepUpdateListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, TutorialFragment.onTutorialFinishedListener, Core.onStepUpdateListener, RatingFragment.onRatingFinishedListener {
 
     public static double destLat;
     public static double destLon;
@@ -154,7 +154,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     private Toolbar toolbar;
     private Analytics mAnalytics;
     private FloatingActionButton fab;
-    private SensorManager mSensorManager;
+    RatingFragment ratingFragment;
 
     public static double computeDistanz(double lat, double lon) {
         // Entfernung bzw. Distanz zur eigenen aktuellen Position
@@ -319,7 +319,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
 
         //Check if magnetic sensor is existing. If not: Warn user!
         try {
-            mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+            SensorManager mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
             mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD).getName();
         } catch (Exception e) {
             View viewLine = findViewById(R.id.view156);
@@ -390,7 +390,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             tutorialFragment = new TutorialFragment();
             fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment);
-            fragmentTransaction.commit();
+            fragmentTransaction.commitAllowingStateLoss();();
         }
 
         mTts = new TextToSpeech(GoogleMap.this, null);
@@ -753,16 +753,8 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 13.0F)));
         }
         followMe = true;
-        /*
-        Initialize core of SmartNavi that does all the step-detection and orientation estimations
-        as well as export feature
-        */
-        new Thread(new Runnable() {
-            public void run() {
-                mCore = new Core(GoogleMap.this);
-                mCore.startSensors();
-            }
-        }).start();
+        mCore = new Core(GoogleMap.this);
+        mCore.startSensors();
     }
 
     private List<LatLng> decodePoly(String encoded) {
@@ -1054,15 +1046,9 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 // TutorialFragment
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                if (tutorialFragment != null) {
-                    map.getUiSettings().setAllGesturesEnabled(false);
-                    tutorialFragment = new TutorialFragment();
-                    fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment).commit();
-                } else {
-                    tutorialFragment = new TutorialFragment();
-                    fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment);
-                    fragmentTransaction.commit();
-                }
+                map.getUiSettings().setAllGesturesEnabled(false);
+                tutorialFragment = new TutorialFragment();
+                fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment).commit();
                 return true;
             case R.id.menu_info:
                 mAnalytics.trackEvent("Google_Menu", "info");
@@ -1152,70 +1138,16 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         // Wait at least n days before opening
         if (launch_count >= Config.LAUNCHES_UNTIL_PROMPT) {
             if (System.currentTimeMillis() >= date_firstLaunch + (Config.DAYS_UNTIL_PROMPT * 24 * 60 * 60 * 1000)) {
-                showRateDialog();
+                // RatingFragment
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                map.getUiSettings().setAllGesturesEnabled(false);
+                ratingFragment = new RatingFragment();
+                fragmentTransaction.add(R.id.googlemap_actvity_layout, ratingFragment).commit();
+
             }
         }
         editor.apply();
-    }
-
-    private void showRateDialog() {
-        final View appRateDialog = findViewById(R.id.appRateDialog);
-        if (appRateDialog != null) {
-            appRateDialog.setVisibility(View.VISIBLE);
-        }
-        mAnalytics.trackEvent("Rating_Dialog_View", "View");
-        Button rateButton1 = (Button) findViewById(R.id.rateButton);
-        if (rateButton1 != null) {
-            rateButton1.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (appRateDialog != null) {
-                        appRateDialog.setVisibility(View.INVISIBLE);
-                    }
-                    mAnalytics.trackEvent("Rating_Dialog_Action", "No");
-                    SharedPreferences prefs = getSharedPreferences(getPackageName() + "_preferences", 0);
-                    int notRated = prefs.getInt("not_rated", 0) + 1;
-
-                    new changeSettings("not_rated", notRated).execute();
-
-                    if (notRated == 1) {
-                        new changeSettings("launch_count", -6).execute();
-                    } else if (notRated == 2) {
-                        new changeSettings("launch_count", -8).execute();
-                    } else if (notRated == 3) {
-                        new changeSettings("launch_count", -10).execute();
-                    } else if (notRated == 4) {
-                        new changeSettings("dontshowagain", true).execute();
-                    }
-                }
-            });
-        }
-        Button rateButton3 = (Button) findViewById(R.id.rateButton2);
-        if (rateButton3 != null) {
-            rateButton3.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mAnalytics.trackEvent("Rating_Dialog_Action", "Yes_Button");
-                    new changeSettings("not_rated", 999).execute();
-                    if (appRateDialog != null) {
-                        appRateDialog.setVisibility(View.INVISIBLE);
-                    }
-                    new changeSettings("dontshowagain", true).execute();
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + Config.APP_PNAME)));
-                }
-            });
-        }
-    }
-
-    public void clickOnStars(final View view) {
-        new changeSettings("not_rated", 999).execute();
-        mAnalytics.trackEvent("Rating_Dialog_Action", "Yes_Stars");
-        final View appRateDialog = findViewById(R.id.appRateDialog);
-        if (appRateDialog != null) {
-            appRateDialog.setVisibility(View.INVISIBLE);
-        }
-        new changeSettings("dontshowagain", true).execute();
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + Config.APP_PNAME)));
     }
 
     @Override
@@ -1326,8 +1258,13 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 else if (query.equalsIgnoreCase("cake") || query.equalsIgnoreCase("the cake") || query.equalsIgnoreCase("portal"))
                     Toast.makeText(GoogleMap.this, "The cake is a lie!", Toast.LENGTH_LONG).show();
                 else if (query.equalsIgnoreCase("rateme")) {
-                    // show app rate dialog
-                    showRateDialog();
+                    // show RatingFragment
+                    Log.i("Rating", "Showing Rating Fragment");
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    map.getUiSettings().setAllGesturesEnabled(false);
+                    ratingFragment = new RatingFragment();
+                    fragmentTransaction.add(R.id.googlemap_actvity_layout, ratingFragment).commit();
                 } else if (query.equalsIgnoreCase("smartnavihelp")) {
                     // User ID anzeigen
                     SharedPreferences activity_settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
@@ -1462,6 +1399,14 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             //Threshold reached for Autocorrection
             mLocationer.starteAutocorrect();
         }
+    }
+
+    @Override
+    public void onRatingFinished() {
+        map.getUiSettings().setAllGesturesEnabled(true);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.remove(ratingFragment).commit();
     }
 
 
