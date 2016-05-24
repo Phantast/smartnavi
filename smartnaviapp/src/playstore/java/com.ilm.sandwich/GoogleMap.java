@@ -143,6 +143,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     int phases;
     int segmentCounter;
     TutorialFragment tutorialFragment;
+    RatingFragment ratingFragment;
     private com.google.android.gms.maps.GoogleMap map;
     private String[] html_instructions = new String[31];
     private String[] polylineArray = new String[31];
@@ -154,7 +155,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     private Toolbar toolbar;
     private Analytics mAnalytics;
     private FloatingActionButton fab;
-    RatingFragment ratingFragment;
 
     public static double computeDistanz(double lat, double lon) {
         // Entfernung bzw. Distanz zur eigenen aktuellen Position
@@ -390,7 +390,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             tutorialFragment = new TutorialFragment();
             fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment);
-            fragmentTransaction.commitAllowingStateLoss();();
+            fragmentTransaction.commitAllowingStateLoss();
         }
 
         mTts = new TextToSpeech(GoogleMap.this, null);
@@ -501,10 +501,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 if (mProgressBar != null) {
                     mProgressBar.setVisibility(View.VISIBLE);
                 }
-                return;
+                break;
             case 5:
                 showGPSDialog();
-                return;
+                break;
             case 8:
                 Core.setLocation(Locationer.startLat, Locationer.startLon);
                 mLocationer.stopAutocorrect();
@@ -512,14 +512,14 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                     Config.backgroundServiceActive = true;
                     BackgroundService.reactivateFakeProvider();
                 }
-                return;
+                break;
             case 12:
                 // message from Locationer
                 mProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
                 if (mProgressBar != null) {
                     mProgressBar.setVisibility(View.GONE);
                 }
-                return;
+                break;
             case 14:
                 // next position from Locationer
                 setPosition(true);
