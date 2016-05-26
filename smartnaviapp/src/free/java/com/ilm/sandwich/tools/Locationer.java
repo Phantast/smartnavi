@@ -148,10 +148,16 @@ public class Locationer implements LocationListener {
 
     public void startLocationUpdates() {
         try {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 0, this);
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10, 0, this);
-            mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 10, 0, this);
-        } catch (SecurityException e) {
+            try {
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 0, this);
+                if (mLocationManager.getAllProviders().contains("network")) {
+                    mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10, 0, this);
+                }
+                mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 10, 0, this);
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

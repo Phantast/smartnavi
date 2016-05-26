@@ -66,21 +66,6 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
             deactivateLocationer();
         }
     };
-    private Runnable satelitesInRangeTest = new Runnable() {
-        public void run() {
-            if (satellitesInRange < 5) {
-                stopAutocorrect();
-                if (BuildConfig.debug)
-                    Log.i("Location-Status", "Not enough satelites in range: " + satellitesInRange);
-            }
-        }
-    };
-    private Runnable autoStopTask = new Runnable() {
-        public void run() {
-
-            stopAutocorrect();
-        }
-    };
     private LocationListener gpsAutocorrectLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             if (location.getLatitude() != 0) {
@@ -123,6 +108,21 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
         public void onProviderDisabled(String provider) {
         }
 
+    };
+    private Runnable autoStopTask = new Runnable() {
+        public void run() {
+
+            stopAutocorrect();
+        }
+    };
+    private Runnable satelitesInRangeTest = new Runnable() {
+        public void run() {
+            if (satellitesInRange < 5) {
+                stopAutocorrect();
+                if (BuildConfig.debug)
+                    Log.i("Location-Status", "Not enough satelites in range: " + satellitesInRange);
+            }
+        }
     };
 
 
@@ -176,7 +176,9 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
         if (status != ConnectionResult.SUCCESS) {
             try {
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 0, this);
-                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10, 0, this);
+                if (mLocationManager.getAllProviders().contains("network")) {
+                    mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10, 0, this);
+                }
                 mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 10, 0, this);
             } catch (SecurityException e) {
                 e.printStackTrace();
