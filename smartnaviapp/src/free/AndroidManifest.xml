@@ -3,7 +3,7 @@
     package="com.ilm.sandwich"
     android:installLocation="auto"
     android:versionCode="35"
-    android:versionName="2.2.3f">
+    android:versionName="2.2.4f">
 
     <uses-feature
         android:glEsVersion="0x00020000"
