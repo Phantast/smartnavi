@@ -69,9 +69,9 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.ilm.sandwich.fragments.RatingFragment;
 import com.ilm.sandwich.fragments.TutorialFragment;
+import com.ilm.sandwich.sensors.Core;
 import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
-import com.ilm.sandwich.tools.Core;
 import com.ilm.sandwich.tools.HttpRequests;
 import com.ilm.sandwich.tools.Locationer;
 import com.ilm.sandwich.tools.PlacesAutoComplete;
@@ -1141,10 +1141,12 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 // RatingFragment
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                map.getUiSettings().setAllGesturesEnabled(false);
+                try {
+                    map.getUiSettings().setAllGesturesEnabled(false);
+                } catch (Exception e) {
+                }
                 ratingFragment = new RatingFragment();
                 fragmentTransaction.add(R.id.googlemap_actvity_layout, ratingFragment).commit();
-
             }
         }
         editor.apply();
@@ -1255,8 +1257,12 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 // easter eggs
                 if (query.equalsIgnoreCase("Chuck Norris"))
                     Toast.makeText(GoogleMap.this, "You can not find Chuck Norris. Chuck Norris finds YOU!", Toast.LENGTH_LONG).show();
-                else if (query.equalsIgnoreCase("cake") || query.equalsIgnoreCase("the cake") || query.equalsIgnoreCase("portal"))
+                else if (query.equalsIgnoreCase("cake") || query.equalsIgnoreCase("the cake") || query.equalsIgnoreCase("portal")) {
                     Toast.makeText(GoogleMap.this, "The cake is a lie!", Toast.LENGTH_LONG).show();
+                } else if (query.equalsIgnoreCase("gyrooff")) {
+                    mCore.gyroExists = false;
+                    mCore.reactivateSensors();
+                }
                 else if (query.equalsIgnoreCase("rateme")) {
                     // show RatingFragment
                     Log.i("Rating", "Showing Rating Fragment");

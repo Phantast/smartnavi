@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,9 +22,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.ilm.sandwich.sensors.Core;
 import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
-import com.ilm.sandwich.tools.Core;
 
 /**
  * @author Christian Henke
@@ -35,9 +37,7 @@ public class BackgroundService extends AppCompatActivity {
     public static double sGeoLon;
     public static int steps = 0;
     static Location loc;
-    static Location loc2;
     static String mocLocationProvider;
-    static String mocLocationNetworkProvider;
     static LocationManager geoLocationManager;
     Notification notification;
     Button serviceButton;
@@ -52,10 +52,6 @@ public class BackgroundService extends AppCompatActivity {
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
             geoLocationManager.removeTestProvider(mocLocationProvider);
             geoLocationManager.clearTestProviderEnabled(mocLocationProvider);
-
-            geoLocationManager.setTestProviderEnabled(mocLocationNetworkProvider, false);
-            geoLocationManager.removeTestProvider(mocLocationNetworkProvider);
-            geoLocationManager.clearTestProviderEnabled(mocLocationNetworkProvider);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,10 +64,6 @@ public class BackgroundService extends AppCompatActivity {
             mocLocationProvider = LocationManager.GPS_PROVIDER;
             geoLocationManager.addTestProvider(mocLocationProvider, false, false, false, false, true, true, true, 0, 5);
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, true);
-
-            mocLocationNetworkProvider = LocationManager.NETWORK_PROVIDER;
-            geoLocationManager.addTestProvider(mocLocationNetworkProvider, false, false, false, false, true, true, true, 1, 5);
-            geoLocationManager.setTestProviderEnabled(mocLocationNetworkProvider, true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,7 +88,11 @@ public class BackgroundService extends AppCompatActivity {
         loc.setTime(System.currentTimeMillis());
         try {
             try {
-                loc.setElapsedRealtimeNanos(System.currentTimeMillis());
+                if (Build.VERSION.SDK_INT >= 17) {
+                    loc.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+                } else {
+                    loc.setElapsedRealtimeNanos(System.currentTimeMillis() * 1000);
+                }
             } catch (NoSuchMethodError e) {
                 e.printStackTrace();
             }
@@ -105,31 +101,6 @@ public class BackgroundService extends AppCompatActivity {
         }
         try {
             geoLocationManager.setTestProviderLocation(mocLocationProvider, loc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        //Network
-        loc2 = new Location(mocLocationNetworkProvider);
-        loc2.setAccuracy(12.0f);
-        loc2.setAltitude(Core.altitude);
-        loc2.setLatitude(Core.startLat);
-        loc2.setLongitude(Core.startLon);
-        loc2.setProvider(mocLocationNetworkProvider);
-        loc2.setSpeed(0.8f);
-        loc2.setBearing((float) Core.azimuth);
-        loc2.setTime(System.currentTimeMillis());
-        try {
-            try {
-                loc2.setElapsedRealtimeNanos(System.currentTimeMillis());
-            } catch (NoSuchMethodError e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            geoLocationManager.setTestProviderLocation(mocLocationNetworkProvider, loc2);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -211,13 +182,10 @@ public class BackgroundService extends AppCompatActivity {
     public void starte() {
 
         mocLocationProvider = LocationManager.GPS_PROVIDER;
-        mocLocationNetworkProvider = LocationManager.NETWORK_PROVIDER;
         try {
             geoLocationManager.addTestProvider(mocLocationProvider, false, false, false, false, true, true, true, 1, 5);
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, true);
-
-            geoLocationManager.addTestProvider(mocLocationNetworkProvider, false, false, false, false, true, true, true, 1, 5);
-            geoLocationManager.setTestProviderEnabled(mocLocationNetworkProvider, true);
+            geoLocationManager.setTestProviderStatus(mocLocationProvider, 2, null, System.currentTimeMillis());
 
             notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
