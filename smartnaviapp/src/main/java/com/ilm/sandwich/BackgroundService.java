@@ -20,9 +20,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.ilm.sandwich.sensors.Core;
 import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
-import com.ilm.sandwich.tools.Core;
 
 /**
  * @author Christian Henke

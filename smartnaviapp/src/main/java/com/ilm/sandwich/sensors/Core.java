@@ -1,4 +1,4 @@
-package com.ilm.sandwich.tools;
+package com.ilm.sandwich.sensors;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +16,7 @@ import android.util.Log;
 import com.ilm.sandwich.BackgroundService;
 import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.GoogleMap;
+import com.ilm.sandwich.tools.Config;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -58,6 +59,7 @@ public class Core implements SensorEventListener {
     public static int units = 0;
     static File posFile;
     static File sensorFile;
+    private static double azimuthOld;
     private static double oldAzimuth = 0;
     private static float frequency;
     private static boolean stepBegin = false;
@@ -94,6 +96,7 @@ public class Core implements SensorEventListener {
     private static boolean startedToExport = false;
     private static double azimuthUnfilteredUncorrected;
     private static long startTime;
+    private ImprovedOrientationSensor2Provider mOrientationProvider;
     private SensorManager mSensorManager;
     private Context context;
     private boolean alreadyWaitingForAutoCorrect = false;
@@ -135,6 +138,7 @@ public class Core implements SensorEventListener {
         version = BuildConfig.VERSION_NAME;
 
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        mOrientationProvider = new ImprovedOrientationSensor2Provider((SensorManager) context.getSystemService(Context.SENSOR_SERVICE));
     }
 
     /**
@@ -244,8 +248,7 @@ public class Core implements SensorEventListener {
                     outs.write(startLat + "; " + startLon + "; " + stepLength + ";" + version + "; ");
                     outs.newLine();
                     outs.write("origmagn0; origmagn1; origmagn2; origaccel0; origaccel1; origaccel2; "
-                            + "imbamagn0; imbamagn1; imbamagn2; gravity0; gravity1; gravity2; "
-                            + "azimuthUnfilteredUncorrected; korr; azimuth; schrittFrequenz;");
+                            + "azimuthOld; azimuthNeu;");
                     outs.close();
                     sensorFileNotExisting = false;
                 } else {
@@ -255,8 +258,7 @@ public class Core implements SensorEventListener {
                     outs.newLine();
 
                     outs.write(origMagn[0] + ";" + origMagn[1] + ";" + origMagn[2] + ";" + origAcl[0] + ";" + origAcl[1] + ";" + origAcl[2] + ";"
-                            + magn[0] + ";" + magn[1] + ";" + magn[2] + ";" + gravity[0] + ";" + gravity[1] + ";" + gravity[2] + ";" + azimuthUnfilteredUncorrected
-                            + ";" + korr + ";" + azimuth + ";" + schrittFrequenz + ";");
+                            + azimuthOld + ";" + azimuth + ";");
                     outs.close();
                 }
             }
@@ -270,13 +272,16 @@ public class Core implements SensorEventListener {
         magnUnits = 0;
         startTime = System.nanoTime();
         try {
-            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
-            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
+            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME);
             if (BuildConfig.debug)
                 Log.i("Sensors", "Sensors activated");
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        //new orientation provider
+        mOrientationProvider.start();
     }
 
     public void reactivateSensors() {
@@ -286,12 +291,16 @@ public class Core implements SensorEventListener {
             mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
             if (BuildConfig.debug)
                 Log.i("Sensors", "Sensors activated!");
+            //new orientation provider
+            mOrientationProvider.start();
         }
     }
 
     public void pauseSensors() {
         try {
             mSensorManager.unregisterListener(this);
+            //new orientation provider
+            mOrientationProvider.stop();
             if (BuildConfig.debug)
                 Log.i("Sensors", "Sensors deactivated!");
         } catch (Exception e) {
@@ -515,11 +524,7 @@ public class Core implements SensorEventListener {
         // }
 
         //Filtering was already done with source values of magnetic sensor and accelerometer
-        azimuth = azimuthUnfilteredUncorrected;
-
-        if (export && BuildConfig.debug) {
-            dataOutput();
-        }
+        azimuthOld = azimuthUnfilteredUncorrected;
     }
 
     public void stepDetection() {
@@ -529,24 +534,24 @@ public class Core implements SensorEventListener {
             initialStep = false;
             stepBegin = true;
         } else if (!stepBegin) {
-            //invoke step (only interface, not a real step), because orientation of user has changed more than X degree
-            //so a step is necessary to update users position marker and respective orientation
-            //at this position in code it means: no step is being awaited and therefore check orientation change
             if (oldAzimuth - azimuth > 5 || oldAzimuth - azimuth < -5) {
+                //invoke step (only interface, not a real step), because orientation of user has changed more than X degree
+                //so a step is necessary to update users position marker and respective orientation
+                //at this position in code it means: no step is being awaited and therefore check orientation change
                 stepUpdateListener.onStepUpdate(0);
                 oldAzimuth = azimuth;
             }
         }
         if (stepBegin && iStep / frequency >= 0.24f && iStep / frequency <= 0.8f) {
             // Timeframe for step between minTime and maxTime
-            // Messung bis negativer Peak
+            // Check for negative peak
             if (value < -stepThreshold) {
                 // TimeFrame correct AND Threshold of reverse side reached
                 stepCounter++;
                 stepBegin = false;
                 iStep = 1;
                 initialStep = true;
-                newStep(azimuth);
+                newStep();
                 newStepDetected = true;
                 //save old azimith for possibly necessary orientation change, in case no steps are detected and users orientation changes strong enough
                 oldAzimuth = azimuth;
@@ -568,7 +573,8 @@ public class Core implements SensorEventListener {
         }
     }
 
-    private void newStep(double winkel) {
+    private void newStep() {
+        double winkel = azimuth;
         double winkel2 = winkel * 0.01745329252;
         if (BuildConfig.debug) {
             Log.i("Location-Status", "Step: " + Core.startLon);
@@ -711,7 +717,7 @@ public class Core implements SensorEventListener {
     }
 
     public void shutdown(Context mContext) {
-        mSensorManager.unregisterListener(this);
+        pauseSensors();
         if (BuildConfig.debug)
             Log.i("Sensors", "Sensors deactivated");
         try {
@@ -765,6 +771,13 @@ public class Core implements SensorEventListener {
                 imbaGravity(event.values.clone());
                 imbaLinear(event.values.clone());
                 calculate();
+
+                azimuth = mOrientationProvider.getAzimuth(decl);
+
+                if (export && BuildConfig.debug) {
+                    dataOutput();
+                }
+
                 stepDetection();
 
                 // AutoCorrect (dependent on Factor, i.e. number of steps)

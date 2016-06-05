@@ -21,6 +21,7 @@ import com.google.android.gms.location.LocationServices;
 import com.ilm.sandwich.BackgroundService;
 import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.GoogleMap;
+import com.ilm.sandwich.sensors.Core;
 
 import java.util.Iterator;
 
@@ -66,6 +67,21 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
             deactivateLocationer();
         }
     };
+    private Runnable satelitesInRangeTest = new Runnable() {
+        public void run() {
+            if (satellitesInRange < 5) {
+                stopAutocorrect();
+                if (BuildConfig.debug)
+                    Log.i("Location-Status", "Not enough satelites in range: " + satellitesInRange);
+            }
+        }
+    };
+    private Runnable autoStopTask = new Runnable() {
+        public void run() {
+
+            stopAutocorrect();
+        }
+    };
     private LocationListener gpsAutocorrectLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             if (location.getLatitude() != 0) {
@@ -108,21 +124,6 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
         public void onProviderDisabled(String provider) {
         }
 
-    };
-    private Runnable autoStopTask = new Runnable() {
-        public void run() {
-
-            stopAutocorrect();
-        }
-    };
-    private Runnable satelitesInRangeTest = new Runnable() {
-        public void run() {
-            if (satellitesInRange < 5) {
-                stopAutocorrect();
-                if (BuildConfig.debug)
-                    Log.i("Location-Status", "Not enough satelites in range: " + satellitesInRange);
-            }
-        }
     };
 
 

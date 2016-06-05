@@ -7,6 +7,7 @@ import android.util.Log;
 import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.GoogleMap;
 import com.ilm.sandwich.OsmMap;
+import com.ilm.sandwich.sensors.Core;
 
 import org.json.JSONArray;
 import org.json.JSONException;
