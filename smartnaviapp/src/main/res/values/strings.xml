@@ -3,7 +3,6 @@
 <!-- STANDARD ENGLISCH   -->
 
 <resources>
-
     <string name="app_name">SmartNavi</string>
     <string name="tx_01">Start <b>step based</b> navigation</string>
     <string name="tx_02">Address</string>

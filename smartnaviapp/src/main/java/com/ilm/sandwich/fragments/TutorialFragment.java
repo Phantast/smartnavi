@@ -21,8 +21,8 @@ import android.widget.Toast;
 
 import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.R;
+import com.ilm.sandwich.sensors.Core;
 import com.ilm.sandwich.tools.Analytics;
-import com.ilm.sandwich.tools.Core;
 
 import java.text.DecimalFormat;
 

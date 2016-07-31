@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.Splashscreen;
+import com.ilm.sandwich.sensors.Core;
 
 import org.json.JSONObject;
 

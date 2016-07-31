@@ -51,9 +51,9 @@ import android.widget.Toast;
 
 import com.ilm.sandwich.fragments.RatingFragment;
 import com.ilm.sandwich.fragments.TutorialFragment;
+import com.ilm.sandwich.sensors.Core;
 import com.ilm.sandwich.tools.Analytics;
 import com.ilm.sandwich.tools.Config;
-import com.ilm.sandwich.tools.Core;
 import com.ilm.sandwich.tools.Locationer;
 import com.ilm.sandwich.tools.MyItemizedOverlay;
 import com.ilm.sandwich.tools.PlacesAutoComplete;
