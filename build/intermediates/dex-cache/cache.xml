@@ -1,3 +1,229 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
 
+    <item
+        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.4\695b63d702f505b9b916e02272e3b6381bade7f\gson-2.4.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="0695b63d702f505b9b916e02272e3b6381bade7f">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\gson-2.4_91a2ec1634acf38cc87b061f1c649cd671fc91d2.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.google.android.gms\play-services-basement\9.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="cc178928721f3222b3b06bdfbd9497378ccb9792">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.google.android.gms-play-services-basement-9.0.0_307489dbb0c14061a15deb18ce82fb2e5c761ee3.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.crashlytics.sdk.android\crashlytics\2.5.5\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="611605b6b640c1558f9bdea41de8ff837ab68ca8">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.crashlytics.sdk.android-crashlytics-2.5.5_e550b8f747e5a4ceb23f5a5939ed226681b9d484.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="c936c1bd42f0c018c18920c7bec619ef056b24f8">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.android.support-animated-vector-drawable-24.1.1_837788baba34f950c155895b1ebe31112635005f.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.google.android.gms\play-services-tasks\9.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="1941832901fc4e7a93300b53762e9f65d7650b99">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.google.android.gms-play-services-tasks-9.0.0_a6f998c18d8856ba33abe39451046cba6cccddf0.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.squareup.okio\okio\1.6.0\98476622f10715998eacf9240d6b479f12c66143\okio-1.6.0.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="98476622f10715998eacf9240d6b479f12c66143">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\okio-1.6.0_e8f277ec86ec03761827cc457bfce8885465f1a9.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.google.android.gms\play-services-analytics\9.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="b8bedab61b3b5238cd9a07d3b04449d7fecdbc3b">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.google.android.gms-play-services-analytics-9.0.0_f22f855da84a5515a80f3fb3915c4819e48a5d81.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.google.firebase\firebase-iid\9.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="ea4b54dcbfe5ac05efb0a314105f07258118d3a7">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.google.firebase-firebase-iid-9.0.0_a6d5d9c12a875000524b0ae0eaec6e2c9069a075.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.crashlytics.sdk.android\beta\1.1.4\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="ad5bb101ced4d3939225c9b57e5a3d81547c1fbb">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.crashlytics.sdk.android-beta-1.1.4_87f6fc3f8e89d15bad1d0b4cabe725353d0bd54d.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.crashlytics.sdk.android\crashlytics-core\2.3.8\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="c9ef45dcbd082cd63aac09a5e2cd443adb5df837">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.crashlytics.sdk.android-crashlytics-core-2.3.8_b9b654115edd0b8b6b91b0a9a2c356c85f15fdca.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp\2.6.0\212387a39088ecd3daff8e3bfc3bdc4123e33c67\okhttp-2.6.0.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="212387a39088ecd3daff8e3bfc3bdc4123e33c67">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\okhttp-2.6.0_99594ba8880f8c3546bbc094312d78e6a36f1f1d.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\org.osmdroid\osmdroid-android\5.0.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="ce9df050923f8cc3616946c592a64547d0c5bb03">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\org.osmdroid-osmdroid-android-5.0.1_631c091c338c4868645cdd628f3aa702882d2813.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\io.fabric.sdk.android\fabric\1.3.10\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="a5db9a2dd46d84285ef737f65030b74b6e8ee2a4">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\io.fabric.sdk.android-fabric-1.3.10_8ec3e615a6cab870d1f9af637ca987b491e8fa58.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.google.android.gms\play-services-location\9.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="59cca9b91688dc2467754d36793b3d23bebd21a9">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.google.android.gms-play-services-location-9.0.0_653fc24c0248f640df89fb33db7735c065dca8ef.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="f62e763609f65e47dc6c498760a4accf02776788">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.android.support-support-vector-drawable-24.1.1_a748152c4919c34dc4fc71bd23d86f4b1b48664c.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.github.MKergall.osmbonuspack\OSMBonusPack\v5.6\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="e81498db817ae60a7876463b2dd4c6d0a9f77e7f">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.github.MKergall.osmbonuspack-OSMBonusPack-v5.6_0ecab376ee8124374d3ac1aa638b838f61ca2116.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.google.android.gms\play-services-analytics-impl\9.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="373cd65725af2781d100ddc193c7d3f14464a774">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.google.android.gms-play-services-analytics-impl-9.0.0_5a64b0f8fe6e6962b19ae7cbac639b24439ef869.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.gu\option\1.3\fa1ce7cb951145e96e3db1b585ded5d0292a330a\option-1.3.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="fa1ce7cb951145e96e3db1b585ded5d0292a330a">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\option-1.3_a08e0314e6ccfcb3b3d0ec81d9f193fe3c947ac6.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="787871951412550519b0222aba3c9df4cea49875">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.android.support-recyclerview-v7-24.1.1_931af7d2ba3e388fec18acad8d2d8725dc61cc26.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.google.firebase\firebase-analytics\9.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="4ef8ab5fee042023018249474bc93bd4b2b9c17e">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.google.firebase-firebase-analytics-9.0.0_19723a838bf72388474e94e3446f80cdb79739ae.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.google.android.gms\play-services-base\9.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="6f65c144283b31b4b9a70e6e7aa4c4a1c897d4b8">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.google.android.gms-play-services-base-9.0.0_5d5a23c68105dee3c369224e8df142e2a4a8e6dc.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.google.android.gms\play-services-maps\9.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="a819aae4f0c711e50b4fd633922a3c1a176cb51e">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.google.android.gms-play-services-maps-9.0.0_678c166bb3c62f8fc9c4b0d7d15f5281ff25a3c0.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\.gradle\caches\modules-2\files-2.1\com.android.support\support-annotations\24.1.1\3af19f153122737b372622fa6c81dd11a1c6b999\support-annotations-24.1.1.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="3af19f153122737b372622fa6c81dd11a1c6b999">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\support-annotations-24.1.1_a1515b4b59b911d67e6a6c0257de0e3692479699.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.android.support\design\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="e195bd694d5389acfba27ff4fdfa64c4c65b2c05">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.android.support-design-24.1.1_541eff9c1a81a0d42729c5f663123b58f4a62f6a.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.crashlytics.sdk.android\answers\1.3.6\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="9af3b9b8114e685291aa00e6572b0a9131244956">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.crashlytics.sdk.android-answers-1.3.6_760da2e3bcd7b228b9e7f9e3e678a02cf1992c38.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.android.support\support-v4\24.1.1\jars\libs\internal_impl-24.1.1.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="f78c2f395cb096f9dc1dc07e729922b8fcd3c4f5">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\internal_impl-24.1.1_85e4808b56dcfa3da814e4739c96539c89884e6b.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\net.rdrei.android.dirchooser\library\3.2\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="6bcdf152d932e7d93904411ffd82a683ba27f5f8">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\net.rdrei.android.dirchooser-library-3.2_bfb22ad3f7e5f1f103252c6412c69b49bf4ef811.jar" />
+    </item>
+    <item
+        jar="C:\Program Files\Android\Android Studio\gradle\m2repository\org\apache\commons\commons-lang3\3.3.2\commons-lang3-3.3.2.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="90a3822c38ec8c996e84c16a3477ef632cbc87a3">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\commons-lang3-3.3.2_4314d5c387d123a62f2e97084dd070725c126438.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.google.firebase\firebase-common\9.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="42df48c7305b08b14fa0e84561091b0c24d70d26">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.google.firebase-firebase-common-9.0.0_b87d1112125068da3faf22bef45c3cce38c28a15.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.google.firebase\firebase-analytics-impl\9.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="0dc8ab07eeceda5e99b305c8069765056b6e5c9d">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.google.firebase-firebase-analytics-impl-9.0.0_4b80e3caf4fab251c78c60b52c4788d58b672b83.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.android.support\appcompat-v7\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="1256c10604bb098490eab070d76754ac5ceab35c">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.android.support-appcompat-v7-24.1.1_a74d9284bfc786ec1c5678750244005e907a16d8.jar" />
+    </item>
+    <item
+        jar="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\exploded-aar\com.android.support\support-v4\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="6d7d803871e3203465f71a163e7af104f807b446">
+        <dex dex="C:\Users\Christian\Development\smartnavi\smartnaviapp\build\intermediates\pre-dexed\playstore\release\com.android.support-support-v4-24.1.1_21129514410ffea2aeb3615cd22b393ec6e80234.jar" />
+    </item>
+
+</items>

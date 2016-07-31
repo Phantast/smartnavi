@@ -11,8 +11,11 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.ilm.sandwich.tools.AnalyticsApplication;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -28,6 +31,14 @@ public class Splashscreen extends Activity {
 
     public static final boolean PLAYSTORE_VERSION = true; //Used to differ between free and playStoreVersion
     public static final int REQUEST_GOOGLE_PLAY_SERVICES = 1972;
+    private Tracker mTracker;
+
+    @Override
+    protected void onResume() {
+        mTracker.setScreenName("Splashscreen");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        super.onResume();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +56,10 @@ public class Splashscreen extends Activity {
         //Remove title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splashscreen);
+
+        // Obtain the shared Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
 
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
         int code = api.isGooglePlayServicesAvailable(this);

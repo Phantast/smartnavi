@@ -1,4 +1,4 @@
-package com.ilm.sandwich.tools;
+package com.ilm.sandwich.sensors;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +16,7 @@ import android.util.Log;
 import com.ilm.sandwich.BackgroundService;
 import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.GoogleMap;
+import com.ilm.sandwich.tools.Config;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,8 +28,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * This is the heart/core of SmartNavi
- * Here all important calculation takes place.
+ * This is the core of SmartNavis stepdetection and direction calculation
  * The MapActivities just give the Core all sensordata.
  * Core recognizes steps and computes direction, location, etc.
  *
@@ -47,12 +47,10 @@ public class Core implements SensorEventListener {
     public static double startLon;
     public static int stepCounter = 0;
     public static double azimuth;
-    public static double schrittFrequenz = 0;
     public static int altitude = 150;
     public static double distanceLongitude;
     public static float stepLength;
     public static boolean export;
-    public static double korr;
     public static String version;
     public static float lastErrorGPS;
     public static int units = 0;
@@ -92,10 +90,10 @@ public class Core implements SensorEventListener {
     private static boolean initialStep;
     private static boolean newStepDetected = false;
     private static boolean startedToExport = false;
-    private static double azimuthUnfilteredUncorrected;
     private static long startTime;
+    public boolean gyroExists = false;
+    private ImprovedOrientationSensor2Provider mOrientationProvider;
     private SensorManager mSensorManager;
-    private Context context;
     private boolean alreadyWaitingForAutoCorrect = false;
     private int stepsToWait = 0;
     private int autoCorrectFactor = 1;
@@ -107,7 +105,6 @@ public class Core implements SensorEventListener {
 
 
     public Core(Context context) {
-        this.context = context;
 
         if (context instanceof onStepUpdateListener) {
             stepUpdateListener = (onStepUpdateListener) context;
@@ -135,6 +132,12 @@ public class Core implements SensorEventListener {
         version = BuildConfig.VERSION_NAME;
 
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+
+
+        if (mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null) {
+            gyroExists = true;
+            mOrientationProvider = new ImprovedOrientationSensor2Provider((SensorManager) context.getSystemService(Context.SENSOR_SERVICE));
+        }
     }
 
     /**
@@ -244,8 +247,7 @@ public class Core implements SensorEventListener {
                     outs.write(startLat + "; " + startLon + "; " + stepLength + ";" + version + "; ");
                     outs.newLine();
                     outs.write("origmagn0; origmagn1; origmagn2; origaccel0; origaccel1; origaccel2; "
-                            + "imbamagn0; imbamagn1; imbamagn2; gravity0; gravity1; gravity2; "
-                            + "azimuthUnfilteredUncorrected; korr; azimuth; schrittFrequenz;");
+                            + "azimuthNeu;");
                     outs.close();
                     sensorFileNotExisting = false;
                 } else {
@@ -255,8 +257,7 @@ public class Core implements SensorEventListener {
                     outs.newLine();
 
                     outs.write(origMagn[0] + ";" + origMagn[1] + ";" + origMagn[2] + ";" + origAcl[0] + ";" + origAcl[1] + ";" + origAcl[2] + ";"
-                            + magn[0] + ";" + magn[1] + ";" + magn[2] + ";" + gravity[0] + ";" + gravity[1] + ";" + gravity[2] + ";" + azimuthUnfilteredUncorrected
-                            + ";" + korr + ";" + azimuth + ";" + schrittFrequenz + ";");
+                            + azimuth + ";");
                     outs.close();
                 }
             }
@@ -270,12 +271,16 @@ public class Core implements SensorEventListener {
         magnUnits = 0;
         startTime = System.nanoTime();
         try {
-            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
-            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
+            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME);
             if (BuildConfig.debug)
                 Log.i("Sensors", "Sensors activated");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if (gyroExists) {
+            //use gyroscope with impovedOrientationProvider
+            mOrientationProvider.start();
         }
     }
 
@@ -286,12 +291,18 @@ public class Core implements SensorEventListener {
             mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
             if (BuildConfig.debug)
                 Log.i("Sensors", "Sensors activated!");
+            if (gyroExists) {
+                //use gyroscope with impovedOrientationProvider
+                mOrientationProvider.start();
+            }
         }
     }
 
     public void pauseSensors() {
         try {
             mSensorManager.unregisterListener(this);
+            //new orientation provider
+            mOrientationProvider.stop();
             if (BuildConfig.debug)
                 Log.i("Sensors", "Sensors deactivated!");
         } catch (Exception e) {
@@ -363,82 +374,6 @@ public class Core implements SensorEventListener {
         magn[2] = (float) ym2[3];
     }
 
-    // private static void berechneSchrittfrequenz(long now) {
-    //
-    // schrittx[0] = schrittx[1];
-    // schrittx[1] = schrittx[2];
-    // schrittx[2] = schrittx[3];
-    // schrittx[3] = schrittx[4];
-    // schrittx[4] = now;
-    //
-    // if (schrittx[0] != 0) {
-    // schrittFrequenzCounter++;
-    // double dauerFuenfSchritte = (now - schrittx[0]) / 1000.00; // in
-    // // sekunden
-    // if (schrittFrequenz != 0 && schrittFrequenzCounter == 5) {
-    // schrittFrequenzGesamt = (schrittFrequenzGesamt + schrittFrequenz)
-    // / schrittFrequenzTeiler;
-    // schrittFrequenzGesamtString = df.format(schrittFrequenzGesamt);
-    // schrittFrequenzTeiler = 2;
-    // schrittFrequenzCounter = 0;
-    // } else {
-    // schrittFrequenz = (5 / dauerFuenfSchritte);
-    // }
-    // schrittFreq = df.format(schrittFrequenz);
-    // }
-    // }
-
-    // private double korrekturAz(double x) { // auf alle hab ich +0.6 nach Test
-    // 11 und nochmal +0.5 auf die positive Werte
-    // // 3. Juni: wieder 0.3 weniger auf die +werte und posSinX auch 0.1
-    // weniger
-    // // made by Christian Henke
-    // if (azimuthUngefiltert < 180 ){
-    // posSinX = 0.5f;
-    // } else {
-    // posSinX = 0;
-    // }
-    //
-    // if (deltaSollGravity > 0.15 && deltaSollGravity <= 0.3){
-    // korr = ((posSinX+3.8)*Math.sin((double)(3.141592653589793*x/180)));
-    // }
-    // else if (deltaSollGravity > 0.3 && deltaSollGravity <= 0.45){
-    // korr = ((posSinX+7.0)*Math.sin((double)(3.141592653589793*x/180)));
-    // } // made by Christian Henke
-    // else if (deltaSollGravity > 0.45 && deltaSollGravity <= 0.55){
-    // korr = ((posSinX+8.6)*Math.sin((double)(3.141592653589793*x/180)));
-    // }
-    // else if (deltaSollGravity > 0.55 && deltaSollGravity <= 0.75){
-    // korr = ((posSinX+10.3)*Math.sin((double)(3.141592653589793*x/180)));
-    // }
-    // else if (deltaSollGravity > 0.75 && deltaSollGravity <= 0.95){
-    // korr = ((posSinX+13.5)*Math.sin((double)(3.141592653589793*x/180)));
-    // }
-    // else if (deltaSollGravity > 0.95 && deltaSollGravity <= 1.25){
-    // korr = ((posSinX+16.5)*Math.sin((double)(3.141592653589793*x/180)));
-    // }// made by Christian Henke
-    // else if (deltaSollGravity > 1.25){
-    // korr = ((posSinX+20.8)*Math.sin((double)(3.141592653589793*x/180)));
-    // }else{
-    // korr = 0;
-    // }
-    // double azKorrigiert = x + korr;
-    // return azKorrigiert;
-    // }
-
-    // private void rechneSollYBeschl() {
-    // //Tiefpass 0.5Hz
-    // xv[0] = xv[1]; xv[1] = xv[2]; xv[2] = xv[3];
-    // xv[3] = orientation[1] / ugainA;
-    // yv[0] = yv[1]; yv[1] = yv[2]; yv[2] = yv[3];
-    // yv[3] = (xv[0] + xv[3]) + 3 * (xv[1] + xv[2]) + ( tpA[0] * yv[0]) + (
-    // tpA[1] * yv[1]) + ( tpA[2] * yv[2]);
-    // // made by Christian Henke
-    // double bubu = (yv[3]*(-1));
-    // sollYBeschl = (float)(Math.sin(bubu)*9.08665);
-    // deltaSollGravity = Math.abs((sollYBeschl-gravity[1]));
-    // }
-
     public void imbaGravity(float[] accel) {
         // LowPass 0.5Hz for alpha0
         xa0[0] = xa0[1];
@@ -480,73 +415,56 @@ public class Core implements SensorEventListener {
         linear[2] = accel[2] - gravity[2];
     }
 
-    public void calculate() {
-
+    public void calculateAzimuth() {
         SensorManager.getRotationMatrix(RMatrix, iMatrix, gravity, magn);
         SensorManager.remapCoordinateSystem(RMatrix, SensorManager.AXIS_X, SensorManager.AXIS_Y, RMatrixRemapped);
         SensorManager.getOrientation(RMatrixRemapped, orientation);
         Matrix.transposeM(RMatrixTranspose, 0, RMatrix, 0);
         Matrix.multiplyMV(linearRemapped, 0, RMatrixTranspose, 0, linear, 0);
 
-        // rechneSollYBeschl(); //Old correction of azimuth
-
-        if (orientation[0] >= 0) {
-            // Azimuth-Calculation (rad in degree)
-            azimuthUnfilteredUncorrected = (orientation[0] * 57.29577951f + decl);
+        //If Gyroscope exists, use ImprovedOrientationProvider, else use accelerometer and magentic field
+        if (gyroExists) {
+            azimuth = mOrientationProvider.getAzimuth(decl);
         } else {
-            // Azimuth-Calculation (rad in degree) +360
-            azimuthUnfilteredUncorrected = (orientation[0] * 57.29577951f + 360 + decl);
-        }
+            if (orientation[0] >= 0) {
+                // Azimuth-Calculation (rad in degree)
+                azimuth = (orientation[0] * 57.29577951f + decl);
+            } else {
+                // Azimuth-Calculation (rad in degree) +360
+                azimuth = (orientation[0] * 57.29577951f + 360 + decl);
+            }
 
-        if (azimuthUnfilteredUncorrected >= 360) {
-            azimuthUnfilteredUncorrected -= 360;
-        }
-
-        // if (android4 == false && (Karte.gravityExistiert == true ||
-        // Smartgeo.gravityExistiert == true )){ //Geraete mit 2.3.3 bekommen
-        // korrekturAz
-        // azimuthUngefiltert =
-        // korrekturAz(azimuthUnfilteredUncorrected)/57.29577951;
-        // }
-        // else {
-        // azimuthUngefiltert = azimuthUnfilteredUncorrected /57.29577951; //war nur
-        // for Az Filterung, ist also nicht mehr noetig, hat sich als ineffizient
-        // herausgestellt
-        // }
-
-        //Filtering was already done with source values of magnetic sensor and accelerometer
-        azimuth = azimuthUnfilteredUncorrected;
-
-        if (export && BuildConfig.debug) {
-            dataOutput();
+            if (azimuth >= 360) {
+                azimuth -= 360;
+            }
         }
     }
 
     public void stepDetection() {
-        float value = linearRemapped[2]; // Beware: linear or 2imbaLinear
+        float value = linearRemapped[2];
         if (initialStep && value >= stepThreshold) {
             // Introduction of a step
             initialStep = false;
             stepBegin = true;
         } else if (!stepBegin) {
-            //invoke step (only interface, not a real step), because orientation of user has changed more than X degree
-            //so a step is necessary to update users position marker and respective orientation
-            //at this position in code it means: no step is being awaited and therefore check orientation change
             if (oldAzimuth - azimuth > 5 || oldAzimuth - azimuth < -5) {
+                //invoke step (only interface, not a real step), because orientation of user has changed more than X degree
+                //so a step is necessary to update users position marker and respective orientation
+                //at this position in code it means: no step is being awaited and therefore check orientation change
                 stepUpdateListener.onStepUpdate(0);
                 oldAzimuth = azimuth;
             }
         }
         if (stepBegin && iStep / frequency >= 0.24f && iStep / frequency <= 0.8f) {
             // Timeframe for step between minTime and maxTime
-            // Messung bis negativer Peak
+            // Check for negative peak
             if (value < -stepThreshold) {
                 // TimeFrame correct AND Threshold of reverse side reached
                 stepCounter++;
                 stepBegin = false;
                 iStep = 1;
                 initialStep = true;
-                newStep(azimuth);
+                newStep();
                 newStepDetected = true;
                 //save old azimith for possibly necessary orientation change, in case no steps are detected and users orientation changes strong enough
                 oldAzimuth = azimuth;
@@ -568,7 +486,8 @@ public class Core implements SensorEventListener {
         }
     }
 
-    private void newStep(double winkel) {
+    private void newStep() {
+        double winkel = azimuth;
         double winkel2 = winkel * 0.01745329252;
         if (BuildConfig.debug) {
             Log.i("Location-Status", "Step: " + Core.startLon);
@@ -711,7 +630,7 @@ public class Core implements SensorEventListener {
     }
 
     public void shutdown(Context mContext) {
-        mSensorManager.unregisterListener(this);
+        pauseSensors();
         if (BuildConfig.debug)
             Log.i("Sensors", "Sensors deactivated");
         try {
@@ -764,7 +683,13 @@ public class Core implements SensorEventListener {
 
                 imbaGravity(event.values.clone());
                 imbaLinear(event.values.clone());
-                calculate();
+
+                calculateAzimuth();
+
+                if (export && BuildConfig.debug) {
+                    dataOutput();
+                }
+
                 stepDetection();
 
                 // AutoCorrect (dependent on Factor, i.e. number of steps)

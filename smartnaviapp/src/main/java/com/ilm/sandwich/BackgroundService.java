@@ -7,10 +7,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,9 +21,11 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.ilm.sandwich.tools.Analytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.ilm.sandwich.sensors.Core;
+import com.ilm.sandwich.tools.AnalyticsApplication;
 import com.ilm.sandwich.tools.Config;
-import com.ilm.sandwich.tools.Core;
 
 /**
  * @author Christian Henke
@@ -35,15 +38,14 @@ public class BackgroundService extends AppCompatActivity {
     public static double sGeoLon;
     public static int steps = 0;
     static Location loc;
-    static Location loc2;
     static String mocLocationProvider;
-    static String mocLocationNetworkProvider;
     static LocationManager geoLocationManager;
     Notification notification;
     Button serviceButton;
     NotificationManager notificationManager;
     private boolean shouldStart = true;
-    private Analytics mAnalytics;
+
+    private Tracker mTracker;
 
     public static void pauseFakeProvider() {
         if (BuildConfig.debug)
@@ -52,10 +54,6 @@ public class BackgroundService extends AppCompatActivity {
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
             geoLocationManager.removeTestProvider(mocLocationProvider);
             geoLocationManager.clearTestProviderEnabled(mocLocationProvider);
-
-            geoLocationManager.setTestProviderEnabled(mocLocationNetworkProvider, false);
-            geoLocationManager.removeTestProvider(mocLocationNetworkProvider);
-            geoLocationManager.clearTestProviderEnabled(mocLocationNetworkProvider);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,10 +66,6 @@ public class BackgroundService extends AppCompatActivity {
             mocLocationProvider = LocationManager.GPS_PROVIDER;
             geoLocationManager.addTestProvider(mocLocationProvider, false, false, false, false, true, true, true, 0, 5);
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, true);
-
-            mocLocationNetworkProvider = LocationManager.NETWORK_PROVIDER;
-            geoLocationManager.addTestProvider(mocLocationNetworkProvider, false, false, false, false, true, true, true, 1, 5);
-            geoLocationManager.setTestProviderEnabled(mocLocationNetworkProvider, true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,7 +90,11 @@ public class BackgroundService extends AppCompatActivity {
         loc.setTime(System.currentTimeMillis());
         try {
             try {
-                loc.setElapsedRealtimeNanos(System.currentTimeMillis());
+                if (Build.VERSION.SDK_INT >= 17) {
+                    loc.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+                } else {
+                    loc.setElapsedRealtimeNanos(System.currentTimeMillis() * 1000);
+                }
             } catch (NoSuchMethodError e) {
                 e.printStackTrace();
             }
@@ -109,48 +107,30 @@ public class BackgroundService extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //Network
-        loc2 = new Location(mocLocationNetworkProvider);
-        loc2.setAccuracy(12.0f);
-        loc2.setAltitude(Core.altitude);
-        loc2.setLatitude(Core.startLat);
-        loc2.setLongitude(Core.startLon);
-        loc2.setProvider(mocLocationNetworkProvider);
-        loc2.setSpeed(0.8f);
-        loc2.setBearing((float) Core.azimuth);
-        loc2.setTime(System.currentTimeMillis());
-        try {
-            try {
-                loc2.setElapsedRealtimeNanos(System.currentTimeMillis());
-            } catch (NoSuchMethodError e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            geoLocationManager.setTestProviderLocation(mocLocationNetworkProvider, loc2);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         if (BuildConfig.debug) {
             Log.i("Location-Status", "New Fake Position: " + loc.toString());
         }
     }
 
     @Override
+    protected void onResume() {
+        mTracker.setScreenName("BackgroundService");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        super.onResume();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_backgroundservice);
-        ;
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getResources().getString(R.string.tx_64));
         geoLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-        boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
-        mAnalytics = new Analytics(trackingAllowed);
+        // Obtain the shared Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
 
         //restart Sensors
         try {
@@ -211,13 +191,10 @@ public class BackgroundService extends AppCompatActivity {
     public void starte() {
 
         mocLocationProvider = LocationManager.GPS_PROVIDER;
-        mocLocationNetworkProvider = LocationManager.NETWORK_PROVIDER;
         try {
             geoLocationManager.addTestProvider(mocLocationProvider, false, false, false, false, true, true, true, 1, 5);
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, true);
-
-            geoLocationManager.addTestProvider(mocLocationNetworkProvider, false, false, false, false, true, true, true, 1, 5);
-            geoLocationManager.setTestProviderEnabled(mocLocationNetworkProvider, true);
+            geoLocationManager.setTestProviderStatus(mocLocationProvider, 2, null, System.currentTimeMillis());
 
             notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -229,7 +206,7 @@ public class BackgroundService extends AppCompatActivity {
             notification = builder.setContentIntent(activity)
                     .setContentTitle(getApplicationContext().getResources().getString(R.string.tx_72))
                     .setContentText(getApplicationContext().getResources().getString(R.string.tx_73))
-                    .setSmallIcon(R.drawable.stats)
+                    .setSmallIcon(R.drawable.ic_stat_maps_directions_walk)
                     .setOngoing(true)
                     .build();
 
@@ -249,7 +226,10 @@ public class BackgroundService extends AppCompatActivity {
                 OsmMap.listHandler.sendEmptyMessage(9);
             }
 
-            mAnalytics.trackEvent("Background_Service", "Start_Success");
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("Backround_service_start_success")
+                    .build());
 
             Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);
@@ -257,7 +237,10 @@ public class BackgroundService extends AppCompatActivity {
             startActivity(startMain);
 
         } catch (SecurityException sece) {
-            mAnalytics.trackEvent("Background_Service", "Start_Error");
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("Backround_service_start_error")
+                    .build());
             final Dialog dialog1 = new Dialog(BackgroundService.this);
             dialog1.setContentView(R.layout.dialog1);
             dialog1.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
@@ -301,7 +284,10 @@ public class BackgroundService extends AppCompatActivity {
 
     public void stop() {
         //stop the Handlers who are responsible for restarting the sensor-listeners
-        mAnalytics.trackEvent("Background_Service", "Stop");
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("Backround_service_stopped")
+                .build());
         if (Config.usingGoogleMaps) {
             GoogleMap.listHandler.removeMessages(10);
         } else {

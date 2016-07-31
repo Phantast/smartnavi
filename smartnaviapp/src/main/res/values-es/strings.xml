@@ -34,8 +34,8 @@
     <string name="tx_23">e.g. 70</string>
     <string name="tx_24">No hay resultados. Compruebe su conexión a internet e intente de nuevo.</string>
     <string name="tx_25">Desactivado</string>
-    <string name="tx_26"><u>Información de uso anónimo.</u></string>
-    <string name="tx_27">Apoya a SmartNavi enviando información anónima sobre el uso de la aplicación. Enviando datos como el modelo de teléfono, sistema de sensores o el uso de ciertas características del programa nos ayudarás a mejorar SmartNavi. Toda esta información es anónima y no incluye ningún tipo de posicionamiento. Puedes desactivar esta característica cuando quieras desde los ajustes. Gracias por tu apoyo!</string>
+    <string name="tx_26"></string>
+    <string name="tx_27"></string>
     <string name="tx_28">OK</string>
     <string name="tx_29">Offline Maps Storage Path</string>
     <string name="tx_30">No se pudo obtener información de la ruta deseada. Por favor intente de nuevo mas tarde.</string>
@@ -96,8 +96,8 @@
     <string name="tx_75">Prolonga la vida de la batería</string>
     <string name="tx_76">Balanceado</string>
     <string name="tx_77">No se encontraron los resultados de tu búsqueda.</string>
-    <string name="tx_78">Datos de usuario anónimos</string>
-    <string name="tx_79">Más información acerca de <i>datos de usuario anónimos</i> puede ser encontrada en la sección <i>acerca de</i></string>
+    <string name="tx_78"></string>
+    <string name="tx_79"></string>
     <string name="tx_80">Alta precisión </string>
 
     <string name="tx_81">Enable GPS to get a better initial position.\nAfter getting your initial position SmartNavi works independent from GPS! :)</string>

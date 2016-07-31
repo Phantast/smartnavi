@@ -97,8 +97,8 @@
     <string name="tx_75">电池寿命长</string>
     <string name="tx_76">均衡</string>
     <string name="tx_77">No results were found for your request.</string>
-    <string name="tx_78">匿名的用户数据</string>
-    <string name="tx_79">关于所发送数据的更详细的信息参见： 菜单 -> 关于</string>
+    <string name="tx_78"></string>
+    <string name="tx_79"></string>
     <string name="tx_80">精度高</string>
 
     <string name="tx_81">Enable GPS to get a better initial position.\nAfter getting your initial position SmartNavi works independent from GPS! :)</string>

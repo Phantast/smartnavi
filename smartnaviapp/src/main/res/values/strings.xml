@@ -3,7 +3,6 @@
 <!-- STANDARD ENGLISCH   -->
 
 <resources>
-
     <string name="app_name">SmartNavi</string>
     <string name="tx_01">Start <b>step based</b> navigation</string>
     <string name="tx_02">Address</string>
@@ -34,9 +33,8 @@
     <string name="tx_23">e.g. 70</string>
     <string name="tx_24">No Result. Check internet connection and try again.</string>
     <string name="tx_25">deactivated</string>
-    <string name="tx_26"><u>Anonymous usage data</u></string>
-	<string name="tx_27">Support SmartNavi by sending anonymous usage data. This data will help us to improve SmartNavi. The data are about: device type, 
-	    sensor equipment and usage of features. The data is completely anonymous. No positions and no private information will be transmitted. You can deactivate usage data sending at every time in settings. Thank you for your support!</string>
+    <string name="tx_26"></string>
+    <string name="tx_27"></string>
     <string name="tx_28">Close</string>
     <string name="tx_29">Offline Maps Storage Path</string>
     <string name="tx_30">Could not get route information. Please try again later.</string>
@@ -93,14 +91,14 @@
 
 
     <string name="tx_71">Miscellaneous</string>
-    <string name="tx_72">SmartNavi is now running in background</string>
+    <string name="tx_72">SmartNavi is running in background</string>
     <string name="tx_73">Now providing location data</string>
     <string name="tx_74">Start background service</string>
     <string name="tx_75">Long battery life</string>
     <string name="tx_76">Balanced</string>
     <string name="tx_77">No results were found for your request.</string>
-    <string name="tx_78">Anonymous usage data</string>
-    <string name="tx_79">More Info about the specific data can be found under About</string>
+    <string name="tx_78"></string>
+    <string name="tx_79"></string>
     <string name="tx_80">High accuracy</string>
 
     <string name="tx_81">Enable GPS to get a better initial position.\nAfter getting your initial position SmartNavi works independent from GPS! :)</string>
@@ -149,7 +147,6 @@
         <item>Mapnik OSM</item>
     </string-array>
 
-    <string name="google_app_id">553322027565</string>
 
 
 </resources>

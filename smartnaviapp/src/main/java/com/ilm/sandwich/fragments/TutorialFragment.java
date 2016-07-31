@@ -19,10 +19,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.R;
-import com.ilm.sandwich.tools.Analytics;
-import com.ilm.sandwich.tools.Core;
+import com.ilm.sandwich.sensors.Core;
+import com.ilm.sandwich.tools.AnalyticsApplication;
 
 import java.text.DecimalFormat;
 
@@ -37,7 +39,7 @@ public class TutorialFragment extends Fragment {
     private View welcomeView;
     private boolean metricUnits = true;
     private View fragmentView;
-    private Analytics mAnalytics;
+    private Tracker mTracker;
 
     public TutorialFragment() {
     }
@@ -48,7 +50,13 @@ public class TutorialFragment extends Fragment {
         fragmentView = view;
         SharedPreferences settings = this.getActivity().getSharedPreferences(this.getActivity().getPackageName() + "_preferences", Context.MODE_PRIVATE);
         boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
-        mAnalytics = new Analytics(trackingAllowed);
+
+        // Obtain the shared Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) this.getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
+        mTracker.setScreenName("TutorialFragment");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
         startTutorial();
     }
 
@@ -89,7 +97,10 @@ public class TutorialFragment extends Fragment {
         welcomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAnalytics.trackEvent("Tutorial", "Welcome");
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Welcome_Button_pressed")
+                        .build());
                 welcomeView.setVisibility(View.INVISIBLE);
                 tutorialOverlay = fragmentView.findViewById(R.id.tutorialOverlay);
                 tutorialOverlay.setVisibility(View.VISIBLE);
@@ -146,7 +157,10 @@ public class TutorialFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                mAnalytics.trackEvent("Tutorial", "Start");
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Tutorial_Start_Button_pressed")
+                        .build());
 
                 boolean tutorialDone = false;
                 final EditText heightField = (EditText) fragmentView.findViewById(R.id.tutorialEditText);

@@ -184,37 +184,6 @@
                 android:textColor="#4d4d4d"
                 android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/text9"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/text7"
-                android:gravity="center_vertical|center_horizontal"
-                android:paddingBottom="3dp"
-                android:paddingTop="20dp"
-                android:shadowColor="#FFFFFF"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="0.1"
-                android:text="@string/tx_26"
-                android:textColor="#4d4d4d"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/text10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/text9"
-                android:gravity="center_vertical|center_horizontal"
-                android:paddingBottom="20dp"
-                android:shadowColor="#FFFFFF"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="0.1"
-                android:text="@string/tx_27"
-                android:textColor="#4d4d4d"
-                android:textSize="12sp" />
         </RelativeLayout>
     </RelativeLayout>
 </ScrollView>

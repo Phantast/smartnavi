@@ -34,10 +34,8 @@
     <string name="tx_23">z.B. 70</string>
     <string name="tx_24">Kein Ergebnis. Internet-Verbindung prüfen und nochmal versuchen.</string>
     <string name="tx_25">deaktiviert</string>
-    <string name="tx_26"><u>Anonyme Nutzungsdaten</u></string>
-	<string name="tx_27">Unterstütze SmartNavi durch das Senden anonymer Nutzungsdaten. Diese Daten helfen uns SmartNavi zu verbessern. Die Daten enthalten: allg. Gerätebezeichnungen (z.B. Nexus S), 
-	    Sensorausstattung sowie Nutzungsverhalten (z.B. von Funktionen). Die Daten sind vollständig anonym. Es werden keine Positionsdaten oder andere private Daten gesendet. 
-	     Das Senden der Daten kann jederzeit in den Einstellungen deaktiviert werden. Vielen Dank für Deine Unterstützung!</string>
+    <string name="tx_26"></string>
+    <string name="tx_27"></string>
     <string name="tx_28">Schließen</string>
     <string name="tx_29">Offline Karten Speicherpfad</string>
     <string name="tx_30">Kann keine Routeninformationen abrufen. Bitte später erneut versuchen.</string>
@@ -95,14 +93,14 @@
 
 
     <string name="tx_71">Sonstiges</string>
-    <string name="tx_72">SmartNavi läuft jetzt im Hintergrund</string>
+    <string name="tx_72">SmartNavi läuft im Hintergrund</string>
     <string name="tx_73">Positionen werden bereitgestellt</string>
     <string name="tx_74">Starte Hintergrunddienst</string>
     <string name="tx_75">Hohe Akkulebensdauer</string>
     <string name="tx_76">Ausgewogen</string>
     <string name="tx_77">Ihre Suchanfrage konnte leider keine Ergebnisse liefern.</string>
-    <string name="tx_78">Anonyme Nutzungsdaten</string>
-    <string name="tx_79">Welche Daten gesendet werden steht unter: Menü -> Info</string>
+    <string name="tx_78"></string>
+    <string name="tx_79"></string>
     <string name="tx_80">Hohe Genauigkeit</string>
 
     <string name="tx_81">Erlaube GPS um eine bessere Startposition zu erhalten.\nNach der ersten Position arbeitet SmartNavi unabhängig von GPS! :)</string>

@@ -34,9 +34,8 @@
     <string name="tx_23">es. 70</string>
     <string name="tx_24">Nessun risultato. Verifica la connessione internet e riprova.</string>
     <string name="tx_25">disattivato</string>
-    <string name="tx_26"><u>Dati anonimi sull\'utilizzo</u></string>
-	<string name="tx_27">Sostieni SmartNavi mandando dati anonimi sull\'utilizzo. Questi dati ci aiutano a migliorare SmartNavi. I dati riguardano: tipo di dispositivo,
-	    equipaggiamento dei sensori e uso delle funzionalità. I dati sono completamente anonimi. Non saranno trasmesse posizioni o informazioni private. Puoi sempre disattivare l\'invio di dati sull\'utilizzo cliccando su Opzioni. Grazie per il tuo supporto!</string>
+    <string name="tx_26"></string>
+    <string name="tx_27"></string>
     <string name="tx_28">Chiudi</string>
     <string name="tx_29">Offline Maps Storage Path</string>
     <string name="tx_30">Nessuna informazione di percorso ottenuta. Riprova più tardi.</string>
@@ -97,8 +96,8 @@
     <string name="tx_75">Allunga durata batteria</string>
     <string name="tx_76">Bilanciato</string>
     <string name="tx_77">Nessun risultato trovato per la tua ricerca.</string>
-    <string name="tx_78">Dati anonimi di utilizzo</string>
-    <string name="tx_79">Trovi maggiori informazioni sui dati cliccando su Info</string>
+    <string name="tx_78"></string>
+    <string name="tx_79"></string>
     <string name="tx_80">Alta precisione</string>
 
     <string name="tx_81">Attiva il GPS per ottenere una migliore posizione iniziale.\nDopo la prima posizione SmartNavi lavora indipendente dal GPS! :)</string>

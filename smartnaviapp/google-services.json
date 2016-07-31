@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "553322027565",
+    "project_id": "api-project-553322027565"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553322027565:android:d013c12ed3fa7a96",
+        "android_client_info": {
+          "package_name": "com.ilm.sandwich"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeM8xr23VZqmhPEn5biQRjWHxJdXobWGc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-55892898-2"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

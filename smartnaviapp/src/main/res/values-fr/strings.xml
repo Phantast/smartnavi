@@ -3,7 +3,7 @@
 <!-- FRENCH -->
 
 <resources>
-	
+
     <string name="app_name">SmartNavi</string>
     <string name="tx_01">Démarrer la navigation <b>basée sur vos pas</b></string>
     <string name="tx_02">Adresse</string>
@@ -34,8 +34,8 @@
     <string name="tx_23">Par ex. 70</string>
     <string name="tx_24">Aucun résultat. Vérifiez votre connexion internet puis réessayez.</string>
     <string name="tx_25">Désactivé</string>
-    <string name="tx_26"><u>Usage anonyme des données</u></string>
-    <string name="tx_27">Supportez SmartNavi en envoyant les données de façon anonyme. Ces données nous aiderons à améliorer SmartNavi. Les données concernent : le type d\'appareil, la présence de capteur et le comportement d\'utilisation (des fonctionnalités par ex.). Les données sont totalement anonymes. Il n\'y aura aucune transmission des positions ou d\'informations privées. Vous pouvez désactiver à tout moment l\'usage des données dans les paramètres de l\'application. Merci pour votre soutien !</string>
+    <string name="tx_26"></string>
+    <string name="tx_27"></string>
     <string name="tx_28">Fermer</string>
     <string name="tx_29">Offline Maps Storage Path</string>
     <string name="tx_30">Impossible de récupérer les informations sur le parcours. Veuillez réessayer plus tard.</string>
@@ -96,8 +96,8 @@
     <string name="tx_75">Longue durée de vie de la batterie</string>
     <string name="tx_76">Équilibré</string>
     <string name="tx_77">Aucun résultat n\'a été trouvé pour votre requête.</string>
-    <string name="tx_78">Usage anonyme des données</string>
-    <string name="tx_79">Plus d\'informations à propos des données envoyées dans : Menu -> À propos</string>
+    <string name="tx_78"></string>
+    <string name="tx_79"></string>
     <string name="tx_80">Haute précision</string>
     
     

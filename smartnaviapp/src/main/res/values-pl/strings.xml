@@ -34,9 +34,8 @@
     <string name="tx_23">np. 70</string>
     <string name="tx_24">Brak wyników. Sprawdź połączenie z internetem i spróbuj ponownie.</string>
     <string name="tx_25">wyłączona</string>
-    <string name="tx_26"><u>Anonimowe dane użytkowania</u></string>
-	<string name="tx_27">Wesprzyj SmartNavi wysyłając anonimowe dane użytkowania. Te dane pomogą nam udoskonalić SmartNavi. Dane informują o: typie urządzenia, 
-	    wyposażeniu w czujniki i wykorzystaniu możliwości. Dane są całkowicie anonimowe. Pozycie i informacje prywatne nie są transmitowane. Można wyłączyć wysyłanie danych o użytkowaniu w każdym czasie w ustawieniach. Dziękujemy za twoje wsparcie!</string>
+    <string name="tx_26"></string>
+    <string name="tx_27"></string>
     <string name="tx_28">Ostatni cel podróży:\n</string>
     <string name="tx_29">Offline Maps Storage Path</string>
     <string name="tx_30">Nie udało się uzyskać informacji o trasie. Spróbuj ponownie później.</string>
@@ -99,8 +98,8 @@
     <string name="tx_75">Długi czas pracy baterii</string>
     <string name="tx_76">Zrównoważony</string>
     <string name="tx_77">Nie znaleziono wyników dla Twojego zapytania.</string>
-    <string name="tx_78">Anonimowe dane użytkowania</string>
-    <string name="tx_79">Więcej informacji o konkretnych danych można znaleźć w: Menu -> Informacje</string>
+    <string name="tx_78"></string>
+    <string name="tx_79"></string>
     <string name="tx_80">Wysoka dokładność</string>
 
     <string name="tx_81">Enable GPS to get a better initial position.\nAfter getting your initial position SmartNavi works independent from GPS! :)</string>

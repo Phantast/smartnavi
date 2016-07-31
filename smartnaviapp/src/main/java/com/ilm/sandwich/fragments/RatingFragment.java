@@ -14,8 +14,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.ilm.sandwich.R;
-import com.ilm.sandwich.tools.Analytics;
+import com.ilm.sandwich.tools.AnalyticsApplication;
 import com.ilm.sandwich.tools.Config;
 
 /**
@@ -27,7 +29,7 @@ public class RatingFragment extends Fragment {
 
     private onRatingFinishedListener mListener;
     private View fragmentView;
-    private Analytics mAnalytics;
+    private Tracker mTracker;
 
     public RatingFragment() {
     }
@@ -36,9 +38,13 @@ public class RatingFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         fragmentView = view;
-        SharedPreferences settings = this.getActivity().getSharedPreferences(this.getActivity().getPackageName() + "_preferences", Context.MODE_PRIVATE);
-        boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
-        mAnalytics = new Analytics(trackingAllowed);
+
+        // Obtain the shared Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) this.getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
+        mTracker.setScreenName("RatingFragment");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
         showRateDialog();
     }
 
@@ -72,13 +78,15 @@ public class RatingFragment extends Fragment {
     }
 
     private void showRateDialog() {
-        mAnalytics.trackEvent("Rating_Dialog_View", "View");
         Button rateButton1 = (Button) fragmentView.findViewById(R.id.rateButton);
         if (rateButton1 != null) {
             rateButton1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mAnalytics.trackEvent("Rating_Dialog_Action", "No");
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Action")
+                            .setAction("Rating_No")
+                            .build());
                     SharedPreferences prefs = RatingFragment.this.getActivity().getSharedPreferences(RatingFragment.this.getActivity().getPackageName() + "_preferences", 0);
                     int notRated = prefs.getInt("not_rated", 0) + 1;
 
@@ -104,7 +112,10 @@ public class RatingFragment extends Fragment {
             rateButton3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mAnalytics.trackEvent("Rating_Dialog_Action", "Yes_Button");
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Action")
+                            .setAction("Rating_Yes")
+                            .build());
                     new changeSettings("not_rated", 999).execute();
                     new changeSettings("dontshowagain", true).execute();
                     if (mListener != null) {
@@ -121,7 +132,10 @@ public class RatingFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     new changeSettings("not_rated", 999).execute();
-                    mAnalytics.trackEvent("Rating_Dialog_Action", "Yes_Stars");
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Action")
+                            .setAction("Rating_Yes")
+                            .build());
                     new changeSettings("dontshowagain", true).execute();
                     if (mListener != null) {
                         mListener.onRatingFinished();

@@ -49,11 +49,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.ilm.sandwich.fragments.RatingFragment;
 import com.ilm.sandwich.fragments.TutorialFragment;
-import com.ilm.sandwich.tools.Analytics;
+import com.ilm.sandwich.sensors.Core;
+import com.ilm.sandwich.tools.AnalyticsApplication;
 import com.ilm.sandwich.tools.Config;
-import com.ilm.sandwich.tools.Core;
 import com.ilm.sandwich.tools.Locationer;
 import com.ilm.sandwich.tools.MyItemizedOverlay;
 import com.ilm.sandwich.tools.PlacesAutoComplete;
@@ -123,21 +125,23 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     private boolean backgroundServiceShallBeOn = false;
     private boolean routeHasBeenDrawn = false;
     private Toolbar toolbar;
-    private Analytics mAnalytics;
     private FloatingActionButton fab;
+    private Tracker mTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Config.usingGoogleMaps = false;
+
+        // Obtain the shared Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         setContentView(R.layout.activity_osmmap);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         toolbar = (Toolbar) findViewById(R.id.toolbar_osm); // Attaching the layout to the toolbar object
         setSupportActionBar(toolbar);                   // Setting toolbar as the ActionBar with setSupportActionBar() call
-
-        boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
-        mAnalytics = new Analytics(trackingAllowed);
 
         fab = (FloatingActionButton) findViewById(R.id.fabosm);
         if (fab != null) {
@@ -187,11 +191,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mAnalytics.trackEvent("Location_Permission", "Granted_OSM");
                     checkWriteStoragePermission();
                 } else {
                     Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_100), Toast.LENGTH_LONG).show();
-                    mAnalytics.trackEvent("Location_Permission", "Denied_OSM");
                     finish();
                 }
                 break;
@@ -199,11 +201,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             case Config.PERMISSION_WRITE_EXTERNAL_STORAGE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mAnalytics.trackEvent("Storage_Permission", "Granted_OSM");
                     proceedOnCreate();
                 } else {
                     Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_101), Toast.LENGTH_LONG).show();
-                    mAnalytics.trackEvent("Storage_Permission", "Denied_OSM");
                     finish();
                 }
                 break;
@@ -304,7 +304,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 if (arg2 == 0) {
                     Core.setLocation(longPressedGeoPoint.getLatitude(), longPressedGeoPoint.getLongitude());
-                    mAnalytics.trackEvent("OSM_LongPress_Action", "Set_Position");
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Action")
+                            .setAction("SetPosition_after_Longpress")
+                            .build());
                     list.setVisibility(View.INVISIBLE);
                     setFollowOn();
                     map.invalidate();
@@ -313,7 +316,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                     positionUpdate();
                 } else {
                     showRouteInfo(true);
-                    mAnalytics.trackEvent("OSM_LongPress_Action", "Set_Destination");
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Action")
+                            .setAction("SetDestination_after_Longpress")
+                            .build());
                     new PlacesTextSeachAsync().execute(longPressedGeoPoint.getLatitude() + ", " + longPressedGeoPoint.getLongitude());
                     list.setVisibility(View.INVISIBLE);
                 }
@@ -502,6 +508,9 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     }
 
     private void proceedOnResume() {
+        mTracker.setScreenName("OsmMap");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
         firstPositionFound = false;
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         autoCorrect = settings.getBoolean("autocorrect", false);
@@ -657,12 +666,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         dialogGPS.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
         dialogGPS.setCanceledOnTouchOutside(false);
         dialogGPS.show();
-        mAnalytics.trackEvent("GPS_Dialog_View", "OSM_View");
 
         Button cancel = (Button) dialogGPS.findViewById(R.id.dialogCancelgps);
         cancel.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
-                mAnalytics.trackEvent("OSM_GPS_Dialog_Action", "Cancel");
                 dialogGPS.dismiss();
             }
         });
@@ -670,7 +677,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         Button settingsGPS = (Button) dialogGPS.findViewById(R.id.dialogSettingsgps);
         settingsGPS.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
-                mAnalytics.trackEvent("OSM_GPS_Dialog_Action", "Go_To_Settings");
                 try {
                     startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                     userSwitchesGPS = true;
@@ -702,7 +708,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
     public void abortGPS(final View view) {
         // Abort GPS was pressed (ProgressBar was pressed)
         try {
-            mAnalytics.trackEvent("GPS_Cancel_Pressed", "pressed_on_OSM");
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("GPS_canceled_OsmMap")
+                    .build());
             mLocationer.deactivateLocationer();
             ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBarOsm);
             mProgressBar.setVisibility(View.GONE);
@@ -780,23 +789,19 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         switch (item.getItemId()) {
             case R.id.menu_bgservice:
                 // activity_backgroundservice / background service
-                mAnalytics.trackEvent("OSM_Menu", "background_service");
                 knownReasonForBreak = true;
                 Intent myIntent = new Intent(this, BackgroundService.class);
                 startActivity(myIntent);
                 return true;
             case R.id.menu_offlinemaps:
-                mAnalytics.trackEvent("OSM_Menu", "offline_maps");
                 startActivity(new Intent(OsmMap.this, Webview.class));
                 return true;
             case R.id.menu_settings:
-                mAnalytics.trackEvent("OSM_Menu", "settings");
                 // Go to Settings
                 knownReasonForBreak = true;
                 startActivity(new Intent(this, Settings.class));
                 return true;
             case R.id.menu_tutorial:
-                mAnalytics.trackEvent("OSM_Menu", "tutorial");
                 // open TutorialFragment
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -811,7 +816,6 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
                 }
                 return true;
             case R.id.menu_info:
-                mAnalytics.trackEvent("OSM_Menu", "info");
                 // go to About Page
                 knownReasonForBreak = true;
                 startActivity(new Intent(this, Info.class));
@@ -835,7 +839,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
         longPressedGeoPoint = p;
         list = (ListView) findViewById(R.id.listeOsm);
         list.setVisibility(View.VISIBLE);
-        mAnalytics.trackEvent("LongPress_View", "OSM_View");
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("Longpress_OsmMap")
+                .build());
         //Set this variable after quite some time, so that the dialog
         //has a guaranteed mininum lifetime and is not discarded after a short
         //random touch on the screen
@@ -1199,7 +1206,10 @@ public class OsmMap extends AppCompatActivity implements Locationer.onLocationUp
             routeHasBeenDrawn = true;
             setNewPositionMarker();
             map.invalidate();
-            mAnalytics.trackEvent("Route", "Created_on_OsmMap");
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("RouteCreated_on_OsmMap")
+                    .build());
         }
     }
 

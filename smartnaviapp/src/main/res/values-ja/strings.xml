@@ -34,9 +34,8 @@
     <string name="tx_23">例 70</string>
     <string name="tx_24">結果はありません。インターネット接続を確認してもう一度試してください。</string>
     <string name="tx_25">無効にしました</string>
-    <string name="tx_26"><u>匿名の使用状況データ</u></string>
-	<string name="tx_27">匿名の使用状況データを送信して SmartNavi をご支援ください。このデータは SmartNavi の改善に役立ちます。データは、デバイスの種類、
-	    センサー機器、機能の使用状況を含みます。データは完全に匿名です。場所や個人情報は送信しません。使用状況データの送信はいつでも設定から無効にできます。ご支援ありがとうございます!</string>
+    <string name="tx_26"></string>
+    <string name="tx_27"></string>
     <string name="tx_28">閉じる</string>
     <string name="tx_29">Offline Maps Storage Path</string>
     <string name="tx_30">経路情報を取得できません。後でもう一度試してください。</string>
@@ -99,8 +98,8 @@
     <string name="tx_75">長寿命のバッテリー</string>
     <string name="tx_76">均衡のとれた</string>
     <string name="tx_77">リクエストの結果が見つかりませんでした。</string>
-    <string name="tx_78">匿名の使用状況データ</string>
-    <string name="tx_79">特定のデータに関する詳細な情報は、アプリについてを参照してください</string>
+    <string name="tx_78"></string>
+    <string name="tx_79"></string>
     <string name="tx_80">高精度</string>
 
     <string name="tx_81">正確な初期の場所を取得するには GPS を有効にしてください。\n初期の場所を取得した後は SmartNavi は GPS から独立して動作します! :)</string>

@@ -8,17 +8,28 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.ilm.sandwich.tools.AnalyticsApplication;
+
 /**
  * @author Christian Henke
  *         www.smartnavi-app.com
  */
 public class Info extends AppCompatActivity {
 
+    private Tracker mTracker;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getResources().getString(R.string.tx_65));
+
+        // Obtain the shared Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+
         TextView versionNameText = (TextView) findViewById(R.id.versionName);
         PackageInfo pInfo = null;
         try {
@@ -28,6 +39,13 @@ public class Info extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        mTracker.setScreenName("Info");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        super.onResume();
     }
 
     @Override

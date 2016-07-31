@@ -51,6 +51,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -69,9 +71,9 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.ilm.sandwich.fragments.RatingFragment;
 import com.ilm.sandwich.fragments.TutorialFragment;
-import com.ilm.sandwich.tools.Analytics;
+import com.ilm.sandwich.sensors.Core;
+import com.ilm.sandwich.tools.AnalyticsApplication;
 import com.ilm.sandwich.tools.Config;
-import com.ilm.sandwich.tools.Core;
 import com.ilm.sandwich.tools.HttpRequests;
 import com.ilm.sandwich.tools.Locationer;
 import com.ilm.sandwich.tools.PlacesAutoComplete;
@@ -144,6 +146,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     int segmentCounter;
     TutorialFragment tutorialFragment;
     RatingFragment ratingFragment;
+    private Tracker mTracker;
     private com.google.android.gms.maps.GoogleMap map;
     private String[] html_instructions = new String[31];
     private String[] polylineArray = new String[31];
@@ -153,7 +156,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     private boolean listVisible = false;
     private Polyline[] completeRoute = new Polyline[31];
     private Toolbar toolbar;
-    private Analytics mAnalytics;
     private FloatingActionButton fab;
 
     public static double computeDistanz(double lat, double lon) {
@@ -199,9 +201,9 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         toolbar = (Toolbar) findViewById(R.id.toolbar_googlemap); // Attaching the layout to the toolbar object
         setSupportActionBar(toolbar);                   // Setting toolbar as the ActionBar with setSupportActionBar() call
 
-        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-        boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
-        mAnalytics = new Analytics(trackingAllowed);
+        // Obtain the shared Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -239,11 +241,17 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         // If request is cancelled, the result arrays are empty.
         if (grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            mAnalytics.trackEvent("Location_Permission", "Granted_Google");
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("Granted_Google_Location")
+                    .build());
             proceedOnCreate();
         } else {
             Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_100), Toast.LENGTH_LONG).show();
-            mAnalytics.trackEvent("Location_Permission", "Denied_Google");
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("Denied_Google_Location")
+                    .build());
             finish();
         }
     }
@@ -285,7 +293,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         map.setOnMapLongClickListener(new OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng arg0) {
-                mAnalytics.trackEvent("LongPress_View", "Google_View");
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Longpress_GoogleMap")
+                        .build());
                 longpressLocation = arg0;
                 if (longPressMarker != null) {
                     if (longPressMarker.isVisible()) {
@@ -406,14 +417,20 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 if (arg2 == 0) {
                     setHome();
-                    mAnalytics.trackEvent("Google_LongPress_Action", "Set_Position");
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Action")
+                            .setAction("SetPosition_after_Longpress")
+                            .build());
                     list.setVisibility(View.INVISIBLE);
                     listVisible = false;
                     longPressMarker.remove();
                     positionUpdate();
                 } else {
                     fingerDestination(longpressLocation);
-                    mAnalytics.trackEvent("Google_LongPress_Action", "Set_Destination");
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Action")
+                            .setAction("SetDestination_after_Longpress")
+                            .build());
                     list.setVisibility(View.INVISIBLE);
                     listVisible = false;
                     longPressMarker.remove();
@@ -882,6 +899,9 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
         int status = api.isGooglePlayServicesAvailable(this);
 
+        mTracker.setScreenName("GoogleMap");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
         if (status != ConnectionResult.SUCCESS) {
             new changeSettings("MapSource", "MapQuestOSM").execute();
         } else if (!userSwitchedGps) {
@@ -1013,20 +1033,17 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
 
         switch (item.getItemId()) {
             case R.id.menu_bgservice:
-                mAnalytics.trackEvent("Google_Menu", "background_service");
                 // activity_backgroundservice
                 knownReasonForBreak = true;
                 Intent myIntent = new Intent(GoogleMap.this, BackgroundService.class);
                 startActivity(myIntent);
                 return true;
             case R.id.menu_settings:
-                mAnalytics.trackEvent("Google_Menu", "settings");
                 // Go to Settings
                 knownReasonForBreak = true;
                 startActivity(new Intent(this, Settings.class));
                 return true;
             case R.id.menu_offlinemaps:
-                mAnalytics.trackEvent("Google_Menu", "offline_maps");
                 /*
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                     String url = "http://smartnavi-app.com/offline/";
@@ -1042,7 +1059,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 startActivity(new Intent(GoogleMap.this, Webview.class));
                 return true;
             case R.id.menu_tutorial:
-                mAnalytics.trackEvent("Google_Menu", "tutorial");
                 // TutorialFragment
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -1051,7 +1067,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment).commit();
                 return true;
             case R.id.menu_info:
-                mAnalytics.trackEvent("Google_Menu", "info");
                 // About Page
                 knownReasonForBreak = true;
                 startActivity(new Intent(this, Info.class));
@@ -1084,7 +1099,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     }
 
     public void routeStartAnimation(LatLng northeast, LatLng southwest) {
-        mAnalytics.trackEvent("Route", "Created_on_GoogleMap");
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("RouteCreated_on_GoogleMap")
+                .build());
         LatLngBounds grenzen = new LatLngBounds(southwest, northeast);
         map.animateCamera(CameraUpdateFactory.newLatLngBounds(grenzen, 100));
         listHandler.sendEmptyMessageDelayed(11, 3000);
@@ -1141,10 +1159,12 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 // RatingFragment
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                map.getUiSettings().setAllGesturesEnabled(false);
+                try {
+                    map.getUiSettings().setAllGesturesEnabled(false);
+                } catch (Exception e) {
+                }
                 ratingFragment = new RatingFragment();
                 fragmentTransaction.add(R.id.googlemap_actvity_layout, ratingFragment).commit();
-
             }
         }
         editor.apply();
@@ -1162,7 +1182,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     public void abortGPS(final View view) {
         // Abort GPS was pressed (ProgressBar was pressed)
         try {
-            mAnalytics.trackEvent("GPS_Cancel_Pressed", "pressed_on_Google");
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("GPS_canceled_GoogleMap")
+                    .build());
             mLocationer.deactivateLocationer();
             ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
             if (mProgressBar != null) {
@@ -1182,12 +1205,16 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             dialogGPS.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
             dialogGPS.setCanceledOnTouchOutside(false);
             dialogGPS.show();
-            mAnalytics.trackEvent("GPS_Dialog_View", "Google_View");
+            mTracker.setScreenName("Dialog-GPS-enable");
+            mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
             Button cancel = (Button) dialogGPS.findViewById(R.id.dialogCancelgps);
             cancel.setOnClickListener(new OnClickListener() {
                 public void onClick(View arg0) {
-                    mAnalytics.trackEvent("Google_GPS_Dialog_Action", "Cancel");
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Action")
+                            .setAction("GPS_dialog_canceled_GoogleMap")
+                            .build());
                     dialogGPS.dismiss();
                 }
             });
@@ -1202,7 +1229,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                         startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
                         userSwitchedGps = true;
                     }
-                    mAnalytics.trackEvent("Google_GPS_Dialog_Action", "Go_To_Settings");
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Action")
+                            .setAction("GPS_dialog_jumpToSettings_GoogleMap")
+                            .build());
                     dialogGPS.dismiss();
                 }
             });
@@ -1255,8 +1285,12 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 // easter eggs
                 if (query.equalsIgnoreCase("Chuck Norris"))
                     Toast.makeText(GoogleMap.this, "You can not find Chuck Norris. Chuck Norris finds YOU!", Toast.LENGTH_LONG).show();
-                else if (query.equalsIgnoreCase("cake") || query.equalsIgnoreCase("the cake") || query.equalsIgnoreCase("portal"))
+                else if (query.equalsIgnoreCase("cake") || query.equalsIgnoreCase("the cake") || query.equalsIgnoreCase("portal")) {
                     Toast.makeText(GoogleMap.this, "The cake is a lie!", Toast.LENGTH_LONG).show();
+                } else if (query.equalsIgnoreCase("gyrooff")) {
+                    mCore.gyroExists = false;
+                    mCore.reactivateSensors();
+                }
                 else if (query.equalsIgnoreCase("rateme")) {
                     // show RatingFragment
                     Log.i("Rating", "Showing Rating Fragment");

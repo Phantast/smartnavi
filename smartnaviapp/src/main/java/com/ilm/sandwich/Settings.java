@@ -37,7 +37,9 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-import com.ilm.sandwich.tools.Analytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.ilm.sandwich.tools.AnalyticsApplication;
 import com.ilm.sandwich.tools.Config;
 
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
@@ -59,14 +61,20 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
     CheckBox checkBoxSpeech;
     CheckBox checkBoxGPS;
     CheckBox checkBoxExport;
-    CheckBox checkBoxUsageData;
     Spinner mapSpinner;
     private LocationManager mLocationManager;
     private String oldMapSource;
     private String actualMapSource;
     private SubMenu subMenu1;
-    private Analytics mAnalytics;
     private DirectoryChooserFragment mDialog;
+    private Tracker mTracker;
+
+    @Override
+    protected void onResume() {
+        mTracker.setScreenName("Settings");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        super.onResume();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +83,11 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         getSupportActionBar().setTitle(getResources().getString(R.string.tx_15));
         setContentView(R.layout.activity_settings);
 
+        // Obtain the shared Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-        boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
-        mAnalytics = new Analytics(trackingAllowed);
 
         editText = (EditText) findViewById(R.id.editText);
         checkBoxVibration = (CheckBox) findViewById(R.id.checkBoxVibration);
@@ -86,7 +96,6 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         checkBoxGPS = (CheckBox) findViewById(R.id.checkBoxGPS);
         final SeekBar seekBarTimer = (SeekBar) findViewById(R.id.seekBarTimer);
         checkBoxExport = (CheckBox) findViewById(R.id.checkBoxExport);
-        checkBoxUsageData = (CheckBox) findViewById(R.id.checkBoxUsageData);
         final TextView timerText = (TextView) findViewById(R.id.textTimer);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -116,7 +125,10 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
                     chosenMapSource = "MapnikOSM";
                     setMapSource(chosenMapSource);
                 }
-                mAnalytics.trackEvent("Settings", "mapSource_to_" + chosenMapSource);
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Settings_Changed_Map_to_" + chosenMapSource)
+                        .build());
             }
 
             @Override
@@ -188,9 +200,6 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         boolean export = settings.getBoolean("export", false);
         checkBoxExport.setChecked(export);
 
-        boolean usageData = settings.getBoolean("nutzdaten", true);
-        checkBoxUsageData.setChecked(usageData);
-
         boolean autocorrect = settings.getBoolean("autocorrect", false);
         checkBoxGPS.setChecked(autocorrect);
 
@@ -216,7 +225,6 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         checkBoxSatellite.setOnCheckedChangeListener(this);
         checkBoxSpeech.setOnCheckedChangeListener(this);
         checkBoxExport.setOnCheckedChangeListener(this);
-        checkBoxUsageData.setOnCheckedChangeListener(this);
 
         editText.setOnEditorActionListener(this);
         checkBoxGPS.setOnCheckedChangeListener(this);
@@ -240,7 +248,10 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 new writeSettings("gpstimer", seekBar.getProgress()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                mAnalytics.trackEvent("Settings", "AutoCorrect_to_" + seekBar.getProgress());
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Setting_Changed_Autocorrect_to_" + seekBar.getProgress())
+                        .build());
                 // start Autocorrect after 3sek
                 // because after this time the activity_settings are surely updated correctly
                 try {
@@ -406,7 +417,10 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
                 editText.setFocusable(true);
             }
         }
-        mAnalytics.trackEvent("Settings", "Body_Height_Change");
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("Setting_Changed_bodyheight")
+                .build());
         return false;
     }
 
@@ -425,7 +439,6 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case 7:
-                mAnalytics.trackEvent("Settings", "Info_via_Menu");
                 startActivity(new Intent(this, Info.class));
                 return true;
             case android.R.id.home:
@@ -532,12 +545,13 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
             key = "view";
         } else if (buttonView.getId() == R.id.checkBoxSpeech) {
             key = "language";
-        } else if (buttonView.getId() == R.id.checkBoxUsageData) {
-            key = "nutzdaten";
         } else if (buttonView.getId() == R.id.checkBoxVibration) {
             key = "vibration";
         }
-        mAnalytics.trackEvent("Settings", key + "_changed_to_" + isChecked);
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("Settings_" + key + "_changed_to_" + isChecked)
+                .build());
         new writeSettings(key, isChecked).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -553,7 +567,6 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
             if (isChecked) {
                 Toast.makeText(Settings.this, getResources().getString(R.string.tx_88), Toast.LENGTH_LONG).show();
             }
-            mAnalytics.trackEvent("Settings", key + "_changed_to_" + isChecked);
             new writeSettings(key, isChecked).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
@@ -563,11 +576,9 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            mAnalytics.trackEvent("Storage_Permission", "Granted_Google");
             checkOfflineMapsDirectory();
         } else {
             Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_101), Toast.LENGTH_LONG).show();
-            mAnalytics.trackEvent("Storage_Permission", "Denied_Google");
         }
     }
 
