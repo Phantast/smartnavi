@@ -257,10 +257,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     }
 
     private void proceedOnCreate() {
-        // Rate App show for debugging
-        //showRateDialog();
-        // Rate App live
-        appRateDialog();
         mLocationer = new Locationer(GoogleMap.this);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -437,6 +433,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 }
             }
         });
+        // Rate App show for debugging
+        //showRateDialog();
+        // Rate App live
+        appRateDialog();
     }
 
     public void onMapTouch() {
@@ -1164,7 +1164,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 } catch (Exception e) {
                 }
                 ratingFragment = new RatingFragment();
-                fragmentTransaction.add(R.id.googlemap_actvity_layout, ratingFragment).commit();
+                fragmentTransaction.add(R.id.googlemap_actvity_layout, ratingFragment).commitAllowingStateLoss();
             }
         }
         editor.apply();

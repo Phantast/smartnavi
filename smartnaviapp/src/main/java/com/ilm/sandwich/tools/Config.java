@@ -10,8 +10,8 @@ import android.provider.BaseColumns;
 public class Config {
     //app-Rate Dialog
     public final static String APP_PNAME = "com.ilm.sandwich";
-    public final static int DAYS_UNTIL_PROMPT = 2; // 2
-    public final static int LAUNCHES_UNTIL_PROMPT = 3; // 3
+    public final static int DAYS_UNTIL_PROMPT = 2;
+    public final static int LAUNCHES_UNTIL_PROMPT = 2;
     // places and mapquest api
     public static final String PLACES_API_URL = "https://maps.googleapis.com/maps/api/place";
     public static final String PLACES_API_KEY = "AIzaSyAT3ahsjBZZtWZMzcMy-AJffVfVGLZPdMw";
