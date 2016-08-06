@@ -1137,15 +1137,17 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
 
     private void appRateDialog() {
         SharedPreferences prefs = getSharedPreferences(getPackageName() + "_preferences", 0);
-        if (prefs.getBoolean("dontshowagain", false)) {
+        if (BuildConfig.debug)
+            Log.i("RateDialog", "User denied to show again: " + prefs.getBoolean("neverShowRatingAgain", false));
+        if (prefs.getBoolean("neverShowRatingAgain", false)) {
             return;
         }
         SharedPreferences.Editor editor = prefs.edit();
         // Increment launch counter
-        int launch_count = prefs.getInt("launch_count", 0) + 1;
-        editor.putInt("launch_count", launch_count);
+        int appLaunchCounter = prefs.getInt("appLaunchCounter", 0) + 1;
+        editor.putInt("appLaunchCounter", appLaunchCounter);
         if (BuildConfig.debug)
-            Log.i("RateDialog", "Launch-Count: " + launch_count);
+            Log.i("RateDialog", "Launch-Count: " + appLaunchCounter);
 
         // Get date of first launch
         Long date_firstLaunch = prefs.getLong("date_firstlaunch", 0);
@@ -1154,7 +1156,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             editor.putLong("date_firstlaunch", date_firstLaunch);
         }
         // Wait at least n days before opening
-        if (launch_count >= Config.LAUNCHES_UNTIL_PROMPT) {
+        if (appLaunchCounter >= Config.LAUNCHES_UNTIL_PROMPT) {
             if (System.currentTimeMillis() >= date_firstLaunch + (Config.DAYS_UNTIL_PROMPT * 24 * 60 * 60 * 1000)) {
                 // RatingFragment
                 FragmentManager fragmentManager = getSupportFragmentManager();

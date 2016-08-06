@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.R;
 import com.ilm.sandwich.tools.AnalyticsApplication;
 import com.ilm.sandwich.tools.Config;
@@ -88,18 +89,19 @@ public class RatingFragment extends Fragment {
                             .setAction("Rating_No")
                             .build());
                     SharedPreferences prefs = RatingFragment.this.getActivity().getSharedPreferences(RatingFragment.this.getActivity().getPackageName() + "_preferences", 0);
-                    int notRated = prefs.getInt("not_rated", 0) + 1;
-
-                    new changeSettings("not_rated", notRated).execute();
+                    int notRated = prefs.getInt("ratingDenied", 0) + 1;
+                    if (BuildConfig.debug)
+                        Log.i("RateDialog", "Not Rated: " + notRated);
+                    prefs.edit().putInt("ratingDenied", notRated).apply();
 
                     if (notRated == 1) {
-                        new changeSettings("launch_count", -6).execute();
+                        prefs.edit().putInt("appLaunchCounter", -2).apply();
                     } else if (notRated == 2) {
-                        new changeSettings("launch_count", -8).execute();
+                        prefs.edit().putInt("appLaunchCounter", -5).apply();
                     } else if (notRated == 3) {
-                        new changeSettings("launch_count", -10).execute();
-                    } else if (notRated == 4) {
-                        new changeSettings("dontshowagain", true).execute();
+                        prefs.edit().putInt("appLaunchCounter", -5).apply();
+                    } else if (notRated >= 4) {
+                        prefs.edit().putBoolean("neverShowRatingAgain", true).apply();
                     }
                     if (mListener != null) {
                         mListener.onRatingFinished();
@@ -112,12 +114,13 @@ public class RatingFragment extends Fragment {
             rateButton3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    SharedPreferences prefs = RatingFragment.this.getActivity().getSharedPreferences(RatingFragment.this.getActivity().getPackageName() + "_preferences", 0);
                     mTracker.send(new HitBuilders.EventBuilder()
                             .setCategory("Action")
                             .setAction("Rating_Yes")
                             .build());
-                    new changeSettings("not_rated", 999).execute();
-                    new changeSettings("dontshowagain", true).execute();
+                    prefs.edit().putInt("ratingDenied", 100).apply();
+                    prefs.edit().putBoolean("neverShowRatingAgain", true).apply();
                     if (mListener != null) {
                         mListener.onRatingFinished();
                     }
@@ -131,12 +134,13 @@ public class RatingFragment extends Fragment {
             stars.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new changeSettings("not_rated", 999).execute();
+                    SharedPreferences prefs = RatingFragment.this.getActivity().getSharedPreferences(RatingFragment.this.getActivity().getPackageName() + "_preferences", 0);
+                    prefs.edit().putInt("ratingDenied", 100).apply();
                     mTracker.send(new HitBuilders.EventBuilder()
                             .setCategory("Action")
                             .setAction("Rating_Yes")
                             .build());
-                    new changeSettings("dontshowagain", true).execute();
+                    prefs.edit().putBoolean("neverShowRatingAgain", true).apply();
                     if (mListener != null) {
                         mListener.onRatingFinished();
                     }
@@ -148,36 +152,5 @@ public class RatingFragment extends Fragment {
 
     public interface onRatingFinishedListener {
         void onRatingFinished();
-    }
-
-    private class changeSettings extends AsyncTask<Void, Void, Void> {
-
-        private String key;
-        private int dataType;
-        private boolean setting1;
-        private int setting3;
-
-        private changeSettings(String key, boolean setting1) {
-            this.key = key;
-            this.setting1 = setting1;
-            dataType = 0;
-        }
-
-        private changeSettings(String key, int setting3) {
-            this.key = key;
-            this.setting3 = setting3;
-            dataType = 2;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            SharedPreferences settings = RatingFragment.this.getActivity().getSharedPreferences(RatingFragment.this.getActivity().getPackageName() + "_preferences", Context.MODE_PRIVATE);
-            if (dataType == 0) {
-                settings.edit().putBoolean(key, setting1).apply();
-            } else if (dataType == 2) {
-                settings.edit().putInt(key, setting3).apply();
-            }
-            return null;
-        }
     }
 }
