@@ -25,12 +25,13 @@ Developed By
 
 * Christian Henke - <contact@smartnavi-app.com>
 
-Special thanks to: Markus Kniep & Michael Lückgen - You are awesome! 
+Special thanks to: Markus Kniep & Michael Lückgen - You are awesome!
+Thanks to Alexanders Pacha for his improved OrientationSensor!
 
 License
 =======
 
-    Copyright 2014 Christian Henke
+    Copyright 2011 Christian Henke
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

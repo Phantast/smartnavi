@@ -20,10 +20,11 @@ http://creativecommons.org/licenses/by-sa/4.0/
 
 Libraries
 ==============
-SmartNavi makes use of the following libraries under their corresponding licenses:
+SmartNavi makes use of the following libraries and classes under their corresponding licenses:
 * osmdroid - Apache License 2.0
 * OsmBonusPack - GNU LESSER GENERAL PUBLIC LICENSE
 * Android DirectoryChooser - Apache License 2.0
+* The class ImprovedOrientationSensor2Provider and connected classes are developed by Alexander Pacha under the MIT License
 
 
 Apache License
@@ -376,3 +377,15 @@ whether future versions of the GNU Lesser General Public License shall
 apply, that proxy's public statement of acceptance of any version is
 permanent authorization for you to choose that version for the
 Library.
+
+MIT License
+===============
+
+The MIT License (MIT)
+Copyright (c) <year> <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
