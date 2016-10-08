@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -26,6 +27,7 @@ public class Webview extends AppCompatActivity {
 
         getSupportActionBar().setTitle(getResources().getString(R.string.tx_90));
         WebView webview = new WebView(this);
+        webview.setWebViewClient(new WebViewClient());
         setContentView(webview);
         WebSettings webSettings = webview.getSettings();
         webSettings.setJavaScriptEnabled(true);

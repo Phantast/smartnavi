@@ -78,7 +78,6 @@ import com.ilm.sandwich.tools.HttpRequests;
 import com.ilm.sandwich.tools.Locationer;
 import com.ilm.sandwich.tools.PlacesAutoComplete;
 import com.ilm.sandwich.tools.PlacesTextSearch;
-import com.ilm.sandwich.tools.Statistics;
 import com.ilm.sandwich.tools.SuggestionsAdapter;
 
 import org.json.JSONArray;
@@ -195,7 +194,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Config.usingGoogleMaps = true;
         setContentView(R.layout.activity_googlemap);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         toolbar = (Toolbar) findViewById(R.id.toolbar_googlemap); // Attaching the layout to the toolbar object
@@ -461,8 +459,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                             listVisible = true;
                         }
                     }, 1200);
-                } else if (msg.what == 3) {
-                    finish(); // used by Settings to change to OsmMap
                 } else if (msg.what == 6) {
                     // initialize Autocorrect oder restart new
                     // after activity_settings changed if necessary
@@ -895,7 +891,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
 
     @Override
     protected void onResume() {
-        Config.usingGoogleMaps = true;
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
         int status = api.isGooglePlayServicesAvailable(this);
 
@@ -995,8 +990,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 e.printStackTrace();
             }
         }
-        Statistics mStatistics = new Statistics();
-        mStatistics.check(this);
         super.onDestroy();
     }
 
@@ -1174,10 +1167,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult arg0) {
-        if (BuildConfig.debug)
-            Log.i("Location-Status", "LocationClient: Connection FAILED" + arg0.getErrorCode());
-        startActivity(new Intent(GoogleMap.this, OsmMap.class));
-        finish();
     }
 
     // at Touch on ProgressBar

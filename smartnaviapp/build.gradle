@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
-apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 24
@@ -20,15 +19,9 @@ android {
             buildConfigField 'Boolean', 'debug', 'true'
         }
     }
-    productFlavors {
-        playstore {
-            repositories {
-                maven { url 'https://maven.fabric.io/public' }
-                maven { url 'http://guardian.github.com/maven/repo-releases' }
-            }
-        }
-        free {
-        }
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+        maven { url 'http://guardian.github.com/maven/repo-releases' }
     }
     lintOptions {
         abortOnError false
@@ -39,21 +32,19 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
-    playstoreCompile 'com.google.android.gms:play-services-location:9.0.0'
-    playstoreCompile 'com.google.android.gms:play-services-maps:9.0.0'
-    playstoreCompile('com.crashlytics.sdk.android:answers:1.3.6@aar') {
+    compile 'com.google.android.gms:play-services-location:9.6.1'
+    compile 'com.google.android.gms:play-services-maps:9.6.1'
+    compile('com.crashlytics.sdk.android:answers:1.3.6@aar') {
         transitive = true;
     }
-    playstoreCompile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
-    playstoreCompile 'com.google.android.gms:play-services-analytics:9.0.0'
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.github.MKergall.osmbonuspack:OSMBonusPack:v5.6'
-    compile 'com.android.support:support-v4:24.1.1'
-    compile 'com.android.support:design:24.1.1'
-    compile 'com.gu:option:1.3'
-    compile 'net.rdrei.android.dirchooser:library:3.2@aar'
+    compile 'com.google.android.gms:play-services-analytics:9.6.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:design:24.2.1'
 }
+
+apply plugin: 'com.google.gms.google-services'

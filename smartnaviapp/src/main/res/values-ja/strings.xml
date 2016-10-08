@@ -104,7 +104,7 @@
 
     <string name="tx_81">正確な初期の場所を取得するには GPS を有効にしてください。\n初期の場所を取得した後は SmartNavi は GPS から独立して動作します! :)</string>
     <string name="tx_82">初期の場所決めを停止しました。</string>
-    <string name="tx_83">Google マップのみ</string>
+    <string name="tx_83"></string>
     <string name="tx_84">ナビゲーション手順用</string>
     <string name="tx_85">GPS で定期的に自分の位置を補正する</string>
     <string name="tx_86">地図プロバイダー</string>

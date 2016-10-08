@@ -20,7 +20,7 @@
     <string name="tx_11">Grazie a Madeliniz per il logo SmartNavi:\nhttp://madeliniz.deviantart.com</string>
     <string name="tx_12">Tieni premuto sulla mappa per avere più opzioni. Ad esempio, puoi impostare la tua posizione esatta di partenza.</string>
     <string name="tx_13">Inserisci la tua\n<b>altezza</b></string>
-    <string name="tx_14">Attiva\n<i>Posizioni fittizie</i>\nin:\n> Opzioni\n> Sviluppo</string>
+    <string name="tx_14">Please <b>select</b> SmartNavi as <b>mock location app</b> at Developer options!</string>
     <string name="tx_15">Opzioni</string>
     <string name="tx_16">es. 180</string>
     <string name="tx_17">Imposta posizione</string>
@@ -102,7 +102,7 @@
 
     <string name="tx_81">Attiva il GPS per ottenere una migliore posizione iniziale.\nDopo la prima posizione SmartNavi lavora indipendente dal GPS! :)</string>
     <string name="tx_82">Posizionamento iniziale fermato.</string>
-    <string name="tx_83">Solo per GoogleMaps</string>
+    <string name="tx_83"></string>
     <string name="tx_84">Per istruzioni di navigazione</string>
     <string name="tx_85">Corregge la tua posizione regolarmente col GPS</string>
     <string name="tx_86">Fornitore di mappe</string>

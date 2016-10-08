@@ -134,11 +134,7 @@ public class BackgroundService extends AppCompatActivity {
 
         //restart Sensors
         try {
-            if (Config.usingGoogleMaps) {
-                GoogleMap.listHandler.sendEmptyMessage(10);
-            } else {
-                OsmMap.listHandler.sendEmptyMessage(10);
-            }
+            GoogleMap.listHandler.sendEmptyMessage(10);
         } catch (Exception e) {
             e.printStackTrace();
             //Bug for some devices, in that case: Abort and go back.
@@ -220,11 +216,8 @@ public class BackgroundService extends AppCompatActivity {
 
             //tell the Maps to restart the sensor listeners after 10s because
             //other foreign third party apps may stop them
-            if (Config.usingGoogleMaps) {
-                GoogleMap.listHandler.sendEmptyMessage(9);
-            } else {
-                OsmMap.listHandler.sendEmptyMessage(9);
-            }
+            GoogleMap.listHandler.sendEmptyMessage(9);
+
 
             mTracker.send(new HitBuilders.EventBuilder()
                     .setCategory("Action")
@@ -288,11 +281,7 @@ public class BackgroundService extends AppCompatActivity {
                 .setCategory("Action")
                 .setAction("Backround_service_stopped")
                 .build());
-        if (Config.usingGoogleMaps) {
-            GoogleMap.listHandler.removeMessages(10);
-        } else {
-            OsmMap.listHandler.removeMessages(10);
-        }
+        GoogleMap.listHandler.removeMessages(10);
 
         Config.backgroundServiceActive = false;
 

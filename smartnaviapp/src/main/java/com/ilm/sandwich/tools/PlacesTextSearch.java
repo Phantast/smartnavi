@@ -74,12 +74,10 @@ public class PlacesTextSearch {
 
             for (int i = 0; i < types.length(); i++) {
                 if (types.get(i).equals("street_address") || types.get(i).equals("locality")) {
-                    if (Config.usingGoogleMaps) {
-                        try {
-                            GoogleMap.drawableDest = BitmapFactory.decodeResource(context.getResources(), R.drawable.finish2);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        GoogleMap.drawableDest = BitmapFactory.decodeResource(context.getResources(), R.drawable.finish2);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     break;
                 } else {

@@ -102,7 +102,7 @@
 
     <string name="tx_81">Enable GPS to get a better initial position.\nAfter getting your initial position SmartNavi works independent from GPS! :)</string>
     <string name="tx_82">Initial positioning stopped.</string>
-    <string name="tx_83">Only for GoogleMaps</string>
+    <string name="tx_83"></string>
     <string name="tx_84">For navigation instructions</string>
     <string name="tx_85">Corrects your position regularly with GPS</string>
     <string name="tx_86">Map Provider</string>

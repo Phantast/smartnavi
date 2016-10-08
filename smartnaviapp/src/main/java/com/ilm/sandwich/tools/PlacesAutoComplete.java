@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.GoogleMap;
-import com.ilm.sandwich.OsmMap;
 import com.ilm.sandwich.sensors.Core;
 
 import org.json.JSONArray;
@@ -102,16 +101,11 @@ public class PlacesAutoComplete extends AsyncTask<String, String, StringBuilder>
                 int pos = i + 1;
                 cursor.addRow(new String[]{"" + pos, predsJsonArray.getJSONObject(i).getString("description")});
             }
-            if (Config.usingGoogleMaps) {
-                try {
-                    GoogleMap.cursor = cursor;
-                    GoogleMap.changeSuggestionAdapter.sendEmptyMessage(0);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                OsmMap.cursor = cursor;
-                OsmMap.changeSuggestionAdapter.sendEmptyMessage(0);
+            try {
+                GoogleMap.cursor = cursor;
+                GoogleMap.changeSuggestionAdapter.sendEmptyMessage(0);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
         } catch (JSONException e) {

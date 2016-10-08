@@ -2,7 +2,6 @@ package com.ilm.sandwich;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
@@ -11,7 +10,6 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -21,8 +19,6 @@ import io.fabric.sdk.android.Fabric;
 
 /**
  * This class is important because it checks if user has GooglePlayServices installed
- * if yes: GoogleMap is opened
- * if not: OsmMapAcitivity is opened
  *
  * @author Christian Henke
  *         www.smartnavi-app.com
@@ -31,14 +27,6 @@ public class Splashscreen extends Activity {
 
     public static final boolean PLAYSTORE_VERSION = true; //Used to differ between free and playStoreVersion
     public static final int REQUEST_GOOGLE_PLAY_SERVICES = 1972;
-    private Tracker mTracker;
-
-    @Override
-    protected void onResume() {
-        mTracker.setScreenName("Splashscreen");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        super.onResume();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +47,7 @@ public class Splashscreen extends Activity {
 
         // Obtain the shared Tracker instance.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mTracker = application.getDefaultTracker();
+        Tracker mTracker = application.getDefaultTracker();
 
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
         int code = api.isGooglePlayServicesAvailable(this);
@@ -80,12 +68,7 @@ public class Splashscreen extends Activity {
     }
 
     private void startMap() {
-        SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-        if (settings.getString("MapSource", "GoogleMaps").equalsIgnoreCase("GoogleMaps")) {
-            startActivity(new Intent(Splashscreen.this, GoogleMap.class));
-        } else {
-            startActivity(new Intent(Splashscreen.this, OsmMap.class));
-        }
+        startActivity(new Intent(Splashscreen.this, GoogleMap.class));
         finish();
     }
 

@@ -13,7 +13,6 @@
             android:id="@+id/generalBar"
             android:layout_width="wrap_content"
             android:layout_height="25dp"
-            android:layout_marginTop="1dp"
             android:background="#333333"
             android:focusable="true"
             android:focusableInTouchMode="true">
@@ -54,6 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
+                android:layout_marginTop="5dp"
                 android:paddingLeft="10dp"
                 android:shadowColor="#FFFFFF"
                 android:shadowDx="0"
@@ -70,6 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@+id/textView1"
+                android:layout_marginBottom="5dp"
                 android:layout_marginLeft="10dp"
                 android:layout_toLeftOf="@+id/editText"
                 android:shadowColor="#FFFFFF"
@@ -86,9 +87,9 @@
                 android:layout_height="36dp"
                 android:layout_alignBottom="@+id/textView2"
                 android:layout_alignParentRight="true"
-                android:layout_marginBottom="5dp"
                 android:layout_marginLeft="0dp"
-                android:layout_marginRight="15dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/edittxt"
                 android:gravity="center"
                 android:inputType="number"
@@ -130,69 +131,13 @@
                 android:textStyle="bold" />
         </RelativeLayout>
 
-        <!-- Map Provider -->
-
-        <RelativeLayout
-            android:id="@+id/mapProviderLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/mapSettingsBar"
-            android:layout_marginTop="1dp"
-            android:background="#f5f5f5"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:paddingBottom="3dp"
-            android:paddingTop="3dp">
-
-            <TextView
-                android:id="@+id/mapProviderText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginTop="5dp"
-                android:paddingLeft="10dp"
-                android:shadowColor="#FFFFFF"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="0.1"
-                android:text="@string/tx_86"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#4d4d4d"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/mapProviderTextBelow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/mapProviderText"
-                android:layout_toLeftOf="@+id/spinnerMapProvider"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:shadowColor="#FFFFFF"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="0.1"
-                android:text="@string/tx_87"
-                android:textColor="#4d4d4d"
-                android:textSize="12sp" />
-
-            <Spinner
-                android:id="@+id/spinnerMapProvider"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/mapProviderTextBelow"
-                android:layout_alignParentRight="true"
-                android:layout_marginBottom="5dp"
-                android:spinnerMode="dropdown" />
-        </RelativeLayout>
         <!-- Satellite View -->
 
         <RelativeLayout
             android:id="@+id/satellite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/mapProviderLayout"
+            android:layout_below="@+id/mapSettingsBar"
             android:layout_marginTop="1dp"
             android:background="#f5f5f5"
             android:focusable="true"
@@ -205,7 +150,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="10dp"
                 android:paddingLeft="10dp"
                 android:shadowColor="#FFFFFF"
                 android:shadowDx="0"
@@ -216,90 +161,15 @@
                 android:textColor="#4d4d4d"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/sateliteTextBelow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/sateliteText"
-                android:layout_toLeftOf="@+id/checkBoxSatellite"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:shadowColor="#FFFFFF"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="0.1"
-                android:text="@string/tx_83"
-                android:textColor="#4d4d4d"
-                android:textSize="12sp" />
-
             <CheckBox
                 android:id="@+id/checkBoxSatellite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/sateliteTextBelow"
                 android:layout_alignParentRight="true"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
                 android:button="@drawable/custom_checkbox" />
-        </RelativeLayout>
-
-        <!-- Offline Maps Path -->
-
-        <RelativeLayout
-            android:id="@+id/offlineMaps"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/satellite"
-            android:layout_marginTop="1dp"
-            android:background="#f5f5f5"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:paddingBottom="3dp"
-            android:paddingTop="3dp">
-
-            <TextView
-                android:id="@+id/offlineMapsText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginTop="5dp"
-                android:paddingLeft="10dp"
-                android:shadowColor="#FFFFFF"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="0.1"
-                android:text="@string/tx_29"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#4d4d4d"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/offlineMapsTextBelow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/offlineMapsText"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:shadowColor="#FFFFFF"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="0.1"
-                android:textColor="#4d4d4d"
-                android:textSize="12sp" />
-
-            <ImageView
-                android:id="@+id/choosefolderbutton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@+id/offlineMapsText"
-                android:layout_marginRight="5dp"
-                android:src="@android:drawable/ic_menu_more" />
-
-
         </RelativeLayout>
 
         <!-- GPS Korrektur -->
@@ -308,7 +178,7 @@
             android:id="@+id/gpsCorrection"
             android:layout_width="wrap_content"
             android:layout_height="25dp"
-            android:layout_below="@+id/offlineMaps"
+            android:layout_below="@+id/satellite"
             android:layout_marginTop="1dp"
             android:background="#333333"
             android:focusable="true"

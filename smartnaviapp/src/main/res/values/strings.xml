@@ -16,10 +16,10 @@
     <string name="tx_10">Please enter your body height, so that your step length can be determined.</string>
 
 
-    <string name="tx_11">Thanks to Madeliniz for the SmartNavi Logo:\nhttp://madeliniz.deviantart.com</string>
+    <string name="tx_11"></string>
     <string name="tx_12">Touch and hold the map to get extra options. So you can set your exact start position.</string>
     <string name="tx_13">Enter your\n<b>body height</b></string>
-    <string name="tx_14">Please enable\n<i>Mock Locations</i>\nunder:\> Settings\n> Development</string>
+    <string name="tx_14">Please <b>select</b> SmartNavi as <b>mock location app</b> at Developer options!</string>
     <string name="tx_15">Settings</string>
     <string name="tx_16">e.g. 180</string>
     <string name="tx_17">Set position</string>
@@ -36,7 +36,7 @@
     <string name="tx_26"></string>
     <string name="tx_27"></string>
     <string name="tx_28">Close</string>
-    <string name="tx_29">Offline Maps Storage Path</string>
+    <string name="tx_29"></string>
     <string name="tx_30">Could not get route information. Please try again later.</string>
 
 
@@ -103,7 +103,7 @@
 
     <string name="tx_81">Enable GPS to get a better initial position.\nAfter getting your initial position SmartNavi works independent from GPS! :)</string>
     <string name="tx_82">Initial positioning stopped.</string>
-    <string name="tx_83">Only for GoogleMaps</string>
+    <string name="tx_83"></string>
     <string name="tx_84">For navigation instructions</string>
     <string name="tx_85">Corrects your position regularly with GPS</string>
     <string name="tx_86">Map Provider</string>

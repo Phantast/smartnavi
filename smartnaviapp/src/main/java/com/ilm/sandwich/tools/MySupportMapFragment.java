@@ -5,12 +5,12 @@ package com.ilm.sandwich.tools;
  * Thanks to Stackoverflow: Gaucho
  */
 
-import com.google.android.gms.maps.SupportMapFragment;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.android.gms.maps.SupportMapFragment;
 
 public class MySupportMapFragment extends SupportMapFragment {
     public View mOriginalContentView;
