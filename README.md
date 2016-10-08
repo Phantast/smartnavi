@@ -13,8 +13,6 @@ Features
 * Step based navigation for pedestrians
 * Independent from GPS
 * Saves up to 80% energy compared to other navigation apps
-* Includes GoogleMaps and OpenStreetMaps
-* Can be used independent from Google Play Services
 * Background Service: SmartNavi can provide location data for your favorite apps while running in background
 * Export your route in an useful GPX file
 * SmartNavi respects your privacy!
@@ -46,11 +44,6 @@ License
     limitations under the License.
 
 For more information, see the License file.
-
-Other
-========
- Don't forget to insert your own GoogleMaps API Key (in AndroidManifest.xml),
- as well as a valid GooglePlaces API Key and MapQuest API Key (in Config.java).
 
 
  [1]: http://smartnavi-app.com/img/smartnavi-teaser.jpg
