@@ -6,7 +6,7 @@ Step based and GPS independent pedestrian navigation for Android
 
 ![SmartNavi Teaser][1]
 
-**See http://smartnavi-app.com for more information!**
+**See https://smartnavi-app.com for more information!**
 
 Features
 ==========
