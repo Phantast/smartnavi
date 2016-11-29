@@ -121,11 +121,11 @@
     <string name="tx_96"><b>GPS</b> から <b>独立</b> し、バッテリーを 80% まで節約します</string>
     <string name="tx_97">SmartNavi はオープンソースで、あなたのプライバシーを尊重します</string>
     <string name="tx_98">次へ</string>
-    <string name="tx_99">You cannot use Google Maps in the Open Source version of SmartNavi due to missing Google Play Services.</string>
-    <string name="tx_100">SmartNavi needs permission for location services.</string>
+    <string name="tx_99">オープンソース版の SmartNavi は Google Play サービスがないため Google マップを使用することができません。</string>
+    <string name="tx_100">SmartNavi は、位置情報サービスのアクセス許可が必要です。</string>
 
-    <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
-    <string name="tx_102">Not possible with Google Maps as Map Provider</string>
+    <string name="tx_101">SmartNavi は、データをストレージに保存するアクセス許可が必要です。</string>
+    <string name="tx_102">Google マップを地図プロバイダーとして利用できません</string>
 
     <string-array name="dimension">
         <item>cm</item>
