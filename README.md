@@ -8,6 +8,10 @@ Step based and GPS independent pedestrian navigation for Android
 
 **See https://smartnavi-app.com for more information!**
 
+**Donations via Bitcoin are very much appreciated: 1MPPXgwnkBeYASVdh1BL3LyqCftZ4qmTPB**
+
+**Donations via Paypal can be sent via link in the website.**
+
 Features
 ==========
 * Step based navigation for pedestrians
