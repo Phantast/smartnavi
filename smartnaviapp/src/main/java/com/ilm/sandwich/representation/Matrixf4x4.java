@@ -199,7 +199,6 @@ public class Matrixf4x4 {
      */
     public void multiplyMatrix4x4ByMatrix(Matrixf4x4 matrixf) {
 
-        // TODO implement Strassen Algorithm in place of this slower naive one.
         if (matrixValid && matrixf.isMatrixValid()) {
             float[] bufferMatrix = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             float[] matrix = matrixf.getMatrix();

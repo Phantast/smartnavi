@@ -7,13 +7,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.ilm.sandwich.tools.AnalyticsApplication;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class Webview extends AppCompatActivity {
 
-    private Tracker mTracker;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,9 +19,8 @@ public class Webview extends AppCompatActivity {
         setContentView(R.layout.activity_webview);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mTracker = application.getDefaultTracker();
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         getSupportActionBar().setTitle(getResources().getString(R.string.tx_90));
         WebView webview = new WebView(this);
@@ -31,14 +28,7 @@ public class Webview extends AppCompatActivity {
         setContentView(webview);
         WebSettings webSettings = webview.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        webview.loadUrl("http://smartnavi-app.com/offline");
-    }
-
-    @Override
-    protected void onResume() {
-        mTracker.setScreenName("OfflineMaps");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        super.onResume();
+        webview.loadUrl("https://smartnavi-app.com/offline");
     }
 
     @Override

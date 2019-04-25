@@ -19,12 +19,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.R;
 import com.ilm.sandwich.sensors.Core;
-import com.ilm.sandwich.tools.AnalyticsApplication;
 
 import java.text.DecimalFormat;
 
@@ -39,7 +37,7 @@ public class TutorialFragment extends Fragment {
     private View welcomeView;
     private boolean metricUnits = true;
     private View fragmentView;
-    private Tracker mTracker;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public TutorialFragment() {
     }
@@ -48,14 +46,10 @@ public class TutorialFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         fragmentView = view;
-        SharedPreferences settings = this.getActivity().getSharedPreferences(this.getActivity().getPackageName() + "_preferences", Context.MODE_PRIVATE);
-        boolean trackingAllowed = settings.getBoolean("nutzdaten", true);
 
-        // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) this.getActivity().getApplication();
-        mTracker = application.getDefaultTracker();
-        mTracker.setScreenName("TutorialFragment");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(view.getContext());
+        mFirebaseAnalytics.logEvent("Tutorial_Start", null);
 
         startTutorial();
     }
@@ -93,14 +87,13 @@ public class TutorialFragment extends Fragment {
         welcomeView = fragmentView.findViewById(R.id.welcomeView);
         welcomeView.setVisibility(View.VISIBLE);
 
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.TUTORIAL_BEGIN, null);
+
         Button welcomeButton = (Button) fragmentView.findViewById(R.id.welcomeButton);
         welcomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mTracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("Action")
-                        .setAction("Welcome_Button_pressed")
-                        .build());
+                mFirebaseAnalytics.logEvent("Tutorial_Button1_pressed", null);
                 welcomeView.setVisibility(View.INVISIBLE);
                 tutorialOverlay = fragmentView.findViewById(R.id.tutorialOverlay);
                 tutorialOverlay.setVisibility(View.VISIBLE);
@@ -157,11 +150,8 @@ public class TutorialFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                mTracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("Action")
-                        .setAction("Tutorial_Start_Button_pressed")
-                        .build());
 
+                mFirebaseAnalytics.logEvent("Tutorial_Button2_pressed", null);
                 boolean tutorialDone = false;
                 final EditText heightField = (EditText) fragmentView.findViewById(R.id.tutorialEditText);
                 int op = heightField.length();
@@ -192,6 +182,7 @@ public class TutorialFragment extends Fragment {
 
                 if (tutorialDone) {
                     // TutorialFragment finished
+                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.TUTORIAL_COMPLETE, null);
                     if (mListener != null) {
                         mListener.onTutorialFinished();
                     }

@@ -28,9 +28,8 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.ilm.sandwich.tools.AnalyticsApplication;
+
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ilm.sandwich.tools.Config;
 
 import java.text.DecimalFormat;
@@ -50,14 +49,7 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
     CheckBox checkBoxExport;
     private LocationManager mLocationManager;
     private SubMenu subMenu1;
-    private Tracker mTracker;
-
-    @Override
-    protected void onResume() {
-        mTracker.setScreenName("Settings");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        super.onResume();
-    }
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +58,8 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         getSupportActionBar().setTitle(getResources().getString(R.string.tx_15));
         setContentView(R.layout.activity_settings);
 
-        // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mTracker = application.getDefaultTracker();
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
 
@@ -147,10 +138,7 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 new writeSettings("gpstimer", seekBar.getProgress()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                mTracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("Action")
-                        .setAction("Setting_Changed_Autocorrect_to_" + seekBar.getProgress())
-                        .build());
+                mFirebaseAnalytics.logEvent("Settings_Changed_Autocorrect_to_" + seekBar.getProgress(), null);
                 // start Autocorrect after 3sek
                 // because after this time the activity_settings are surely updated correctly
                 try {
@@ -240,10 +228,7 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
                 editText.setFocusable(true);
             }
         }
-        mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Action")
-                .setAction("Setting_Changed_bodyheight")
-                .build());
+        mFirebaseAnalytics.logEvent("Settings_Changed_Bodyheight", null);
         return false;
     }
 
@@ -332,10 +317,7 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         } else if (buttonView.getId() == R.id.checkBoxVibration) {
             key = "vibration";
         }
-        mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Action")
-                .setAction("Settings_" + key + "_changed_to_" + isChecked)
-                .build());
+        mFirebaseAnalytics.logEvent("Settings_" + key + "_changed_to_" + isChecked, null);
         new writeSettings(key, isChecked).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 

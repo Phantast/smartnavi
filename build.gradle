@@ -6,11 +6,13 @@ buildscript {
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url 'https://maven.fabric.io/public' }
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
-        classpath 'io.fabric.tools:gradle:1.+'
-        classpath 'com.google.gms:google-services:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath 'io.fabric.tools:gradle:1.27.1'
+        classpath 'com.google.gms:google-services:4.2.0'
+        classpath 'io.fabric.tools:gradle:1.27.1'
     }
 }
 
@@ -18,6 +20,7 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
+        google()
         maven { url "https://jitpack.io" }
         maven { url 'https://maven.fabric.io/public' }
     }

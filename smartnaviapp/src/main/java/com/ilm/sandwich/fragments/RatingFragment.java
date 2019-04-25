@@ -14,11 +14,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.R;
-import com.ilm.sandwich.tools.AnalyticsApplication;
 import com.ilm.sandwich.tools.Config;
 
 /**
@@ -30,7 +28,7 @@ public class RatingFragment extends Fragment {
 
     private onRatingFinishedListener mListener;
     private View fragmentView;
-    private Tracker mTracker;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public RatingFragment() {
     }
@@ -40,11 +38,9 @@ public class RatingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         fragmentView = view;
 
-        // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) this.getActivity().getApplication();
-        mTracker = application.getDefaultTracker();
-        mTracker.setScreenName("RatingFragment");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(view.getContext());
+        mFirebaseAnalytics.logEvent("Rating_Popup_Shown", null);
 
         showRateDialog();
     }
@@ -84,10 +80,7 @@ public class RatingFragment extends Fragment {
             rateButton1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mTracker.send(new HitBuilders.EventBuilder()
-                            .setCategory("Action")
-                            .setAction("Rating_No")
-                            .build());
+                    mFirebaseAnalytics.logEvent("Rating_Popup_No", null);
                     SharedPreferences prefs = RatingFragment.this.getActivity().getSharedPreferences(RatingFragment.this.getActivity().getPackageName() + "_preferences", 0);
                     int notRated = prefs.getInt("ratingDenied", 0) + 1;
                     if (BuildConfig.debug)
@@ -115,10 +108,7 @@ public class RatingFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     SharedPreferences prefs = RatingFragment.this.getActivity().getSharedPreferences(RatingFragment.this.getActivity().getPackageName() + "_preferences", 0);
-                    mTracker.send(new HitBuilders.EventBuilder()
-                            .setCategory("Action")
-                            .setAction("Rating_Yes")
-                            .build());
+                    mFirebaseAnalytics.logEvent("Rating_Popup_Yes", null);
                     prefs.edit().putInt("ratingDenied", 100).apply();
                     prefs.edit().putBoolean("neverShowRatingAgain", true).apply();
                     if (mListener != null) {
@@ -136,10 +126,7 @@ public class RatingFragment extends Fragment {
                 public void onClick(View v) {
                     SharedPreferences prefs = RatingFragment.this.getActivity().getSharedPreferences(RatingFragment.this.getActivity().getPackageName() + "_preferences", 0);
                     prefs.edit().putInt("ratingDenied", 100).apply();
-                    mTracker.send(new HitBuilders.EventBuilder()
-                            .setCategory("Action")
-                            .setAction("Rating_Yes")
-                            .build());
+                    mFirebaseAnalytics.logEvent("Rating_Popup_Yes", null);
                     prefs.edit().putBoolean("neverShowRatingAgain", true).apply();
                     if (mListener != null) {
                         mListener.onRatingFinished();

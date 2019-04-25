@@ -34,7 +34,7 @@ public class PlacesAutoComplete extends AsyncTask<String, String, StringBuilder>
 
         try {
             StringBuilder sb = new StringBuilder(Config.PLACES_API_URL + TYPE_AUTOCOMPLETE + OUT_JSON);
-            sb.append("?sensor=true&key=" + Config.PLACES_API_KEY);
+            sb.append("?sensor=true&key=" + Config.PLACES_AND_DIRECTIONS_API_KEY);
             sb.append("&language=" + Locale.getDefault().getLanguage());
             sb.append("&location=" + Core.startLat + "," + Core.startLon);
             sb.append("&radius=1000");
@@ -46,7 +46,7 @@ public class PlacesAutoComplete extends AsyncTask<String, String, StringBuilder>
             URL url = new URL(sb.toString());
             conn = (HttpURLConnection) url.openConnection();
             try {
-                conn.setRequestProperty("Referer", "smartnavi-app.com/app/places");
+                conn.setRequestProperty("Referer", Config.AUTOCOMPLETE_REFERRER);
             } catch (Exception e) {
                 e.printStackTrace();
             }

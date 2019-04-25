@@ -271,6 +271,7 @@ public class Core implements SensorEventListener {
         magnUnits = 0;
         startTime = System.nanoTime();
         try {
+            mSensorManager.unregisterListener(Core.this);
             mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
             mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME);
             if (BuildConfig.debug)
@@ -290,7 +291,7 @@ public class Core implements SensorEventListener {
             mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
             mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
             if (BuildConfig.debug)
-                Log.i("Sensors", "Sensors activated!");
+                Log.i("Sensors", "Sensors reactivated!");
             if (gyroExists) {
                 //use gyroscope with impovedOrientationProvider
                 mOrientationProvider.start();

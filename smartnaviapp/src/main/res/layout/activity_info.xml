@@ -140,6 +140,7 @@
                 android:textColor="#4d4d4d"
                 android:textColorLink="#86b530"
                 android:textSize="13sp" />
+
         </RelativeLayout>
 
         <RelativeLayout
@@ -184,6 +185,22 @@
                 android:textColor="#4d4d4d"
                 android:textSize="12sp" />
 
+            <TextView
+                android:id="@+id/privacLinkInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text7"
+                android:layout_marginTop="20dp"
+                android:autoLink="web"
+                android:gravity="center_vertical|center_horizontal"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="0.1"
+                android:text="@string/tx_102"
+                android:textColor="#4d4d4d"
+                android:textColorLink="#86b530"
+                android:textSize="13sp" />
         </RelativeLayout>
     </RelativeLayout>
 </ScrollView>

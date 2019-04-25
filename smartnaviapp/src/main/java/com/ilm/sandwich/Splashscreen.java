@@ -7,15 +7,11 @@ import android.os.Handler;
 import android.view.Window;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.core.CrashlyticsCore;
-import com.google.android.gms.analytics.Tracker;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.ilm.sandwich.tools.AnalyticsApplication;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
-import io.fabric.sdk.android.Fabric;
 
 /**
  * This class is important because it checks if user has GooglePlayServices installed
@@ -27,27 +23,18 @@ public class Splashscreen extends Activity {
 
     public static final boolean PLAYSTORE_VERSION = true; //Used to differ between free and playStoreVersion
     public static final int REQUEST_GOOGLE_PLAY_SERVICES = 1972;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(BuildConfig.debug){
-            Fabric.with(this, new Crashlytics.Builder().core(new CrashlyticsCore.Builder().disabled(BuildConfig.debug).build()).build());
-        }else{
-            final Fabric fabric = new Fabric.Builder(this)
-                    .kits(new Crashlytics())
-                    .debuggable(true)
-                    .build();
-            Fabric.with(fabric);
-            Fabric.with(this, new Answers());
-        }
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         //Remove title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splashscreen);
 
-        // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        Tracker mTracker = application.getDefaultTracker();
 
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
         int code = api.isGooglePlayServicesAvailable(this);

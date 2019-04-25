@@ -6,38 +6,28 @@
 
     <string name="app_name">SmartNavi</string>
     <string name="tx_01"><b>歩行ベース</b> のナビゲーションを開始</string>
-    <string name="tx_02">住所</string>
     <string name="tx_03">検索</string>
     <string name="tx_04">経路の読み込み中。しばらくお待ちください&#8230;</string>
     <string name="tx_05">体の前にデバイスを持ってください</string>
     <string name="tx_06">SmartNavi が初期の場所を取得できませんでした。\nインターネットまたは GPS を有効にして、SmartNaviを再起動してください。\nまたは、サポート: smartnavi@2imba.de にご連絡ください</string>
     <string name="tx_07">SmartNavi はオープンソースで、\n歩行ベースの GPS から独立したナビゲーションを提供します。</string>
     <string name="tx_08"><u>動作方法:</u></string>
-    <string name="tx_09">お気軽にご連絡ください:\ncontact@smartnavi-app.com</string>
+    <string name="tx_09">お気軽にご連絡ください:\nchristian6767@gmail.com</string>
     <string name="tx_10">あなたの身長を入力してください。歩幅を決定します。</string>
 
 
-    <string name="tx_11">SmartNavi ロゴの Madeliniz に感謝します:\nhttp://madeliniz.deviantart.com</string>
     <string name="tx_12">地図を長押しすると追加のオプションを表示します。そこで、あなたの正確な場所を設定することができます。</string>
     <string name="tx_13"><b>身長</b>\nを入力してください</string>
     <string name="tx_14">\> 設定\n> 開発 から、\n<i>モックの位置</i>\nを有効にしてください</string>
     <string name="tx_15">設定</string>
-    <string name="tx_16">例 180</string>
-    <string name="tx_17">場所を設定</string>
     <string name="tx_18">長押し</string>
-    <string name="tx_19">詳細な情報は Web サイト:\nwww.smartnavi-app.com</string>
-    <string name="tx_20">身長が正しい値ではありません。数字のみ入力できます。</string>
+    <string name="tx_19">詳細な情報は Web サイト:\nhttps://smartnavi-app.com</string>
 
 
     <string name="tx_21">動作</string>
     <string name="tx_22">&#160;方法</string>
-    <string name="tx_23">例 70</string>
     <string name="tx_24">結果はありません。インターネット接続を確認してもう一度試してください。</string>
     <string name="tx_25">無効にしました</string>
-    <string name="tx_26"></string>
-    <string name="tx_27"></string>
-    <string name="tx_28">閉じる</string>
-    <string name="tx_29">Offline Maps Storage Path</string>
     <string name="tx_30">経路情報を取得できません。後でもう一度試してください。</string>
 
 
@@ -47,7 +37,6 @@
     <string name="tx_34">SmartNavi を評価</string>
     <string name="tx_35">キャンセル</string>
     <string name="tx_36">設定を開く</string>
-    <string name="tx_37">後で</string>
     <string name="tx_38">OK</string>
     <string name="tx_39">後で</string>
     <string name="tx_40">Play ストアで今すぐ評価</string>
@@ -56,20 +45,15 @@
 	<string name="tx_41">SmartNavi は、加速度計と磁気センサーのデータを使用して、歩数を認識します。
 	    歩行により、対応する方向で場所を変更します。内部エラー訂正により、しっかりした精度を保証します。
 	    開始場所は GPS または UMTS/Wifi/GSM いずれかの位置情報を使用して位置決めします。GPS の代わりに、内部センサーを使用すると SmartNavi は、80 ％までエネルギーと、したがってバッテリー寿命を節約することができます。</string>
-    <string name="tx_42">いいえ結構です</string>
-    <string name="tx_43">残念ながら、お使いのデバイスは磁気センサーがないようです (コンパス)。 SmartNavi はそれがないと動作しません。\n詳細な情報は Web サイト:\nwww.smartnavi.mobi\n</string>
+    <string name="tx_43">残念ながら、お使いのデバイスは磁気センサーがないようです (コンパス)。 SmartNavi はそれがないと動作しません。\n詳細な情報は Web サイト:\nhttps://smartnavi-app.com\n</string>
     <string name="tx_44">設定の調整:</string>
-    <string name="tx_45"><u>動作方法:</u></string>
-    <string name="tx_46"><u>設定:</u></string>
     <string name="tx_47">インターネット接続を確認してください。</string>
-    <string name="tx_48">残念ながら SmartNavi がお使いの加速度計を初期化できません。 \nサポートは Web サイトからご連絡ください:\nwww.smartnavi.mobi\n</string>
     <string name="tx_49">ご注意ください! GPS を有効にしてください!</string>
     <string name="tx_50">チュートリアル</string>
 
 
     <string name="tx_51">身長</string>
     <string name="tx_52">身長を使用して歩幅を計算します</string>
-    <string name="tx_53">身長を入力してください</string>
     <string name="tx_54">全般</string>
     <string name="tx_55">振動</string>
     <string name="tx_56">衛星表示</string>
@@ -79,8 +63,6 @@
     <string name="tx_60">経路をエクスポート</string>
 
 
-    <string name="tx_61">初期の場所決めを停止しました。</string>
-    <string name="tx_62">場所</string>
     <string name="tx_63">自動修正</string>
     <string name="tx_64">バックグランド サービス</string>
     <string name="tx_65">アプリについて</string>
@@ -98,34 +80,23 @@
     <string name="tx_75">長寿命のバッテリー</string>
     <string name="tx_76">均衡のとれた</string>
     <string name="tx_77">リクエストの結果が見つかりませんでした。</string>
-    <string name="tx_78"></string>
-    <string name="tx_79"></string>
     <string name="tx_80">高精度</string>
 
     <string name="tx_81">正確な初期の場所を取得するには GPS を有効にしてください。\n初期の場所を取得した後は SmartNavi は GPS から独立して動作します! :)</string>
     <string name="tx_82">初期の場所決めを停止しました。</string>
-    <string name="tx_83"></string>
     <string name="tx_84">ナビゲーション手順用</string>
     <string name="tx_85">GPS で定期的に自分の位置を補正する</string>
-    <string name="tx_86">地図プロバイダー</string>
-    <string name="tx_87">マップ タイル プロバイダーを変更</string>
     <string name="tx_88">フォルダー \"smartnavi\" に GPX ファイルを作成します</string>
-    <string name="tx_89">ベータテスト コミュニティに参加してください &lt;br&gt; &lt;a href="https://plus.google.com/communities/105614123040262375968"&gt;ベータテスト コミュニティ&lt;/a&gt;</string>
     <string name="tx_90">オフライン地図</string>
 
-    <string name="tx_91">お使いのデバイスにオフライン地図を保存するにはチュートリアルを参照してください。詳細な情報は Web サイトを参照してください。</string>
-    <string name="tx_92">smartnavi-app.com/offline</string>
-    <string name="tx_93">Web サイトを開く</string>
     <string name="tx_94">ようこそ!</string>
     <string name="tx_95">SmartNavi は内部センサーを使用して <b>歩行</b> を認識します</string>
     <string name="tx_96"><b>GPS</b> から <b>独立</b> し、バッテリーを 80% まで節約します</string>
     <string name="tx_97">SmartNavi はオープンソースで、あなたのプライバシーを尊重します</string>
     <string name="tx_98">次へ</string>
-    <string name="tx_99">オープンソース版の SmartNavi は Google Play サービスがないため Google マップを使用することができません。</string>
     <string name="tx_100">SmartNavi は、位置情報サービスのアクセス許可が必要です。</string>
 
     <string name="tx_101">SmartNavi は、データをストレージに保存するアクセス許可が必要です。</string>
-    <string name="tx_102">Google マップを地図プロバイダーとして利用できません</string>
 
     <string-array name="dimension">
         <item>cm</item>
@@ -135,17 +106,6 @@
     <string-array name="possetzen">
         <item>場所を設定</item>
         <item>目的地を設定</item>
-    </string-array>
-
-    <string-array name="possetzen2">
-        <item>場所を設定</item>
-        <item>目的地を設定</item>
-    </string-array>
-
-    <string-array name="mapProvider">
-        <item>Google マップ</item>
-        <item>MapQuest OSM</item>
-        <item>Mapnik OSM</item>
     </string-array>
 
 

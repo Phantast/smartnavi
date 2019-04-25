@@ -51,8 +51,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -69,10 +68,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ilm.sandwich.fragments.RatingFragment;
 import com.ilm.sandwich.fragments.TutorialFragment;
 import com.ilm.sandwich.sensors.Core;
-import com.ilm.sandwich.tools.AnalyticsApplication;
 import com.ilm.sandwich.tools.Config;
 import com.ilm.sandwich.tools.HttpRequests;
 import com.ilm.sandwich.tools.Locationer;
@@ -92,7 +91,7 @@ import java.util.Locale;
  * MapActivitiy for Google Maps
  *
  * @author Christian Henke
- *         www.smartnavi-app.com
+ * www.smartnavi-app.com
  */
 public class GoogleMap extends AppCompatActivity implements Locationer.onLocationUpdateListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, TutorialFragment.onTutorialFinishedListener, Core.onStepUpdateListener, RatingFragment.onRatingFinishedListener {
@@ -145,7 +144,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     int segmentCounter;
     TutorialFragment tutorialFragment;
     RatingFragment ratingFragment;
-    private Tracker mTracker;
+    private FirebaseAnalytics mFirebaseAnalytics;
     private com.google.android.gms.maps.GoogleMap map;
     private String[] html_instructions = new String[31];
     private String[] polylineArray = new String[31];
@@ -171,7 +170,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         try {
             actualMarker[0].setPosition(startLatLng);
         } catch (Exception e) {
-            if (BuildConfig.debug)
                 e.printStackTrace();
         }
         if (follow) {
@@ -199,9 +197,8 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         toolbar = (Toolbar) findViewById(R.id.toolbar_googlemap); // Attaching the layout to the toolbar object
         setSupportActionBar(toolbar);                   // Setting toolbar as the ActionBar with setSupportActionBar() call
 
-        // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mTracker = application.getDefaultTracker();
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -214,7 +211,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                         if (list != null && list.getVisibility() == View.VISIBLE)
                             list.setVisibility(View.INVISIBLE);
                     } catch (Exception e) {
-                        if (BuildConfig.debug)
                             e.printStackTrace();
                     }
                     setFollowOn();
@@ -239,17 +235,11 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         // If request is cancelled, the result arrays are empty.
         if (grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Action")
-                    .setAction("Granted_Google_Location")
-                    .build());
+            mFirebaseAnalytics.logEvent("Granted_Google_Location", null);
             proceedOnCreate();
         } else {
             Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_100), Toast.LENGTH_LONG).show();
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Action")
-                    .setAction("Denied_Google_Location")
-                    .build());
+            mFirebaseAnalytics.logEvent("Denied_Google_Location", null);
             finish();
         }
     }
@@ -287,10 +277,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         map.setOnMapLongClickListener(new OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng arg0) {
-                mTracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("Action")
-                        .setAction("Longpress_GoogleMap")
-                        .build());
+                mFirebaseAnalytics.logEvent("Longpress_Map", null);
                 longpressLocation = arg0;
                 if (longPressMarker != null) {
                     if (longPressMarker.isVisible()) {
@@ -385,9 +372,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                     Core.stepLength = (float) (savedBodyHeight * 2.54 / 222);
                 }
             } catch (NumberFormatException e) {
-                if (BuildConfig.debug) {
                     e.printStackTrace();
-                }
             }
         } else {
             map.getUiSettings().setAllGesturesEnabled(false);
@@ -411,20 +396,14 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 if (arg2 == 0) {
                     setHome();
-                    mTracker.send(new HitBuilders.EventBuilder()
-                            .setCategory("Action")
-                            .setAction("SetPosition_after_Longpress")
-                            .build());
+                    mFirebaseAnalytics.logEvent("SetPosition_after_Longpress", null);
                     list.setVisibility(View.INVISIBLE);
                     listVisible = false;
                     longPressMarker.remove();
                     positionUpdate();
                 } else {
                     fingerDestination(longpressLocation);
-                    mTracker.send(new HitBuilders.EventBuilder()
-                            .setCategory("Action")
-                            .setAction("SetDestination_after_Longpress")
-                            .build());
+                    mFirebaseAnalytics.logEvent("SetDestination_after_Longpress", null);
                     list.setVisibility(View.INVISIBLE);
                     listVisible = false;
                     longPressMarker.remove();
@@ -479,10 +458,14 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                             listHandler.sendEmptyMessageDelayed(9, 5000);
                         }
                     }, 5000);
+                    if (BuildConfig.DEBUG)
+                        Log.i("SmartNavi", "Reactivate Sensors regularly because Background service is running.");
                 } else if (msg.what == 10) {
                     //BackgroundService is created, so dont stop sensors
                     if (mCore != null)
                         mCore.reactivateSensors();
+                    if (BuildConfig.DEBUG)
+                        Log.i("SmartNavi", "Reactivate Sensors because Background service is running.");
                 } else if (msg.what == 11) {
                     setFollowOn();
                     startLatLng = new LatLng(Core.startLat, Core.startLon);
@@ -647,7 +630,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 new routeTask().execute("zielortSollRoutenTaskSelbstRausfinden");
             }
         } catch (Exception e) {
-            if (BuildConfig.debug)
                 e.printStackTrace();
         }
     }
@@ -766,8 +748,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 13.0F)));
         }
         followMe = true;
-        mCore = new Core(GoogleMap.this);
-        mCore.startSensors();
+        if (mCore == null) {
+            mCore = new Core(GoogleMap.this);
+            mCore.startSensors();
+        }
     }
 
     private List<LatLng> decodePoly(String encoded) {
@@ -893,9 +877,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     protected void onResume() {
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
         int status = api.isGooglePlayServicesAvailable(this);
-
-        mTracker.setScreenName("GoogleMap");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         if (status != ConnectionResult.SUCCESS) {
             new changeSettings("MapSource", "MapQuestOSM").execute();
@@ -1092,10 +1073,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     }
 
     public void routeStartAnimation(LatLng northeast, LatLng southwest) {
-        mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Action")
-                .setAction("RouteCreated_on_GoogleMap")
-                .build());
+        mFirebaseAnalytics.logEvent("Route_Created_Successfully", null);
         LatLngBounds grenzen = new LatLngBounds(southwest, northeast);
         map.animateCamera(CameraUpdateFactory.newLatLngBounds(grenzen, 100));
         listHandler.sendEmptyMessageDelayed(11, 3000);
@@ -1126,7 +1104,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         });
     }
     */
-
 
     private void appRateDialog() {
         SharedPreferences prefs = getSharedPreferences(getPackageName() + "_preferences", 0);
@@ -1173,17 +1150,13 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     public void abortGPS(final View view) {
         // Abort GPS was pressed (ProgressBar was pressed)
         try {
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Action")
-                    .setAction("GPS_canceled_GoogleMap")
-                    .build());
+            mFirebaseAnalytics.logEvent("User_Canceled_GPS", null);
             mLocationer.deactivateLocationer();
             ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
             if (mProgressBar != null) {
                 mProgressBar.setVisibility(View.GONE);
             }
         } catch (Exception e) {
-            if (BuildConfig.debug)
                 e.printStackTrace();
         }
         Toast.makeText(this, getResources().getString(R.string.tx_82), Toast.LENGTH_SHORT).show();
@@ -1196,16 +1169,11 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             dialogGPS.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
             dialogGPS.setCanceledOnTouchOutside(false);
             dialogGPS.show();
-            mTracker.setScreenName("Dialog-GPS-enable");
-            mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-
+            mFirebaseAnalytics.logEvent("GPS_Dialog_shown", null);
             Button cancel = (Button) dialogGPS.findViewById(R.id.dialogCancelgps);
             cancel.setOnClickListener(new OnClickListener() {
                 public void onClick(View arg0) {
-                    mTracker.send(new HitBuilders.EventBuilder()
-                            .setCategory("Action")
-                            .setAction("GPS_dialog_canceled_GoogleMap")
-                            .build());
+                    mFirebaseAnalytics.logEvent("GPS_Dialog_canceled", null);
                     dialogGPS.dismiss();
                 }
             });
@@ -1220,10 +1188,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                         startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
                         userSwitchedGps = true;
                     }
-                    mTracker.send(new HitBuilders.EventBuilder()
-                            .setCategory("Action")
-                            .setAction("GPS_dialog_jumpToSettings_GoogleMap")
-                            .build());
+                    mFirebaseAnalytics.logEvent("GPS_Dialog_JumpToSettings", null);
                     dialogGPS.dismiss();
                 }
             });
@@ -1281,8 +1246,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 } else if (query.equalsIgnoreCase("gyrooff")) {
                     mCore.gyroExists = false;
                     mCore.reactivateSensors();
-                }
-                else if (query.equalsIgnoreCase("rateme")) {
+                } else if (query.equalsIgnoreCase("rateme")) {
                     // show RatingFragment
                     Log.i("Rating", "Showing Rating Fragment");
                     FragmentManager fragmentManager = getSupportFragmentManager();
@@ -1307,6 +1271,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                     if (Config.PLACES_API_UNDER_LIMIT) {
                         new PlacesTextSeachAsync().execute(query);
                     } else {
+                        Log.i("Route", "Query Limit reached! Perform Geocode Task.");
                         new geocodeTask().execute(query);
                     }
                 }
@@ -1316,7 +1281,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             @Override
             public boolean onQueryTextChange(String query) {
 
-                // min 3 chars before autocomplete
+                // min X chars before autocomplete
                 if (query.length() >= Config.PLACES_SEARCH_QUERY_CHARACTER_LIMIT) {
                     // prevent hammering
                     if (!suggestionsInProgress) {
@@ -1434,7 +1399,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         fragmentTransaction.remove(ratingFragment).commit();
     }
 
-
     private class routeTask extends AsyncTask<String, Void, Void> {
 
         private String endAddress;
@@ -1444,19 +1408,22 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         private boolean getPathSuccess;
         private String firstDistance;
 
-        protected void getPath(LatLng src, LatLng dest) {
+
+        private void getPath(LatLng src, LatLng dest) {
             waitedAtStart = false;
             counterRouteComplexity = phases = segmentCounter = 0;
 
             HttpRequests httpJSON = new HttpRequests();
-            httpJSON.setURL("http://maps.googleapis.com/maps/api/directions/json");
+            httpJSON.setURL("https://maps.googleapis.com/maps/api/directions/json");
             httpJSON.setMethod("GET");
             httpJSON.addValue("origin", src.latitude + "," + src.longitude);
             httpJSON.addValue("destination", dest.latitude + "," + dest.longitude);
             httpJSON.addValue("sensor", "true");
+            httpJSON.addValue("key", Config.PLACES_AND_DIRECTIONS_API_KEY); //Don't you even think to use that API key in another application. Unauthorized use is restricted via API settings and not possible in other applications.
             httpJSON.addValue("mode", "walking");
             httpJSON.addValue("language", language);
             String response = httpJSON.doRequest();
+            Log.i("GeocodeTask Response", response);
             try {
                 getPathSuccess = true;
                 JSONObject json = new JSONObject(response);
@@ -1518,10 +1485,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 phases = stepsArray.length();
 
             } catch (Exception e) {
-                if (BuildConfig.debug)
-                    e.printStackTrace();
+                e.printStackTrace();
                 getPathSuccess = false;
             }
+
         }
 
         @Override
@@ -1530,7 +1497,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             try {
                 getPath(GoogleMap.startLatLng, GoogleMap.destLatLng);
             } catch (Exception e) {
-                if (BuildConfig.debug)
                     e.printStackTrace();
             }
             return null;
@@ -1579,7 +1545,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 }
 
             } catch (Exception e) {
-                if (BuildConfig.debug)
                     e.printStackTrace();
             }
         }
@@ -1617,7 +1582,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                     showRouteInfo();
                     new routeTask().execute(query);
                 } catch (JSONException e) {
-                    if (BuildConfig.debug)
                         e.printStackTrace();
                 }
             }
@@ -1685,7 +1649,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 }
             } catch (Exception e) {
                 geocodeSuccess = false;
-                if (BuildConfig.debug)
                     e.printStackTrace();
             }
             return destination[0];

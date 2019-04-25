@@ -312,8 +312,7 @@ public class Locationer implements GoogleApiClient.ConnectionCallbacks,
                 try {
                     deactivateLocationer();
                 } catch (Exception e) {
-                    if (BuildConfig.debug)
-                        e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
 

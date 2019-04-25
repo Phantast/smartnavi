@@ -2,7 +2,7 @@ package com.ilm.sandwich;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -21,10 +22,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ilm.sandwich.sensors.Core;
-import com.ilm.sandwich.tools.AnalyticsApplication;
+
 import com.ilm.sandwich.tools.Config;
 
 /**
@@ -38,14 +38,14 @@ public class BackgroundService extends AppCompatActivity {
     public static double sGeoLon;
     public static int steps = 0;
     static Location loc;
+    private FirebaseAnalytics mFirebaseAnalytics;
     static String mocLocationProvider;
     static LocationManager geoLocationManager;
-    Notification notification;
     Button serviceButton;
-    NotificationManager notificationManager;
+    NotificationManagerCompat notificationManager;
     private boolean shouldStart = true;
 
-    private Tracker mTracker;
+
 
     public static void pauseFakeProvider() {
         if (BuildConfig.debug)
@@ -112,12 +112,6 @@ public class BackgroundService extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onResume() {
-        mTracker.setScreenName("BackgroundService");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        super.onResume();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,9 +122,8 @@ public class BackgroundService extends AppCompatActivity {
         getSupportActionBar().setTitle(getResources().getString(R.string.tx_64));
         geoLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mTracker = application.getDefaultTracker();
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         //restart Sensors
         try {
@@ -142,23 +135,27 @@ public class BackgroundService extends AppCompatActivity {
             try {
                 geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
             } catch (Exception e2) {
-                // e.printStackTrace();
+                if (BuildConfig.DEBUG)
+                    e.printStackTrace();
             }
             try {
                 geoLocationManager.clearTestProviderEnabled(mocLocationProvider);
             } catch (Exception e3) {
-                // e.printStackTrace();
+                if (BuildConfig.DEBUG)
+                    e.printStackTrace();
             }
             try {
                 geoLocationManager.removeTestProvider(mocLocationProvider);
             } catch (Exception e4) {
-                // e.printStackTrace();
+                if (BuildConfig.DEBUG)
+                    e.printStackTrace();
             }
             try {
-                notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                notificationManager = NotificationManagerCompat.from(this);
                 notificationManager.cancelAll();
             } catch (Exception e5) {
-                // e.printStackTrace();
+                if (BuildConfig.DEBUG)
+                    e.printStackTrace();
             }
             finish();
         }
@@ -192,11 +189,22 @@ public class BackgroundService extends AppCompatActivity {
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, true);
             geoLocationManager.setTestProviderStatus(mocLocationProvider, 2, null, System.currentTimeMillis());
 
-            notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 
             Intent intent = new Intent(this, BackgroundService.class);
             PendingIntent activity = PendingIntent.getActivity(this, 0, intent, 0);
+
+            notificationManager = NotificationManagerCompat.from(this);
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "21986938")
+                    .setContentIntent(activity)
+                    .setContentTitle(getApplicationContext().getResources().getString(R.string.tx_72))
+                    .setContentText(getApplicationContext().getResources().getString(R.string.tx_73))
+                    .setSmallIcon(R.drawable.ic_stat_maps_directions_walk)
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .setOngoing(true)
+                    .setAutoCancel(false);
+            /*
+            notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(
                     this);
             notification = builder.setContentIntent(activity)
@@ -205,8 +213,23 @@ public class BackgroundService extends AppCompatActivity {
                     .setSmallIcon(R.drawable.ic_stat_maps_directions_walk)
                     .setOngoing(true)
                     .build();
+            */
 
-            notificationManager.notify(0, notification);
+            // Create the NotificationChannel, but only on API 26+ because
+            // the NotificationChannel class is new and not in the support library
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CharSequence name = "SmartNavi";
+                String description = "SmartNavi Background Service Notifications";
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel channel = new NotificationChannel("21986938", name, importance);
+                channel.setDescription(description);
+                // Register the channel with the system; you can't change the importance
+                // or other notification behaviors after this
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
+            }
+
+            notificationManager.notify(0, notificationBuilder.build());
             serviceButton.setText(getApplicationContext().getResources().getString(R.string.tx_69));
 
             shouldStart = false;
@@ -218,11 +241,7 @@ public class BackgroundService extends AppCompatActivity {
             //other foreign third party apps may stop them
             GoogleMap.listHandler.sendEmptyMessage(9);
 
-
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Action")
-                    .setAction("Backround_service_start_success")
-                    .build());
+            mFirebaseAnalytics.logEvent("BackgroundService_Start_Success", null);
 
             Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);
@@ -230,10 +249,7 @@ public class BackgroundService extends AppCompatActivity {
             startActivity(startMain);
 
         } catch (SecurityException sece) {
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Action")
-                    .setAction("Backround_service_start_error")
-                    .build());
+            mFirebaseAnalytics.logEvent("BackgroundService_Start_Error", null);
             final Dialog dialog1 = new Dialog(BackgroundService.this);
             dialog1.setContentView(R.layout.dialog1);
             dialog1.setTitle(getApplicationContext().getResources().getString(R.string.tx_44));
@@ -270,35 +286,38 @@ public class BackgroundService extends AppCompatActivity {
             });
             serviceButton.setText(getApplicationContext().getResources().getString(R.string.tx_74));
         } catch (IllegalArgumentException e) {
-            // e.printStackTrace();
+            if (BuildConfig.DEBUG)
+                e.printStackTrace();
         }
 
     }
 
     public void stop() {
         //stop the Handlers who are responsible for restarting the sensor-listeners
-        mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Action")
-                .setAction("Backround_service_stopped")
-                .build());
+        mFirebaseAnalytics.logEvent("BackgroundService_Stop", null);
+        //Stop sensors from beeing reactivated, 9 is for reactivating every 5 sec
         GoogleMap.listHandler.removeMessages(10);
+        GoogleMap.listHandler.removeMessages(9);
 
         Config.backgroundServiceActive = false;
 
         try {
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
         } catch (Exception e) {
-            // e.printStackTrace();
+            if (BuildConfig.DEBUG)
+                e.printStackTrace();
         }
         try {
             geoLocationManager.clearTestProviderEnabled(mocLocationProvider);
         } catch (Exception e) {
-            // e.printStackTrace();
+            if (BuildConfig.DEBUG)
+                e.printStackTrace();
         }
         try {
             geoLocationManager.removeTestProvider(mocLocationProvider);
         } catch (Exception e) {
-            // e.printStackTrace();
+            if (BuildConfig.DEBUG)
+                e.printStackTrace();
         }
 
         notificationManager.cancelAll();

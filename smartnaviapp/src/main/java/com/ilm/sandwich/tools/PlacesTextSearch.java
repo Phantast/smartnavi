@@ -40,7 +40,7 @@ public class PlacesTextSearch {
         try {
 
             StringBuilder sb = new StringBuilder(Config.PLACES_API_URL + TYPE + FORMAT);
-            sb.append("?sensor=true&key=" + Config.PLACES_API_KEY);
+            sb.append("?sensor=true&key=" + Config.PLACES_AND_DIRECTIONS_API_KEY);
             sb.append("&language=" + Locale.getDefault().getLanguage());
             sb.append("&query=" + URLEncoder.encode(input, "utf8"));
             if (BuildConfig.debug)

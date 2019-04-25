@@ -1,35 +1,45 @@
 {
   "project_info": {
-    "project_number": "553322027565",
-    "project_id": "api-project-553322027565"
+    "project_number": "156253963066",
+    "firebase_url": "https://smartnavi-app.firebaseio.com",
+    "project_id": "smartnavi-app",
+    "storage_bucket": "smartnavi-app.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:553322027565:android:d013c12ed3fa7a96",
+        "mobilesdk_app_id": "1:156253963066:android:d013c12ed3fa7a96",
         "android_client_info": {
           "package_name": "com.ilm.sandwich"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "156253963066-f5a2ocle80jmjnno6r34u9au38ud795i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ilm.sandwich",
+            "certificate_hash": "a78c8501f7ffa01b3b34a06850afce5ac868169d"
+          }
+        },
+        {
+          "client_id": "156253963066-9d5og1laisheq9uhpoqisk3oe2gs8jpv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAeM8xr23VZqmhPEn5biQRjWHxJdXobWGc"
+          "current_key": "AIzaSyAqYk2ezXJy8LJbA_yveCMKpHS2TMfQYCE"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 2,
-          "analytics_property": {
-            "tracking_id": "UA-55892898-2"
-          }
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 1
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156253963066-9d5og1laisheq9uhpoqisk3oe2gs8jpv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
