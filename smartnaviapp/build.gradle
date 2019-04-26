@@ -2,20 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
-    signingConfigs {
-        config {
-            keyAlias 'sorcerer'
-            keyPassword 'chrish32110291'
-            storeFile file('D:/nur zum bauen/sandwich.keystore')
-            storePassword 'chrish32110291'
-        }
-        configdebug {
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-            storeFile file('C:/Users/Christian/.android/debug.keystore')
-            storePassword 'android'
-        }
-    }
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     useLibrary 'org.apache.http.legacy'
