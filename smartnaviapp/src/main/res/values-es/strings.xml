@@ -9,10 +9,10 @@
     <string name="tx_03">Búsquedas</string>
     <string name="tx_04">Cargando ruta. Por favor espere&#8230;</string>
     <string name="tx_05">Mantenga el dispositivo frente su cuerpo</string>
-    <string name="tx_06">SmartNavi no pudo encontrar su posición inicial. Por favor active internet o el GPS y reinicie SmartNavi o contacte a nuestro servicio de atención: smartnavi@2imba.de</string>
+    <string name="tx_06">SmartNavi no pudo encontrar su posición inicial. Por favor active internet o el GPS y reinicie SmartNavi o contacte a nuestro servicio de atención: info@smartnavi.app</string>
     <string name="tx_07">SmartNavi es el primer programa o aplicación GPS de navegación basado en pasos para Android.</string>
     <string name="tx_08"><u>Como funciona:</u></string>
-    <string name="tx_09">SmartNavi sigue en desarrollo.\nSiéntase libre de contactarnos:\nchristian6767@gmail.com</string>
+    <string name="tx_09">SmartNavi sigue en desarrollo.\nSiéntase libre de contactarnos:\ninfo@smartnavi.app</string>
     <string name="tx_10">Por favor Introduzca su altura. Para poder determinar la longitud de sus pasos.</string>
 
 
@@ -21,7 +21,7 @@
     <string name="tx_14">Por favor active\n<i>Mock Locations</i> (locaciones falsas)\nunder:\> Settings\n> Development</string>
     <string name="tx_15">Ajustes</string>
     <string name="tx_18">Mantén presionado</string>
-    <string name="tx_19">Mas información en nuestra pagina:\nhttps://smartnavi-app.com</string>
+    <string name="tx_19">Mas información en nuestra pagina:\nhttps://smartnavi.app</string>
 
 
     <string name="tx_21">COMO</string>
@@ -95,11 +95,6 @@
     <string name="tx_100">SmartNavi needs permission for location services.</string>
 
     <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
-
-    <string-array name="dimension">
-        <item>cm</item>
-        <item>Pulgadas</item>
-    </string-array>
 
     <string-array name="possetzen">
         <item>Ajustar la posición</item>

@@ -18,14 +18,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -42,6 +34,14 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -60,13 +60,20 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.ilm.sandwich.fragments.RatingFragment;
 import com.ilm.sandwich.fragments.TutorialFragment;
 import com.ilm.sandwich.sensors.Core;
@@ -186,6 +193,35 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        if (BuildConfig.DEBUG) {
+            FirebaseInstanceId.getInstance().getInstanceId()
+                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                            Log.i("IID_TOKEN", task.getResult().getToken());
+                        }
+                    });
+        } else {
+            mFirebaseRemoteConfig.fetch(1);
+            mFirebaseRemoteConfig.activate();
+        }
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                .setMinimumFetchIntervalInSeconds(1)
+                .build();
+        mFirebaseRemoteConfig.setConfigSettings(configSettings);
+        mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(this, new OnCompleteListener<Boolean>() {
+            @Override
+            public void onComplete(@NonNull Task<Boolean> task) {
+                if (task.isSuccessful()) {
+                    boolean updated = task.getResult();
+                    Log.d("Firebase", "Config params updated: " + updated);
+                } else {
+                    Log.d("Firebase", "Fetch failed");
+                }
+            }
+        });
 
         fab = findViewById(R.id.fab);
         if (fab != null) {
@@ -348,13 +384,21 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         String stepLengthString = settings.getString("step_length", null);
         if (stepLengthString != null) {
             try {
-                stepLengthString = stepLengthString.replace(",", ".");
-                Float savedBodyHeight = (Float.parseFloat(stepLengthString));
-                if (savedBodyHeight < 241 && savedBodyHeight > 119) {
+
+                if (stepLengthString.contains("'")) {
+                    String[] feetInchString = stepLengthString.split("'");
+                    String feetString = feetInchString[0];
+                    String inchString = feetInchString[1];
+                    float feet = Float.valueOf(feetString);
+                    float inch = Float.valueOf(inchString);
+                    float totalInch = 12 * feet + inch;
+                    Core.stepLength = (float) (totalInch * 2.54 / 222);
+                } else {
+                    stepLengthString = stepLengthString.replace(",", ".");
+                    Float savedBodyHeight = (Float.parseFloat(stepLengthString));
                     Core.stepLength = savedBodyHeight / 222;
-                } else if (savedBodyHeight < 95 && savedBodyHeight > 45) {
-                    Core.stepLength = (float) (savedBodyHeight * 2.54 / 222);
                 }
+                if (BuildConfig.DEBUG) Log.i("Step length", "Step length = " + Core.stepLength);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -432,18 +476,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                         mCore.disableAutocorrect();
                     mLocationer.stopAutocorrect();
                 } else if (msg.what == 9) {
-                    //Reactivate sensors regularly because app is in background mode
-                    //and other apps might cause sensors to stop
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            if (mCore != null)
-                                mCore.reactivateSensors();
-                            listHandler.sendEmptyMessageDelayed(9, 5000);
-                        }
-                    }, 5000);
-                    if (BuildConfig.DEBUG)
-                        Log.i("SmartNavi", "Reactivate Sensors regularly because Background service is running.");
+                    //not used anymore
                 } else if (msg.what == 10) {
                     //BackgroundService is created, so dont stop sensors
                     if (mCore != null)
@@ -932,9 +965,13 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             if (mCore != null) {
                 mCore.shutdown(this);
             }
-            if (mTts != null) {
-                mTts.stop();
-                mTts.shutdown();
+            try {
+                if (mTts != null) {
+                    mTts.stop();
+                    mTts.shutdown();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             try {
                 mLocationer.stopAutocorrect();

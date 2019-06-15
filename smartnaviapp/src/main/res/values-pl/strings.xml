@@ -9,10 +9,10 @@
     <string name="tx_03">Wyszukiwanie</string>
     <string name="tx_04">Ładowanie trasy. Proszę czekać&#8230;</string>
     <string name="tx_05">Trzymaj swoje urządzenie zawsze przed sobą, wtedy SmartNavi rozpoznaje kroki i kierunki.</string>
-    <string name="tx_06">SmartNavi nie była w stanie ustalić pozycji początkowej.\nProszę włączyć internet lub GPS i zrestartować SmartNavi,\nalbo skontaktować się z naszym centrum wsparcia: smartnavi@2imba.de</string>
+    <string name="tx_06">SmartNavi nie była w stanie ustalić pozycji początkowej.\nProszę włączyć internet lub GPS i zrestartować SmartNavi,\nalbo skontaktować się z naszym centrum wsparcia: info@smartnavi.app</string>
     <string name="tx_07">SmartNavi jest pierwszą niezależną od GPS i bazującą na krokach aplikacją nawigującą na Androida.</string>
     <string name="tx_08"><u>Jak to działa:</u></string>
-    <string name="tx_09">SmartNavi jest ciągle w rozwoju.\nSkontaktuj się z nami:\nchristian6767@gmail.com</string>
+    <string name="tx_09">SmartNavi jest ciągle w rozwoju.\nSkontaktuj się z nami:\ninfo@smartnavi.app</string>
     <string name="tx_10">Proszę wprowadź wysokość twego ciała, aby można było określić długość twego kroku.</string>
 
 
@@ -21,7 +21,7 @@
     <string name="tx_14">Please <b>select</b> SmartNavi as <b>mock location app</b> at Developer options!</string>
     <string name="tx_15">Ustawienia</string>
     <string name="tx_18">Dłuższe wiśnięcie</string>
-    <string name="tx_19">Więcej informacji na naszej stronie internetowej:\nhttps://smartnavi-app.com</string>
+    <string name="tx_19">Więcej informacji na naszej stronie internetowej:\nhttps://smartnavi.app</string>
 
 
     <string name="tx_21">Tak to</string>
@@ -98,10 +98,6 @@
 
     <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
 
-    <string-array name="dimension">
-        <item>cm</item>
-        <item>inch</item>
-    </string-array>
 
     <string-array name="possetzen">
         <item>Określać Pozycja</item>

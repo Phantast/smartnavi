@@ -9,10 +9,10 @@
     <string name="tx_03">Suche</string>
     <string name="tx_04">Lade Route. Bitte warten&#8230;</string>
     <string name="tx_05">Halte das Gerät stets <b>vor deinen Körper</b></string>
-    <string name="tx_06">SmartNavi konnte keine Startposition bestimmen.\nBitte aktiviere eine Internetverbindung oder GPS und starte SmartNavi neu.\nBei Problemen helfen wir Dir gerne unter: smartnavi@2imba.de</string>
+    <string name="tx_06">SmartNavi konnte keine Startposition bestimmen.\nBitte aktiviere eine Internetverbindung oder GPS und starte SmartNavi neu.\nBei Problemen helfen wir Dir gerne unter: info@smartnavi.app</string>
     <string name="tx_07">SmartNavi ist OpenSource und bietet\nschrittbasierte und GPS unabhängige Navigation.</string>
     <string name="tx_08"><u>Funktionsweise:</u></string>
-    <string name="tx_09">Anregungen sind immer willkommen:\nchristian6767@gmail.com</string>
+    <string name="tx_09">Anregungen sind immer willkommen:\ninfo@smartnavi.app</string>
     <string name="tx_10">Bitte gib deine Körpergröße ein, damit deine Schrittlänge bestimmt werden kann.</string>
 
 
@@ -21,7 +21,7 @@
     <string name="tx_14">Bitte setze SmartNavi als <b>App für simulierte Standorte</b> in den Entwickleroptionen.</string>
     <string name="tx_15">Einstellungen</string>
     <string name="tx_18">Gedrückt halten</string>
-    <string name="tx_19">Mehr Informationen unter:\nhttps://smartnavi-app.com</string>
+    <string name="tx_19">Mehr Informationen unter:\nhttps://smartnavi.app</string>
 
 
     <string name="tx_21">So einfach</string>
@@ -103,11 +103,6 @@
     <string-array name="possetzen">
         <item>Standort setzen</item>
         <item>Ziel setzen</item>
-    </string-array>
-
-    <string-array name="dimension">
-        <item>cm</item>
-        <item>inch</item>
     </string-array>
 
 

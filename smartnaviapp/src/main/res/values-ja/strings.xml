@@ -9,10 +9,10 @@
     <string name="tx_03">検索</string>
     <string name="tx_04">経路の読み込み中。しばらくお待ちください&#8230;</string>
     <string name="tx_05">体の前にデバイスを持ってください</string>
-    <string name="tx_06">SmartNavi が初期の場所を取得できませんでした。\nインターネットまたは GPS を有効にして、SmartNaviを再起動してください。\nまたは、サポート: smartnavi@2imba.de にご連絡ください</string>
+    <string name="tx_06">SmartNavi が初期の場所を取得できませんでした。\nインターネットまたは GPS を有効にして、SmartNaviを再起動してください。\nまたは、サポート: info@smartnavi.app にご連絡ください</string>
     <string name="tx_07">SmartNavi はオープンソースで、\n歩行ベースの GPS から独立したナビゲーションを提供します。</string>
     <string name="tx_08"><u>動作方法:</u></string>
-    <string name="tx_09">お気軽にご連絡ください:\nchristian6767@gmail.com</string>
+    <string name="tx_09">お気軽にご連絡ください:\ninfo@smartnavi.app</string>
     <string name="tx_10">あなたの身長を入力してください。歩幅を決定します。</string>
 
 
@@ -21,7 +21,7 @@
     <string name="tx_14">\> 設定\n> 開発 から、\n<i>モックの位置</i>\nを有効にしてください</string>
     <string name="tx_15">設定</string>
     <string name="tx_18">長押し</string>
-    <string name="tx_19">詳細な情報は Web サイト:\nhttps://smartnavi-app.com</string>
+    <string name="tx_19">詳細な情報は Web サイト:\nhttps://smartnavi.app</string>
 
 
     <string name="tx_21">動作</string>
@@ -98,10 +98,6 @@
 
     <string name="tx_101">SmartNavi は、データをストレージに保存するアクセス許可が必要です。</string>
 
-    <string-array name="dimension">
-        <item>cm</item>
-        <item>インチ</item>
-    </string-array>
 
     <string-array name="possetzen">
         <item>場所を設定</item>

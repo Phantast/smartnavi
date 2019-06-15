@@ -8,13 +8,11 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -28,8 +26,12 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.ilm.sandwich.sensors.Core;
 import com.ilm.sandwich.tools.Config;
 
 import java.text.DecimalFormat;
@@ -47,6 +49,7 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
     CheckBox checkBoxSpeech;
     CheckBox checkBoxGPS;
     CheckBox checkBoxExport;
+    private boolean metricUnits = true;
     private LocationManager mLocationManager;
     private SubMenu subMenu1;
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -54,8 +57,12 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(getResources().getString(R.string.tx_15));
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(getResources().getString(R.string.tx_15));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         setContentView(R.layout.activity_settings);
 
         // Obtain the FirebaseAnalytics instance.
@@ -63,18 +70,21 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
 
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
 
-        editText = (EditText) findViewById(R.id.editText);
-        checkBoxVibration = (CheckBox) findViewById(R.id.checkBoxVibration);
-        checkBoxSatellite = (CheckBox) findViewById(R.id.checkBoxSatellite);
-        checkBoxSpeech = (CheckBox) findViewById(R.id.checkBoxSpeech);
-        checkBoxGPS = (CheckBox) findViewById(R.id.checkBoxGPS);
-        final SeekBar seekBarTimer = (SeekBar) findViewById(R.id.seekBarTimer);
-        checkBoxExport = (CheckBox) findViewById(R.id.checkBoxExport);
-        final TextView timerText = (TextView) findViewById(R.id.textTimer);
+        editText = findViewById(R.id.editText);
+        checkBoxVibration = findViewById(R.id.checkBoxVibration);
+        checkBoxSatellite = findViewById(R.id.checkBoxSatellite);
+        checkBoxSpeech = findViewById(R.id.checkBoxSpeech);
+        checkBoxGPS = findViewById(R.id.checkBoxGPS);
+        final SeekBar seekBarTimer = findViewById(R.id.seekBarTimer);
+        checkBoxExport = findViewById(R.id.checkBoxExport);
+        final TextView timerText = findViewById(R.id.textTimer);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         String stepLength = settings.getString("step_length", null);
         if (stepLength != null) {
+            if (stepLength.contains("'")) {
+                metricUnits = false;
+            }
             editText.setText(stepLength);
         }
 
@@ -115,6 +125,24 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         checkBoxSatellite.setOnCheckedChangeListener(this);
         checkBoxSpeech.setOnCheckedChangeListener(this);
         checkBoxExport.setOnCheckedChangeListener(this);
+
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (!metricUnits) {
+                    if (event.getKeyCode() != KeyEvent.KEYCODE_DEL) {
+                        String input = editText.getText().toString();
+                        if (input.length() == 1) {
+                            input = input + "'";
+                            editText.setText(input);
+                            int pos = editText.getText().length();
+                            editText.setSelection(pos);
+                        }
+                    }
+                }
+                return false;
+            }
+        });
 
         editText.setOnEditorActionListener(this);
         checkBoxGPS.setOnCheckedChangeListener(this);
@@ -158,55 +186,34 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND || actionId == EditorInfo.IME_ACTION_NEXT) {
             int op = editText.length();
-            float number;
+            String stepLengthString = editText.getText().toString();
             if (op != 0) {
                 try {
-                    number = Float.valueOf(editText.getText().toString());
-                    if (number < 241 && number > 119) {
-
-                        String numberString = df.format(number);
-                        new writeSettings("step_length", numberString).execute();
-
-                        // close Keyboard after pressing the button
-                        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                        editText.setFocusableInTouchMode(false); // Workaround: Cursor out of textfield
-                        editText.setFocusable(false);
-                        editText.setFocusableInTouchMode(true);
-                        editText.setFocusable(true);
-
-                        final Intent intent = new Intent();
-                        intent.putExtra("ok", 0);
-                        intent.putExtra("step_length", numberString);
-                        setResult(RESULT_OK, intent);
-                    } else if (number < 95 && number > 45) {
-
-                        String numberString = df.format(number);
-                        new writeSettings("step_length", numberString).execute();
-
-                        // close Keyboard after pressing the button
-                        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                        editText.setFocusableInTouchMode(false); // Workaround: Cursor out of textfield
-                        editText.setFocusable(false);
-                        editText.setFocusableInTouchMode(true);
-                        editText.setFocusable(true);
-
-                        final Intent intent = new Intent();
-                        intent.putExtra("ok", 1);
-                        intent.putExtra("step_length", numberString);
-                        setResult(RESULT_OK, intent);
+                    if (stepLengthString.contains("'")) {
+                        String[] feetInchString = stepLengthString.split("'");
+                        String feetString = feetInchString[0];
+                        String inchString = feetInchString[1];
+                        float feet = Float.valueOf(feetString);
+                        float inch = Float.valueOf(inchString);
+                        float totalInch = 12 * feet + inch;
+                        Core.stepLength = (float) (totalInch * 2.54 / 222);
+                        new writeSettings("step_length", stepLengthString).execute();
+                        mFirebaseAnalytics.logEvent("Settings_Changed_Bodyheight", null);
                     } else {
-                        // close Keyboard after pressing the button
-                        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                        editText.setFocusableInTouchMode(false); // Workaround: Cursor out of textfield
-                        editText.setFocusable(false);
-                        editText.setFocusableInTouchMode(true);
-                        editText.setFocusable(true);
-                        Toast.makeText(Settings.this, getApplicationContext().getResources().getString(R.string.tx_10), Toast.LENGTH_LONG).show();
+                        stepLengthString = stepLengthString.replace(",", ".");
+                        float number = Float.valueOf(stepLengthString);
+                        String numberString = df.format(number);
+                        Core.stepLength = (number / 222);
+                        new writeSettings("step_length", numberString).execute();
+                        mFirebaseAnalytics.logEvent("Settings_Changed_Bodyheight", null);
                     }
-
+                    // close Keyboard after pressing the button
+                    InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    editText.setFocusableInTouchMode(false); // Workaround: Cursor out of textfield
+                    editText.setFocusable(false);
+                    editText.setFocusableInTouchMode(true);
+                    editText.setFocusable(true);
                 } catch (NumberFormatException e) {
                     // close Keyboard after pressing the button
                     InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -228,7 +235,6 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
                 editText.setFocusable(true);
             }
         }
-        mFirebaseAnalytics.logEvent("Settings_Changed_Bodyheight", null);
         return false;
     }
 
@@ -267,10 +273,10 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
 
             SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
 
-            final SeekBar seekBarTimer = (SeekBar) findViewById(R.id.seekBarTimer);
+            final SeekBar seekBarTimer = findViewById(R.id.seekBarTimer);
             seekBarTimer.setEnabled(isChecked);
 
-            final TextView timerText = (TextView) findViewById(R.id.textTimer);
+            final TextView timerText = findViewById(R.id.textTimer);
             if (isChecked == true) {
                 seekBarTimer.setThumb(getResources().getDrawable(R.drawable.seek_thumb_normal));
                 int gpsTimer = settings.getInt("gpstimer", 1);

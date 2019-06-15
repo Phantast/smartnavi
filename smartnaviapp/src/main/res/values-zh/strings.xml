@@ -9,10 +9,10 @@
     <string name="tx_03">搜索</string>
     <string name="tx_04">载入路线，请稍候&#8230;</string>
     <string name="tx_05">请将设备保持在您的身前，便于SmartNavi识别步幅和方向。</string>
-    <string name="tx_06">SmartNavi was not able to get an initial position.\nPlease enable internet or GPS and restart SmartNavi,\nor contact our support: smartnavi@2imba.de</string>
+    <string name="tx_06">SmartNavi was not able to get an initial position.\nPlease enable internet or GPS and restart SmartNavi,\nor contact our support: info@smartnavi.app</string>
     <string name="tx_07">SmartNavi是第一款不依赖于GPS信号，而是根据步伐进行定位的安卓应用。</string>
     <string name="tx_08"><u>如何工作：</u></string>
-    <string name="tx_09">SmartNavi仍然在不断改进。\n请联系我们：\nchristian6767@gmail.com</string>
+    <string name="tx_09">SmartNavi仍然在不断改进。\n请联系我们：\ninfo@smartnavi.app</string>
     <string name="tx_10">请输入您的身高，以方便我们确定您的步幅。</string>
 
 
@@ -21,7 +21,7 @@
     <string name="tx_14">请勾选\n<i>允许模拟位置</i>\n路径:\n>设置\n> 开发者选项</string>
     <string name="tx_15">设置</string>
     <string name="tx_18">長按</string>
-    <string name="tx_19">更多信息请访问：\nhttps://smartnavi-app.com</string>
+    <string name="tx_19">更多信息请访问：\nhttps://smartnavi.app</string>
 
 
     <string name="tx_21">所以它</string>
@@ -97,10 +97,6 @@
 
     <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
 
-    <string-array name="dimension">
-        <item>厘米(cm)</item>
-        <item>英寸(inch)</item>
-    </string-array>
 
     <string-array name="possetzen">
         <item>确定 位置</item>

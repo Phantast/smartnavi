@@ -8,10 +8,10 @@
     <string name="tx_03">Search</string>
     <string name="tx_04">Loading Route. Please wait&#8230;</string>
     <string name="tx_05">Hold your device always in front of your body</string>
-    <string name="tx_06">SmartNavi was not able to get an initial position.\nPlease enable internet or GPS and restart SmartNavi,\nor contact our support: smartnavi@2imba.de</string>
+    <string name="tx_06">SmartNavi was not able to get an initial position.\nPlease enable internet or GPS and restart SmartNavi,\nor contact our support: info@smartnavi.app</string>
     <string name="tx_07">SmartNavi is OpenSource and offers\nstep-based and GPS independent navigation.</string>
     <string name="tx_08"><u>How it works:</u></string>
-    <string name="tx_09">Feel free to contact us:\nchristian6767@gmail.com</string>
+    <string name="tx_09">Contact us:\ninfo@smartnavi.app</string>
     <string name="tx_10">Please enter your body height, so that your step length can be determined.</string>
 
 
@@ -20,7 +20,7 @@
     <string name="tx_14">Please <b>select</b> SmartNavi as <b>mock location app</b> at Developer options!</string>
     <string name="tx_15">Settings</string>
     <string name="tx_18">Long Press</string>
-    <string name="tx_19">More information on our website:\nhttps://smartnavi-app.com</string>
+    <string name="tx_19">More information on our website:\nhttps://smartnavi.app</string>
 
 
     <string name="tx_21">HOW IT</string>
@@ -96,12 +96,12 @@
     <string name="tx_100">SmartNavi needs permission for location services.</string>
 
     <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
-    <string name="tx_102">Privacy Policy \nhttps://smartnavi-app.com/privacy</string>
-    <string name="tx_103">An error occured. Please try again later.</string>
+    <string name="tx_102">Privacy Policy \nhttps://smartnavi.app/privacy</string>
+    <string name="tx_103">An error occurred. Please try again later.</string>
 
     <string-array name="dimension">
         <item>cm</item>
-        <item>inch</item>
+        <item>foot\'inch</item>
     </string-array>
 
     <string-array name="possetzen">

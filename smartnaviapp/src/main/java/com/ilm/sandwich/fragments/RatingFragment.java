@@ -5,14 +5,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ilm.sandwich.BuildConfig;
@@ -75,7 +76,7 @@ public class RatingFragment extends Fragment {
     }
 
     private void showRateDialog() {
-        Button rateButton1 = (Button) fragmentView.findViewById(R.id.rateButton);
+        Button rateButton1 = fragmentView.findViewById(R.id.rateButton);
         if (rateButton1 != null) {
             rateButton1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -102,7 +103,7 @@ public class RatingFragment extends Fragment {
                 }
             });
         }
-        Button rateButton3 = (Button) fragmentView.findViewById(R.id.rateButton2);
+        Button rateButton3 = fragmentView.findViewById(R.id.rateButton2);
         if (rateButton3 != null) {
             rateButton3.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -119,7 +120,7 @@ public class RatingFragment extends Fragment {
             });
         }
 
-        ImageView stars = (ImageView) fragmentView.findViewById(R.id.stars);
+        ImageView stars = fragmentView.findViewById(R.id.stars);
         if (stars != null) {
             stars.setOnClickListener(new View.OnClickListener() {
                 @Override

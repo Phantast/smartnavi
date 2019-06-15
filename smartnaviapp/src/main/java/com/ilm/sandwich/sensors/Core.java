@@ -99,7 +99,7 @@ public class Core implements SensorEventListener {
     private int autoCorrectFactor = 1;
     private int magnUnits;
     private int aclUnits;
-    private boolean autoCorrect = false;
+    private boolean autoCorrect;
     private SharedPreferences settings;
     private onStepUpdateListener stepUpdateListener;
 
@@ -666,7 +666,7 @@ public class Core implements SensorEventListener {
                     Core.origAcl = event.values.clone();
                 }
 
-                if (Config.backgroundServiceActive && units % 50 == 0) {
+                if (Config.backgroundServiceActive && units % 10 == 0) {
                     BackgroundService.newFakePosition();
                 }
 
@@ -692,7 +692,6 @@ public class Core implements SensorEventListener {
                 }
 
                 stepDetection();
-
                 // AutoCorrect (dependent on Factor, i.e. number of steps)
                 if (autoCorrect) {
                     if (!alreadyWaitingForAutoCorrect) {

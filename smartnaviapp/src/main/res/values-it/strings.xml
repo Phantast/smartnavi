@@ -9,10 +9,10 @@
     <string name="tx_03">Ricerca</string>
     <string name="tx_04">Caricamento percorso. Attendere&#8230;</string>
     <string name="tx_05">Tieni sempre il dispositivo davanti al tuo corpo</string>
-    <string name="tx_06">SmartNavi non ha localizzato la posizione di partenza.\nAttiva internet o GPS e fai ripartire SmartNavi,\naltrimenti contatta il nostro supporto: smartnavi@2imba.de</string>
+    <string name="tx_06">SmartNavi non ha localizzato la posizione di partenza.\nAttiva internet o GPS e fai ripartire SmartNavi,\naltrimenti contatta il nostro supporto: info@smartnavi.app</string>
     <string name="tx_07">SmartNavi è OpenSource e offre\nuna navigazione GPS indipendente e basata sui passi.</string>
     <string name="tx_08"><u>Come funziona:</u></string>
-    <string name="tx_09">Suggerimenti sono sempre accetti:\nchristian6767@gmail.com</string>
+    <string name="tx_09">Suggerimenti sono sempre accetti:\ninfo@smartnavi.app</string>
     <string name="tx_10">Inserisci per favore la tua altezza, per determinare la lunghezza del tuo passo.</string>
 
 
@@ -21,7 +21,7 @@
     <string name="tx_14">Please <b>select</b> SmartNavi as <b>mock location app</b> at Developer options!</string>
     <string name="tx_15">Opzioni</string>
     <string name="tx_18">Tieni premuto</string>
-    <string name="tx_19">Per maggiori informazioni:\nhttps://smartnavi-app.com</string>
+    <string name="tx_19">Per maggiori informazioni:\nhttps://smartnavi.app</string>
 
 
     <string name="tx_21">COME</string>
@@ -96,10 +96,6 @@
 
     <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
 
-    <string-array name="dimension">
-        <item>cm</item>
-        <item>pollici</item>
-    </string-array>
 
     <string-array name="possetzen">
         <item>Imposta posizione</item>
