@@ -97,6 +97,7 @@
 
     <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
     <string name="tx_102">Privacy Policy \nhttps://smartnavi-app.com/privacy</string>
+    <string name="tx_103">An error occured. Please try again later.</string>
 
     <string-array name="dimension">
         <item>cm</item>
