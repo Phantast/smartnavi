@@ -175,23 +175,38 @@ public class BackgroundService extends AppCompatActivity {
 
 
     public void starte() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Intent intent = new Intent(this, ForegroundService.class);
-            intent.setAction(ForegroundService.ACTION_START_FOREGROUND_SERVICE);
-            this.startForegroundService(intent);
-        } else {
-            Intent intent = new Intent(this, BackgroundService.class);
-            PendingIntent activity = PendingIntent.getActivity(this, 0, intent, 0);
+        try {
+            mocLocationProvider = LocationManager.GPS_PROVIDER;
 
-            notificationManager = NotificationManagerCompat.from(this);
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "21986938")
-                    .setContentIntent(activity)
-                    .setContentTitle(getApplicationContext().getResources().getString(R.string.tx_72))
-                    .setContentText(getApplicationContext().getResources().getString(R.string.tx_73))
-                    .setSmallIcon(R.drawable.ic_stat_maps_directions_walk)
-                    .setPriority(NotificationCompat.PRIORITY_MAX)
-                    .setOngoing(true)
-                    .setAutoCancel(false);
+            geoLocationManager.addTestProvider(mocLocationProvider, false, false, false, false, true, true, true, 1, 5);
+            geoLocationManager.setTestProviderEnabled(mocLocationProvider, true);
+            geoLocationManager.setTestProviderStatus(mocLocationProvider, 2, null, System.currentTimeMillis());
+
+            serviceButton.setText(getApplicationContext().getResources().getString(R.string.tx_69));
+
+            shouldStart = false;
+            serviceButton.setText(getApplicationContext().getResources().getString(R.string.tx_69));
+            Config.backgroundServiceActive = true;
+
+            mFirebaseAnalytics.logEvent("BackgroundService_Start_Success", null);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Intent intent = new Intent(this, ForegroundService.class);
+                intent.setAction(ForegroundService.ACTION_START_FOREGROUND_SERVICE);
+                this.startForegroundService(intent);
+            } else {
+                Intent intent = new Intent(this, BackgroundService.class);
+                PendingIntent activity = PendingIntent.getActivity(this, 0, intent, 0);
+
+                notificationManager = NotificationManagerCompat.from(this);
+                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "21986938")
+                        .setContentIntent(activity)
+                        .setContentTitle(getApplicationContext().getResources().getString(R.string.tx_72))
+                        .setContentText(getApplicationContext().getResources().getString(R.string.tx_73))
+                        .setSmallIcon(R.drawable.ic_stat_maps_directions_walk)
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
+                        .setOngoing(true)
+                        .setAutoCancel(false);
 
                 /* Create the NotificationChannel, but only on API 26+ because
                 // the NotificationChannel class is new and not in the support library
@@ -207,22 +222,8 @@ public class BackgroundService extends AppCompatActivity {
                     notificationManager.createNotificationChannel(channel);
                 }
                 */
-            notificationManager.notify(0, notificationBuilder.build());
-        }
-        try {
-            mocLocationProvider = LocationManager.GPS_PROVIDER;
-
-            geoLocationManager.addTestProvider(mocLocationProvider, false, false, false, false, true, true, true, 1, 5);
-            geoLocationManager.setTestProviderEnabled(mocLocationProvider, true);
-            geoLocationManager.setTestProviderStatus(mocLocationProvider, 2, null, System.currentTimeMillis());
-
-            serviceButton.setText(getApplicationContext().getResources().getString(R.string.tx_69));
-
-            shouldStart = false;
-            serviceButton.setText(getApplicationContext().getResources().getString(R.string.tx_69));
-            Config.backgroundServiceActive = true;
-
-            mFirebaseAnalytics.logEvent("BackgroundService_Start_Success", null);
+                notificationManager.notify(0, notificationBuilder.build());
+            }
 
             Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);

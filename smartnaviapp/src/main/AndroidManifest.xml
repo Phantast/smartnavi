@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ilm.sandwich"
     android:installLocation="auto"
-    android:versionCode="47"
-    android:versionName="2.4.7">
+    android:versionCode="48"
+    android:versionName="2.4.8">
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -75,7 +75,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_KEY_HERE" />
+            android:value="" />
     </application>
 
 </manifest>

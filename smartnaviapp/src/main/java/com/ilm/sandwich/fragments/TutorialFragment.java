@@ -88,21 +88,34 @@ public class TutorialFragment extends Fragment {
     }
 
     private void startTutorial(View view) {
-        welcomeView = view.findViewById(R.id.welcomeView);
-        welcomeView.setVisibility(View.VISIBLE);
+        //Remote Config for AB Testing for Tutorial Wording
+        FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        boolean showTutorialPage1 = mFirebaseRemoteConfig.getBoolean("tutorial_page1_shown");
+        Log.i("Tutorial AB Test", "showTutorialPage1 = " + showTutorialPage1);
+        if (showTutorialPage1) {
+            //AB TEst about hiding the first page, proceed normally and show page 1
+            welcomeView = view.findViewById(R.id.welcomeView);
+            welcomeView.setVisibility(View.VISIBLE);
 
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.TUTORIAL_BEGIN, null);
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.TUTORIAL_BEGIN, null);
 
-        Button welcomeButton = view.findViewById(R.id.welcomeButton);
-        welcomeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mFirebaseAnalytics.logEvent("Tutorial_Button1_pressed", null);
-                welcomeView.setVisibility(View.INVISIBLE);
-                tutorialOverlay = fragmentView.findViewById(R.id.tutorialOverlay);
-                tutorialOverlay.setVisibility(View.VISIBLE);
-            }
-        });
+            Button welcomeButton = view.findViewById(R.id.welcomeButton);
+            welcomeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mFirebaseAnalytics.logEvent("Tutorial_Button1_pressed", null);
+                    welcomeView.setVisibility(View.INVISIBLE);
+                    tutorialOverlay = fragmentView.findViewById(R.id.tutorialOverlay);
+                    tutorialOverlay.setVisibility(View.VISIBLE);
+                }
+            });
+
+        } else {
+            //AB TEst with hiding the first page, just show page 2
+            tutorialOverlay = fragmentView.findViewById(R.id.tutorialOverlay);
+            tutorialOverlay.setVisibility(View.VISIBLE);
+        }
+
 
         SharedPreferences settings = this.getActivity().getSharedPreferences(this.getActivity().getPackageName() + "_preferences", Context.MODE_PRIVATE);
         String stepLengthString = settings.getString("step_length", null);
@@ -253,9 +266,6 @@ public class TutorialFragment extends Fragment {
                 return false;
             }
         });
-
-        //Remote Config for AB Testing for Tutorial Wording
-        FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
 
         //If remoteConfig String is NOT EMPTY, then use it.
         //Page1

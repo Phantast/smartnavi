@@ -191,7 +191,7 @@
                             android:shadowDy="-2"
                             android:shadowRadius="0.1"
                             android:text="2"
-                            android:textColor="#ffffff"
+                            android:textColor="#FFFFFF"
                             android:textSize="20sp"
                             android:textStyle="bold" />
                     </RelativeLayout>
