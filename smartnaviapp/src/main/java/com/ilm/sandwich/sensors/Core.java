@@ -340,7 +340,7 @@ public class Core implements SensorEventListener {
         }
     }
 
-    public void imbaMagnetic(float[] magnetic) {
+    public static void imbaMagnetic(float[] magnetic) {
         // LowPass 0.5Hz for alpha0
         xm0[0] = xm0[1];
         xm0[1] = xm0[2];
