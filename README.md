@@ -48,4 +48,4 @@ License
 For more information, see the License file.
 
 
- [1]: http://smartnavi-app.com/img/smartnavi-teaser.jpg
+ [1]: http://smartnavi.app/img/smartnavi-teaser.jpg
