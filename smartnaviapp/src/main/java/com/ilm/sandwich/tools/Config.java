@@ -2,7 +2,7 @@ package com.ilm.sandwich.tools;
 
 /**
  * @author Christian Henke
- *         www.smartnavi-app.com
+ *         https://smartnavi.app
  */
 public class Config {
     //app-Rate Dialog

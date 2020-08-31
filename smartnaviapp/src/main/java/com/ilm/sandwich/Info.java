@@ -15,7 +15,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
  * @author Christian Henke
- *         www.smartnavi-app.com
+ *         https://smartnavi.app
  */
 public class Info extends AppCompatActivity {
 

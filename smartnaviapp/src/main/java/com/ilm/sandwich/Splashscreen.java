@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.view.Window;
 import android.widget.Toast;
 
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -17,7 +16,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
  * This class is important because it checks if user has GooglePlayServices installed
  *
  * @author Christian Henke
- *         www.smartnavi-app.com
+ *         https://smartnavi.app
  */
 public class Splashscreen extends Activity {
 

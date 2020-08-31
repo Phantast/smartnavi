@@ -18,7 +18,7 @@
 
     <string name="tx_12">Halte lange auf der Karte gedrückt um zusätzliche Funktionen zu bekommen.So kannst du z.B. deinen eigenen Standort exakt setzen.</string>
     <string name="tx_13">Körpergröße eingeben</string>
-    <string name="tx_14">Bitte setze SmartNavi als <b>App für simulierte Standorte</b> in den Entwickleroptionen.</string>
+    <string name="tx_14">Fast fertig!\n\nSetze SmartNavi als <b>App für simulierte Standorte</b> in den Entwickleroptionen.</string>
     <string name="tx_15">Einstellungen</string>
     <string name="tx_18">Gedrückt halten</string>
     <string name="tx_19">Mehr Informationen unter:\nhttps://smartnavi.app</string>
@@ -98,6 +98,10 @@
     <string name="tx_100">SmartNavi benötigt Rechte zur Standortbestimmung.</string>
 
     <string name="tx_101">SmartNavi benötigt Rechte um Kartenmaterial zu speichern.</string>
+    <string name="tx_102">Privacy Policy \nhttps://smartnavi.app/privacy</string>
+    <string name="tx_103">Ein Fehler ist aufgetreten.</string>
+    <string name="tx_104">Enable Developer Options</string>
+    <string name="tx_105">Um fortzufahren müssen die Entwickleroptionen eingeschaltet sein.\n\n<b>Tippe dazu 7 mal</b> auf die <b>Build Number</b> unter Einstellungen.\n\nAuf manchen Geräten befindet sich die <b>Build Number</b> unter Software Information.\n\nDann komm zurück und schließe die Einrichtung ab.</string>
 
 
     <string-array name="possetzen">

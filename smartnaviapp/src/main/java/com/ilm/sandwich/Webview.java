@@ -29,7 +29,7 @@ public class Webview extends AppCompatActivity {
         setContentView(webview);
         WebSettings webSettings = webview.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        webview.loadUrl("https://smartnavi-app.com/offline");
+        webview.loadUrl("https://smartnavi.app/offline");
     }
 
     @Override

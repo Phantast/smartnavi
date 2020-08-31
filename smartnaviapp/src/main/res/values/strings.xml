@@ -17,7 +17,7 @@
 
     <string name="tx_12">Touch and hold the map to get extra options. So you can set your exact start position.</string>
     <string name="tx_13">Enter your\n<b>body height</b></string>
-    <string name="tx_14">Please <b>select</b> SmartNavi as <b>mock location app</b> at Developer options!</string>
+    <string name="tx_14">Nearly there!\n\nPlease select SmartNavi as <b>mock location app</b> in the Developer options.</string>
     <string name="tx_15">Settings</string>
     <string name="tx_18">Long Press</string>
     <string name="tx_19">More information on our website:\nhttps://smartnavi.app</string>
@@ -98,6 +98,8 @@
     <string name="tx_101">SmartNavi needs permission to save map data to storage.</string>
     <string name="tx_102">Privacy Policy \nhttps://smartnavi.app/privacy</string>
     <string name="tx_103">An error occurred. Please try again later.</string>
+    <string name="tx_104">Enable Developer Options</string>
+    <string name="tx_105">In order to proceed you have to enable Developer Options on your device.\n\nTo do this <b>tap 7 times</b> on the <b>Build Number</b> in your settings.\n\nOn some devices the <b>Build Number</b> can be found under Software Information.\n\nThen come back and try again.</string>
 
     <string-array name="dimension">
         <item>cm</item>

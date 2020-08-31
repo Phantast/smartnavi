@@ -33,7 +33,7 @@ import java.util.TimeZone;
  * Core recognizes steps and computes direction, location, etc.
  *
  * @author Christian Henke
- *         www.smartnavi-app.com
+ *         https://smartnavi.app
  */
 public class Core implements SensorEventListener {
 

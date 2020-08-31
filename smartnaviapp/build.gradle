@@ -2,21 +2,37 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 28
+    signingConfigs {
+        config {
+            keyAlias ''
+            keyPassword ''
+            storeFile file('')
+            storePassword ''
+        }
+        configdebug {
+            keyAlias ''
+            keyPassword ''
+            storeFile file('')
+            storePassword ''
+        }
+    }
+    compileSdkVersion 29
     buildToolsVersion '28.0.3'
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         applicationId 'com.ilm.sandwich'
-        signingConfig signingConfigs.config
+        signingConfig signingConfigs.configdebug
     }
+
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             buildConfigField 'Boolean', 'debug', 'false'
             signingConfig signingConfigs.configdebug
+
         }
         debug {
             minifyEnabled false
@@ -26,7 +42,6 @@ android {
     }
     repositories {
         maven { url "https://maven.google.com/" }
-        maven { url 'https://maven.fabric.io/public' }
         maven { url 'http://guardian.github.com/maven/repo-releases' }
         mavenCentral()
         google()
@@ -46,17 +61,19 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.google.firebase:firebase-core:17.2.0'
-    implementation 'com.google.firebase:firebase-config:19.0.1'
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+    implementation 'com.google.firebase:firebase-core:17.5.0'
+    implementation 'com.google.firebase:firebase-config:19.2.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
-    implementation 'com.google.android.libraries.places:places:2.0.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.libraries.places:places:2.3.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.media:media:1.1.0'
-    implementation 'androidx.core:core:1.1.0'
+    implementation 'androidx.core:core:1.3.1'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+    implementation 'com.google.android.material:material:1.2.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

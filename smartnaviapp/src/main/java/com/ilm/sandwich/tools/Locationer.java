@@ -30,7 +30,7 @@ import java.util.Iterator;
  * and to get location for the autocorrect feature
  *
  * @author Christian Henke
- *         www.smartnavi-app.com
+ *         https://smartnavi.app
  */
 public class Locationer implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,

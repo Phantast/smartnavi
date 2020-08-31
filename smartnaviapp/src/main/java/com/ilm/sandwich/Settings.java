@@ -38,7 +38,7 @@ import java.text.DecimalFormat;
 
 /**
  * @author Christian Henke
- *         www.smartnavi-app.com
+ *         https://smartnavi.app
  */
 public class Settings extends AppCompatActivity implements OnEditorActionListener, OnCheckedChangeListener {
 
