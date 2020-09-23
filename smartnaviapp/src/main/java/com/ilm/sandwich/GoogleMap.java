@@ -1050,20 +1050,13 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         double lowerLeftLongitude;
         double upperRightLatitude;
         double upperRightLongitude;
-        if (Core.startLat > 0) {
-            lowerLeftLatitude = Core.startLat - 0.03;
-            upperRightLatitude = Core.startLat + 0.03;
-        } else {
-            lowerLeftLatitude = Core.startLat + 0.03;
-            upperRightLatitude = Core.startLat - 0.03;
-        }
-        if (Core.startLon > 0) {
-            lowerLeftLongitude = Core.startLon + 0.04;
-            upperRightLongitude = Core.startLon - 0.04;
-        } else {
-            lowerLeftLongitude = Core.startLon - 0.04;
-            upperRightLongitude = Core.startLon + 0.04;
-        }
+
+        lowerLeftLatitude = Core.startLat - 0.03;
+        upperRightLatitude = Core.startLat + 0.03;
+
+        lowerLeftLongitude = Core.startLon - 0.04;
+        upperRightLongitude = Core.startLon + 0.04;
+
         //SoutWest , NothEast
         RectangularBounds bounds = RectangularBounds.newInstance(
                 new LatLng(lowerLeftLatitude, lowerLeftLongitude),

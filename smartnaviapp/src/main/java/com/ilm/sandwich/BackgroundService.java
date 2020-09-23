@@ -52,7 +52,6 @@ public class BackgroundService extends AppCompatActivity {
         try {
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
             geoLocationManager.removeTestProvider(mocLocationProvider);
-            geoLocationManager.clearTestProviderEnabled(mocLocationProvider);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,14 +77,17 @@ public class BackgroundService extends AppCompatActivity {
         steps = Core.stepCounter;
         //GPS
         loc = new Location(mocLocationProvider);
-        loc.setAccuracy(12);
+        loc.setAccuracy(1);
         loc.setAltitude(Core.altitude);
         loc.setLatitude(Core.startLat);
         loc.setLongitude(Core.startLon);
         loc.setProvider(mocLocationProvider);
         loc.setSpeed(0.8f);
+        loc.setSpeedAccuracyMetersPerSecond(0.01f);
         loc.setBearing((float) Core.azimuth);
+        loc.setBearingAccuracyDegrees(1);
         loc.setTime(System.currentTimeMillis());
+        loc.setVerticalAccuracyMeters(1);
         try {
             try {
                 loc.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
@@ -133,12 +135,6 @@ public class BackgroundService extends AppCompatActivity {
                     e.printStackTrace();
             }
             try {
-                geoLocationManager.clearTestProviderEnabled(mocLocationProvider);
-            } catch (Exception e3) {
-                if (BuildConfig.DEBUG)
-                    e.printStackTrace();
-            }
-            try {
                 geoLocationManager.removeTestProvider(mocLocationProvider);
             } catch (Exception e4) {
                 if (BuildConfig.DEBUG)
@@ -179,7 +175,7 @@ public class BackgroundService extends AppCompatActivity {
         try {
             mocLocationProvider = LocationManager.GPS_PROVIDER;
 
-            geoLocationManager.addTestProvider(mocLocationProvider, false, false, false, false, true, true, true, 1, 5);
+            geoLocationManager.addTestProvider(mocLocationProvider, false, false, false, false, true, true, true, 1, 1);
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, true);
             geoLocationManager.setTestProviderStatus(mocLocationProvider, 2, null, System.currentTimeMillis());
 
@@ -313,7 +309,7 @@ public class BackgroundService extends AppCompatActivity {
                 e.printStackTrace();
         }
         try {
-            geoLocationManager.clearTestProviderEnabled(mocLocationProvider);
+            geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
         } catch (Exception e) {
             if (BuildConfig.DEBUG)
                 e.printStackTrace();
@@ -351,7 +347,6 @@ public class BackgroundService extends AppCompatActivity {
                 try {
                     geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
                     geoLocationManager.removeTestProvider(mocLocationProvider);
-                    geoLocationManager.clearTestProviderEnabled(mocLocationProvider);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
