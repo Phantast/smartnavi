@@ -4,50 +4,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/googlemap_actvity_layout"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
-
     <RelativeLayout
-        android:id="@+id/feld"
+        android:id="@+id/googlemap_actvity_layout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/googlemap_fragment"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-        class="com.ilm.sandwich.tools.MySupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <RelativeLayout
+            android:id="@+id/feld"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
 
-    <TextView
+        <TextView
         android:id="@+id/mapText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#bb272c32"
-        android:drawableTop="@drawable/back"
-        android:gravity="center"
-        android:maxLines="5"
-        android:padding="3dp"
-        android:shadowColor="#000000"
-        android:shadowDx="0"
-        android:shadowDy="1"
-        android:shadowRadius="0.1"
-        android:textColor="#f3f3f3"
-        android:textSize="18sp" />
+            android:background="#bb272c32"
+            app:drawableTopCompat="@drawable/back"
+            android:gravity="center"
+            android:maxLines="5"
+            android:padding="3dp"
+            android:shadowColor="#000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="0.1"
+            android:textColor="#f3f3f3"
+            android:textSize="18sp" />
 
-    <View
-        android:id="@+id/view156"
-        android:layout_width="fill_parent"
-        android:layout_height="2dip"
-        android:layout_above="@+id/mapText"
-        android:background="#bb8dbd25" />
+        <fragment
+            android:id="@+id/googlemap_fragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            class="com.ilm.sandwich.tools.MySupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-    <ProgressBar
-        android:id="@+id/progressBar1"
+        <View
+            android:id="@+id/view156"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_above="@+id/mapText"
+            android:background="#bb8dbd25" />
+
+        <ProgressBar
+            android:id="@+id/progressBar1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -174,6 +174,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:clickable="true"
+        android:focusable="true"
         android:scaleType="center"
         android:src="@android:drawable/ic_menu_mylocation"
         android:visibility="invisible"

@@ -131,21 +131,18 @@ public class BackgroundService extends AppCompatActivity {
             try {
                 geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
             } catch (Exception e2) {
-                if (BuildConfig.DEBUG)
-                    e.printStackTrace();
+                    e2.printStackTrace();
             }
             try {
                 geoLocationManager.removeTestProvider(mocLocationProvider);
             } catch (Exception e4) {
-                if (BuildConfig.DEBUG)
-                    e.printStackTrace();
+                e4.printStackTrace();
             }
             try {
                 notificationManager = NotificationManagerCompat.from(this);
                 notificationManager.cancelAll();
             } catch (Exception e5) {
-                if (BuildConfig.DEBUG)
-                    e.printStackTrace();
+                e5.printStackTrace();
             }
             finish();
         }
@@ -285,7 +282,6 @@ public class BackgroundService extends AppCompatActivity {
             }
             serviceButton.setText(getApplicationContext().getResources().getString(R.string.tx_74));
         } catch (IllegalArgumentException e) {
-            if (BuildConfig.DEBUG)
                 e.printStackTrace();
         }
     }
@@ -305,25 +301,22 @@ public class BackgroundService extends AppCompatActivity {
         try {
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
         } catch (Exception e) {
-            if (BuildConfig.DEBUG)
                 e.printStackTrace();
         }
         try {
             geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
         } catch (Exception e) {
-            if (BuildConfig.DEBUG)
                 e.printStackTrace();
         }
         try {
             geoLocationManager.removeTestProvider(mocLocationProvider);
         } catch (Exception e) {
-            if (BuildConfig.DEBUG)
                 e.printStackTrace();
         }
         try {
+            notificationManager = NotificationManagerCompat.from(this);
             notificationManager.cancelAll();
         } catch (Exception e) {
-            if (BuildConfig.DEBUG)
                 e.printStackTrace();
         }
 
@@ -333,7 +326,6 @@ public class BackgroundService extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         if (!shouldStart) {
             stop();
         }
@@ -344,19 +336,10 @@ public class BackgroundService extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             if (!shouldStart) {
-                try {
-                    geoLocationManager.setTestProviderEnabled(mocLocationProvider, false);
-                    geoLocationManager.removeTestProvider(mocLocationProvider);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                notificationManager.cancelAll();
-                Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_70), Toast.LENGTH_LONG).show();
+                stop();
             }
-            finish();
-            return (true);
         }
-        return super.onOptionsItemSelected(item);
+        return (true);
     }
 
 }

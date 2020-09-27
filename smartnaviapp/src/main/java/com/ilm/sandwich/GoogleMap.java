@@ -1322,7 +1322,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                     endAddress += "\n" + zielOrtArray[1];
                 } catch (Exception e) {
                     // thats possible if Destination Name is only 1 line
-                    if (BuildConfig.debug)
                         e.printStackTrace();
                 }
                 if (language.equalsIgnoreCase("de")) {

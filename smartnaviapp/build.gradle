@@ -17,7 +17,6 @@ android {
         }
     }
     compileSdkVersion 29
-    buildToolsVersion '28.0.3'
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         minSdkVersion 21
@@ -28,11 +27,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            minifyEnabled false
             buildConfigField 'Boolean', 'debug', 'false'
             signingConfig signingConfigs.configdebug
-
         }
         debug {
             minifyEnabled false

@@ -141,7 +141,6 @@ public class TutorialFragment extends Fragment {
                     spinner.setSelection(0);
                 }
             } catch (Exception e) {
-                if (BuildConfig.debug)
                     e.printStackTrace();
             }
         } else {
@@ -241,7 +240,6 @@ public class TutorialFragment extends Fragment {
                         bodyHeightField.setFocusableInTouchMode(true);
                         bodyHeightField.setFocusable(true);
                     } catch (Exception e) {
-                        if (BuildConfig.debug)
                             e.printStackTrace();
                     }
                 }
