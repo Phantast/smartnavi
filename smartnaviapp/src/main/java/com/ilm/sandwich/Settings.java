@@ -192,9 +192,16 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
                     if (stepLengthString.contains("'")) {
                         String[] feetInchString = stepLengthString.split("'");
                         String feetString = feetInchString[0];
-                        String inchString = feetInchString[1];
                         float feet = Float.valueOf(feetString);
-                        float inch = Float.valueOf(inchString);
+
+                        //Check if user provided inch, if so set that. If not assume 0
+                        float inch = 0;
+                        if (feetInchString.length > 1) {
+                            String inchString = feetInchString[1];
+                            inch = Float.valueOf(inchString);
+                        } else {
+                            inch = 0;
+                        }
                         float totalInch = 12 * feet + inch;
                         Core.stepLength = (float) (totalInch * 2.54 / 222);
                         new writeSettings("step_length", stepLengthString).execute();

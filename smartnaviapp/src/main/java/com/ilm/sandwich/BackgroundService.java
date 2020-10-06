@@ -328,6 +328,8 @@ public class BackgroundService extends AppCompatActivity {
     public void onBackPressed() {
         if (!shouldStart) {
             stop();
+        } else {
+            finish();
         }
         super.onBackPressed();
     }
@@ -337,6 +339,8 @@ public class BackgroundService extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) {
             if (!shouldStart) {
                 stop();
+            } else {
+                finish();
             }
         }
         return (true);
