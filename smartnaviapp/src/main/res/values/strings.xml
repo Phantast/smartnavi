@@ -4,7 +4,7 @@
 
 <resources>
     <string name="app_name">SmartNavi</string>
-    <string name="tx_01">Start <b>step based</b> navigation</string>
+    <string name="tx_01">Navigate <b>without GPS</b> — save battery</string>
     <string name="tx_03">Search</string>
     <string name="tx_04">Loading Route. Please wait&#8230;</string>
     <string name="tx_05">Hold your device always in front of your body</string>
@@ -103,7 +103,7 @@
 
     <string-array name="dimension">
         <item>cm</item>
-        <item>foot\'inch</item>
+        <item>ft\' in\"</item>
     </string-array>
 
     <string-array name="possetzen">
@@ -112,4 +112,5 @@
     </string-array>
 
 
+    <string name="tx_search_here">Search here</string>
 </resources>

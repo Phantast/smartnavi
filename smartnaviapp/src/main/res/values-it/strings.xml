@@ -5,7 +5,7 @@
 <resources>
 
     <string name="app_name">SmartNavi</string>
-    <string name="tx_01">Inizia la navigazione <b>basata sui passi</b> </string>
+    <string name="tx_01">Naviga <b>senza GPS</b> — risparmia batteria</string>
     <string name="tx_03">Ricerca</string>
     <string name="tx_04">Caricamento percorso. Attendere&#8230;</string>
     <string name="tx_05">Tieni sempre il dispositivo davanti al tuo corpo</string>
@@ -102,5 +102,6 @@
         <item>Imposta destinazione</item>
     </string-array>
 
+    <string name="tx_search_here">Cerca qui</string>
 
 </resources>

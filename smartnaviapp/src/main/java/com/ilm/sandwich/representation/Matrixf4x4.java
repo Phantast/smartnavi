@@ -270,241 +270,44 @@ public class Matrixf4x4 {
 
     }
 
-    public void setX0(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_3x3[0]] = value;
-                else
-                    matrix[matIndRow16_3x3[0]] = value;
-            } else {
-                if (colMaj)
-                    matrix[matIndCol9_3x3[0]] = value;
-                else
-                    matrix[matIndRow9_3x3[0]] = value;
-            }
+    /**
+     * Sets a value in the 3x3 portion of the matrix using the given logical index (0-8).
+     * Works for both 9-element and 16-element matrices.
+     */
+    private void set3x3(int logicalIndex, float value) {
+        if (!matrixValid) return;
+        if (matrix.length == 16) {
+            matrix[colMaj ? matIndCol16_3x3[logicalIndex] : matIndRow16_3x3[logicalIndex]] = value;
+        } else {
+            matrix[colMaj ? matIndCol9_3x3[logicalIndex] : matIndRow9_3x3[logicalIndex]] = value;
         }
     }
 
-    public void setX1(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_3x3[1]] = value;
-                else
-                    matrix[matIndRow16_3x3[1]] = value;
-            } else {
-                if (colMaj)
-                    matrix[matIndCol9_3x3[1]] = value;
-                else
-                    matrix[matIndRow9_3x3[1]] = value;
-            }
-        }
+    /**
+     * Sets a value in the 4x4-only portion of the matrix using the given logical index.
+     * Only works for 16-element matrices; silently ignored for 9-element matrices.
+     */
+    private void set4x4(int logicalIndex, float value) {
+        if (!matrixValid || matrix.length != 16) return;
+        matrix[colMaj ? matIndCol16_4x4[logicalIndex] : matIndRow16_4x4[logicalIndex]] = value;
     }
 
-    public void setX2(float value) {
+    public void setX0(float value) { set3x3(0, value); }
+    public void setX1(float value) { set3x3(1, value); }
+    public void setX2(float value) { set3x3(2, value); }
+    public void setY0(float value) { set3x3(3, value); }
+    public void setY1(float value) { set3x3(4, value); }
+    public void setY2(float value) { set3x3(5, value); }
+    public void setZ0(float value) { set3x3(6, value); }
+    public void setZ1(float value) { set3x3(7, value); }
+    public void setZ2(float value) { set3x3(8, value); }
 
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_3x3[2]] = value;
-                else
-                    matrix[matIndRow16_3x3[2]] = value;
-            } else {
-                if (colMaj)
-                    matrix[matIndCol9_3x3[2]] = value;
-                else
-                    matrix[matIndRow9_3x3[2]] = value;
-            }
-        }
-    }
-
-    public void setY0(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_3x3[3]] = value;
-                else
-                    matrix[matIndRow16_3x3[3]] = value;
-            } else {
-                if (colMaj)
-                    matrix[matIndCol9_3x3[3]] = value;
-                else
-                    matrix[matIndRow9_3x3[3]] = value;
-            }
-        }
-    }
-
-    public void setY1(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_3x3[4]] = value;
-                else
-                    matrix[matIndRow16_3x3[4]] = value;
-            } else {
-                if (colMaj)
-                    matrix[matIndCol9_3x3[4]] = value;
-                else
-                    matrix[matIndRow9_3x3[4]] = value;
-            }
-        }
-    }
-
-    public void setY2(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_3x3[5]] = value;
-                else
-                    matrix[matIndRow16_3x3[5]] = value;
-            } else {
-                if (colMaj)
-                    matrix[matIndCol9_3x3[5]] = value;
-                else
-                    matrix[matIndRow9_3x3[5]] = value;
-            }
-        }
-    }
-
-    public void setZ0(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_3x3[6]] = value;
-                else
-                    matrix[matIndRow16_3x3[6]] = value;
-            } else {
-                if (colMaj)
-                    matrix[matIndCol9_3x3[6]] = value;
-                else
-                    matrix[matIndRow9_3x3[6]] = value;
-            }
-        }
-    }
-
-    public void setZ1(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_3x3[7]] = value;
-                else
-                    matrix[matIndRow16_3x3[7]] = value;
-            } else {
-                if (colMaj)
-                    matrix[matIndCol9_3x3[7]] = value;
-                else
-                    matrix[matIndRow9_3x3[7]] = value;
-            }
-        }
-    }
-
-    public void setZ2(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_3x3[8]] = value;
-                else
-                    matrix[matIndRow16_3x3[8]] = value;
-            } else {
-                if (colMaj)
-                    matrix[matIndCol9_3x3[8]] = value;
-                else
-                    matrix[matIndRow9_3x3[8]] = value;
-            }
-        }
-    }
-
-    public void setX3(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_4x4[3]] = value;
-                else
-                    matrix[matIndRow16_4x4[3]] = value;
-            }
-        }
-    }
-
-    public void setY3(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_4x4[7]] = value;
-                else
-                    matrix[matIndRow16_4x4[7]] = value;
-            }
-        }
-    }
-
-    public void setZ3(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_4x4[11]] = value;
-                else
-                    matrix[matIndRow16_4x4[11]] = value;
-            }
-        }
-    }
-
-    public void setW0(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_4x4[12]] = value;
-                else
-                    matrix[matIndRow16_4x4[12]] = value;
-            }
-        }
-    }
-
-    public void setW1(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_4x4[13]] = value;
-                else
-                    matrix[matIndRow16_4x4[13]] = value;
-            }
-        }
-    }
-
-    public void setW2(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_4x4[14]] = value;
-                else
-                    matrix[matIndRow16_4x4[14]] = value;
-            }
-        }
-    }
-
-    public void setW3(float value) {
-
-        if (matrixValid) {
-            if (matrix.length == 16) {
-                if (colMaj)
-                    matrix[matIndCol16_4x4[15]] = value;
-                else
-                    matrix[matIndRow16_4x4[15]] = value;
-            }
-        }
-    }
+    public void setX3(float value) { set4x4(3, value); }
+    public void setY3(float value) { set4x4(7, value); }
+    public void setZ3(float value) { set4x4(11, value); }
+    public void setW0(float value) { set4x4(12, value); }
+    public void setW1(float value) { set4x4(13, value); }
+    public void setW2(float value) { set4x4(14, value); }
+    public void setW3(float value) { set4x4(15, value); }
 
 }

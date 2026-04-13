@@ -5,7 +5,7 @@
 <resources>
 
     <string name="app_name">SmartNavi</string>
-    <string name="tx_01">Uruchom nawigację <b>opartą kroku</b></string>
+    <string name="tx_01">Nawiguj <b>bez GPS</b> — oszczędzaj baterię</string>
     <string name="tx_03">Wyszukiwanie</string>
     <string name="tx_04">Ładowanie trasy. Proszę czekać&#8230;</string>
     <string name="tx_05">Trzymaj swoje urządzenie zawsze przed sobą, wtedy SmartNavi rozpoznaje kroki i kierunki.</string>
@@ -103,5 +103,6 @@
         <item>Określać Pozycja</item>
         <item>Określać cel</item>
     </string-array>
+    <string name="tx_search_here">Szukaj tutaj</string>
 
 </resources>

@@ -12,44 +12,44 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.activity.OnBackPressedCallback;
+import androidx.cardview.widget.CardView;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -60,8 +60,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
@@ -76,8 +74,14 @@ import com.ilm.sandwich.fragments.RatingFragment;
 import com.ilm.sandwich.fragments.TutorialFragment;
 import com.ilm.sandwich.sensors.Core;
 import com.ilm.sandwich.tools.Config;
-import com.ilm.sandwich.tools.HttpRequests;
+import com.ilm.sandwich.tools.PolylineDecoder;
+import com.ilm.sandwich.tools.RouteManager;
 import com.ilm.sandwich.tools.Locationer;
+import com.ilm.sandwich.tools.MySupportMapFragment;
+import com.ilm.sandwich.tools.TouchableWrapper;
+import com.ilm.sandwich.ui.MapViewModel;
+
+import androidx.lifecycle.ViewModelProvider;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -86,6 +90,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * MapActivitiy for Google Maps
@@ -94,7 +100,7 @@ import java.util.Locale;
  * https://smartnavi.app
  */
 public class GoogleMap extends AppCompatActivity implements Locationer.onLocationUpdateListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, TutorialFragment.onTutorialFinishedListener, Core.onStepUpdateListener, RatingFragment.onRatingFinishedListener {
+        OnMapReadyCallback, TutorialFragment.onTutorialFinishedListener, Core.onStepUpdateListener, RatingFragment.onRatingFinishedListener {
 
     public static double destLat;
     public static double destLon;
@@ -106,7 +112,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     public static boolean backgroundServiceShallBeOnAgain = false;
     public static String uid;
     public static boolean userHasSetByTouch = false;
-    public static Handler listHandler;
+    private static Handler mainHandler = new Handler(android.os.Looper.getMainLooper());
     static boolean uTaskIsOn;
     static LatLng longpressLocation;
     private static int stepCounterOld = 1;
@@ -129,7 +135,6 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     public int counterRouteComplexity = 0;
     public boolean speechOutput;
     ListView list;
-    Menu mainMenu;
     String language;
     TextToSpeech mTts;
     ProgressBar mProgressBar;
@@ -137,10 +142,37 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     int segmentCounter;
     TutorialFragment tutorialFragment;
     RatingFragment ratingFragment;
+    private MapViewModel viewModel;
     private FirebaseAnalytics mFirebaseAnalytics;
     private com.google.android.gms.maps.GoogleMap map;
     private String[] html_instructions = new String[31];
     private String[] polylineArray = new String[31];
+    private final ExecutorService routeExecutor = Executors.newSingleThreadExecutor();
+    private final ActivityResultLauncher<Intent> searchLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Place place = Autocomplete.getPlaceFromIntent(result.getData());
+                    if (place.getLatLng() != null) {
+                        Log.i("SmartNavi Autocomplete", "Place: " + place.getName() + ", " + place.getLatLng());
+                        destLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+                        setDestPosition(destLatLng);
+                        showRouteInfo();
+                        fetchRouteAsync();
+                        // Show selected destination in the search bar
+                        TextView searchText = findViewById(R.id.searchBarText);
+                        if (searchText != null && place.getName() != null) {
+                            searchText.setText(place.getName());
+                            searchText.setTextColor(0xFF333333);
+                        }
+                    } else {
+                        Toast.makeText(this, getResources().getString(R.string.tx_103), Toast.LENGTH_LONG).show();
+                    }
+                } else if (result.getResultCode() == AutocompleteActivity.RESULT_ERROR && result.getData() != null) {
+                    Status status = Autocomplete.getStatusFromIntent(result.getData());
+                    Log.i("SmartNavi Autocomplete", status.getStatusMessage());
+                    Toast.makeText(this, getResources().getString(R.string.tx_103), Toast.LENGTH_LONG).show();
+                }
+            });
     private Locationer mLocationer;
     private boolean knownReasonForBreak = false;
     private boolean finishedTalking = false;
@@ -150,7 +182,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
 
     public static double computeDistanz(double lat, double lon) {
         // Entfernung bzw. Distanz zur eigenen aktuellen Position
-        double mittellat2 = (Core.startLat + lat) / 2 * 0.01745329252;
+        double mittellat2 = Math.toRadians((Core.startLat + lat) / 2);
         double distanceLongitude = 111.3 * Math.cos(mittellat2);
         double dlat2 = 111.3 * (Core.startLat - lat);
         double dlon2 = distanceLongitude * (Core.startLon - lon);
@@ -186,8 +218,109 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_googlemap);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Toolbar toolbar = findViewById(R.id.toolbar_googlemap); // Attaching the layout to the toolbar object
-        setSupportActionBar(toolbar);                   // Setting toolbar as the ActionBar with setSupportActionBar() call
+
+        // Set up floating search bar
+        CardView searchBarCard = findViewById(R.id.searchBarCard);
+        TextView searchBarText = findViewById(R.id.searchBarText);
+        ImageButton searchBarOverflow = findViewById(R.id.searchBarOverflow);
+
+        // Clicking the search bar or its text opens Places Autocomplete
+        View.OnClickListener searchClickListener = v -> {
+            knownReasonForBreak = true;
+            autoCompleteSearch();
+        };
+        searchBarCard.setOnClickListener(searchClickListener);
+        searchBarText.setOnClickListener(searchClickListener);
+
+        // Overflow menu (3-dot icon) shows popup with all menu items
+        searchBarOverflow.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(GoogleMap.this, v);
+            popup.getMenu().add(0, 1, 0, getResources().getString(R.string.tx_64));  // Background Service
+            popup.getMenu().add(0, 2, 1, getResources().getString(R.string.tx_90));  // Offline Maps
+            popup.getMenu().add(0, 3, 2, getResources().getString(R.string.tx_15));  // Settings
+            popup.getMenu().add(0, 4, 3, getResources().getString(R.string.tx_50));  // Tutorial
+            popup.getMenu().add(0, 5, 4, getResources().getString(R.string.tx_65));  // About
+            popup.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case 1:
+                        knownReasonForBreak = true;
+                        startActivity(new Intent(GoogleMap.this, BackgroundService.class));
+                        return true;
+                    case 2:
+                        startActivity(new Intent(GoogleMap.this, Webview.class));
+                        return true;
+                    case 3:
+                        knownReasonForBreak = true;
+                        startActivity(new Intent(GoogleMap.this, Settings.class));
+                        return true;
+                    case 4:
+                        FragmentManager fm = getSupportFragmentManager();
+                        FragmentTransaction ft = fm.beginTransaction();
+                        map.getUiSettings().setAllGesturesEnabled(false);
+                        tutorialFragment = new TutorialFragment();
+                        ft.add(R.id.coordinatorRoot, tutorialFragment).commit();
+                        // Hide search bar while tutorial is showing
+                        CardView sb = findViewById(R.id.searchBarCard);
+                        if (sb != null) sb.setVisibility(View.GONE);
+                        return true;
+                    case 5:
+                        knownReasonForBreak = true;
+                        startActivity(new Intent(GoogleMap.this, Info.class));
+                        return true;
+                }
+                return false;
+            });
+            popup.show();
+        });
+
+        // Handle edge-to-edge insets: push search bar below the status bar
+        ViewCompat.setOnApplyWindowInsetsListener(searchBarCard, (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            int extraTopDp = 20;
+            float density = getResources().getDisplayMetrics().density;
+            lp.topMargin = insets.top + (int) (extraTopDp * density);
+            v.setLayoutParams(lp);
+            return windowInsets;
+        });
+
+        // Handle navigation bar insets for the FAB
+        FloatingActionButton fabView = findViewById(R.id.fab);
+        if (fabView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(fabView, (v, windowInsets) -> {
+                Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
+                ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+                lp.bottomMargin = insets.bottom + 16;
+                v.setLayoutParams(lp);
+                return windowInsets;
+            });
+        }
+
+        // Handle navigation bar insets for the bottom info bar spacer
+        View navBarSpacer = findViewById(R.id.mapTextNavBarSpacer);
+        if (navBarSpacer != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(navBarSpacer, (v, windowInsets) -> {
+                Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
+                ViewGroup.LayoutParams lp = v.getLayoutParams();
+                lp.height = insets.bottom;
+                v.setLayoutParams(lp);
+                return windowInsets;
+            });
+        }
+
+        viewModel = new ViewModelProvider(this).get(MapViewModel.class);
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (routeHasBeenDrawn) {
+                    clearRoute();
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -197,37 +330,28 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             mFirebaseRemoteConfig.activate();
         }
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setDeveloperModeEnabled(BuildConfig.DEBUG)
-                .setMinimumFetchIntervalInSeconds(1)
+                .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG ? 0 : 3600)
                 .build();
-        mFirebaseRemoteConfig.setConfigSettings(configSettings);
-        mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(this, new OnCompleteListener<Boolean>() {
-            @Override
-            public void onComplete(@NonNull Task<Boolean> task) {
-                if (task.isSuccessful()) {
-                    boolean updated = task.getResult();
-                    Log.d("Firebase", "Config params updated: " + updated);
-                } else {
-                    Log.d("Firebase", "Fetch failed");
-                }
+        mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+        mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                Log.d("Firebase", "Config params updated: " + task.getResult());
+            } else {
+                Log.d("Firebase", "Fetch failed");
             }
         });
 
         fab = findViewById(R.id.fab);
         if (fab != null) {
-            fab.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // longPressMenu will become invisible
-                    try {
-                        list = findViewById(R.id.liste);
-                        if (list != null && list.getVisibility() == View.VISIBLE)
-                            list.setVisibility(View.INVISIBLE);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    setFollowOn();
+            fab.setOnClickListener(v -> {
+                try {
+                    list = findViewById(R.id.liste);
+                    if (list != null && list.getVisibility() == View.VISIBLE)
+                        list.setVisibility(View.INVISIBLE);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+                setFollowOn();
             });
         }
 
@@ -260,9 +384,12 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     private void proceedOnCreate() {
         mLocationer = new Locationer(GoogleMap.this);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        MySupportMapFragment mapFragment = (MySupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.googlemap_fragment);
         mapFragment.getMapAsync(this);
+        if (mapFragment.mTouchView != null) {
+            mapFragment.mTouchView.setOnMapTouchListener(() -> onMapTouch());
+        }
     }
 
     @Override
@@ -278,40 +405,25 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         map.setIndoorEnabled(true);
         map.getUiSettings().setCompassEnabled(false);
         map.setBuildingsEnabled(true);
-        map.setOnMarkerClickListener(new com.google.android.gms.maps.GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                //do not react to clicks on Markers, as Google would show a small menu in the bottom right corner
-                //showing options to open GoogleMaps
-                return true;
+        map.setOnMarkerClickListener(marker -> true); // suppress default marker info window
+
+        map.setOnMapLongClickListener(arg0 -> {
+            mFirebaseAnalytics.logEvent("Longpress_Map", null);
+            longpressLocation = arg0;
+            if (longPressMarker != null && longPressMarker.isVisible()) {
+                longPressMarker.remove();
             }
+            longPressMarker = map.addMarker(new MarkerOptions().position(longpressLocation).icon(BitmapDescriptorFactory.fromBitmap(drawableDest))
+                    .anchor(0.5F, 1.0F));
+            showLongPressList();
         });
 
-        map.setOnMapLongClickListener(new OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng arg0) {
-                mFirebaseAnalytics.logEvent("Longpress_Map", null);
+        map.setOnMapClickListener(arg0 -> {
+            if (listVisible) {
                 longpressLocation = arg0;
-                if (longPressMarker != null) {
-                    if (longPressMarker.isVisible()) {
-                        longPressMarker.remove();
-                    }
-                }
-                longPressMarker = map.addMarker(new MarkerOptions().position(longpressLocation).icon(BitmapDescriptorFactory.fromBitmap(drawableDest))
-                        .anchor(0.5F, 1.0F));
-                listHandler.sendEmptyMessage(2);
-            }
-        });
-
-        map.setOnMapClickListener(new OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng arg0) {
-                if (listVisible) {
-                    longpressLocation = arg0;
-                    longPressMarker.remove();
-                    list.setVisibility(View.INVISIBLE);
-                    listVisible = false;
-                }
+                longPressMarker.remove();
+                list.setVisibility(View.INVISIBLE);
+                listVisible = false;
             }
         });
 
@@ -320,92 +432,81 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         map.setIndoorEnabled(true);
 
 
-        startHandler();
-
         //Check if magnetic sensor is existing. If not: Warn user!
         try {
             SensorManager mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
             mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD).getName();
         } catch (Exception e) {
-            View viewLine = findViewById(R.id.view156);
-            if (viewLine != null) {
-                viewLine.setVisibility(View.VISIBLE);
-            }
             TextView mapText = findViewById(R.id.mapText);
             if (mapText != null) {
-                mapText.setVisibility(View.VISIBLE);
-            }
-            if (mapText != null) {
                 mapText.setText(getResources().getString(R.string.tx_43));
+            }
+            View container = findViewById(R.id.mapTextContainer);
+            if (container != null) {
+                container.setVisibility(View.VISIBLE);
             }
         }
 
         TextView mapText = findViewById(R.id.mapText);
         if (mapText != null) {
-            mapText.setVisibility(View.INVISIBLE);
             mapText.setSingleLine(false);
         }
-        View viewLine = findViewById(R.id.view156);
-        if (viewLine != null) {
-            viewLine.setVisibility(View.INVISIBLE);
+        View container = findViewById(R.id.mapTextContainer);
+        if (container != null) {
+            container.setVisibility(View.INVISIBLE);
         }
 
         language = Locale.getDefault().getLanguage();
 
-        new changeSettings("follow", true).execute();
+        com.ilm.sandwich.tools.PreferencesHelper.putBoolean(this, "follow", true);
         SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
 
         uid = settings.getString("uid", "0");
         if (uid.equalsIgnoreCase("0")) {
             String neuUID = "" + (1 + (int) (Math.random() * ((10000000 - 1) + 1)));
-            new changeSettings("uid", neuUID).execute();
+            com.ilm.sandwich.tools.PreferencesHelper.putString(this, "uid", neuUID);
             uid = settings.getString("uid", "0");
         }
 
-        satelliteView = settings.getBoolean("view", false);
-        if (satelliteView) {
-            map.setMapType(com.google.android.gms.maps.GoogleMap.MAP_TYPE_HYBRID);
-        } else {
-            map.setMapType(com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL);
-        }
+        // Initialize ViewModel UI state from preferences
+        viewModel.setSatelliteView(settings.getBoolean("view", false));
+        viewModel.setSpeechOutput(settings.getBoolean("language", false));
+        viewModel.setVibration(settings.getBoolean("vibration", true));
+        viewModel.setAutocorrectEnabled(settings.getBoolean("autocorrect", false));
+
+        // Observe satellite view changes
+        viewModel.getSatelliteView().observe(this, isSatellite -> {
+            satelliteView = isSatellite;
+            if (map != null) {
+                map.setMapType(isSatellite
+                        ? com.google.android.gms.maps.GoogleMap.MAP_TYPE_HYBRID
+                        : com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL);
+            }
+        });
+
+        // Observe speech/vibration so instance fields stay in sync
+        viewModel.getSpeechOutput().observe(this, value -> speechOutput = value);
+        viewModel.getVibration().observe(this, value -> vibration = value);
 
         createAllMarkersInvisible();
 
         String stepLengthString = settings.getString("step_length", null);
         if (stepLengthString != null) {
-            try {
-                if (stepLengthString.contains("'")) {
-                    String[] feetInchString = stepLengthString.split("'");
-                    String feetString = feetInchString[0];
-                    float feet = Float.valueOf(feetString);
-
-                    //Check if user provided inch, if so set that. If not assume 0
-                    float inch = 0;
-                    if (feetInchString.length > 1) {
-                        String inchString = feetInchString[1];
-                        inch = Float.valueOf(inchString);
-                    } else {
-                        inch = 0;
-                    }
-
-                    float totalInch = 12 * feet + inch;
-                    Core.stepLength = (float) (totalInch * 2.54 / 222);
-                } else {
-                    stepLengthString = stepLengthString.replace(",", ".");
-                    Float savedBodyHeight = (Float.parseFloat(stepLengthString));
-                    Core.stepLength = savedBodyHeight / 222;
-                }
+            float parsed = com.ilm.sandwich.tools.StepLengthCalculator.calculateStepLength(stepLengthString);
+            if (parsed > 0) {
+                Core.stepLength = parsed;
                 if (BuildConfig.DEBUG) Log.i("Step length", "Step length = " + Core.stepLength);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
             }
         } else {
             map.getUiSettings().setAllGesturesEnabled(false);
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             tutorialFragment = new TutorialFragment();
-            fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment);
+            fragmentTransaction.add(R.id.coordinatorRoot, tutorialFragment);
             fragmentTransaction.commitAllowingStateLoss();
+            // Hide search bar while tutorial is showing
+            CardView sb = findViewById(R.id.searchBarCard);
+            if (sb != null) sb.setVisibility(View.GONE);
         }
 
         mTts = new TextToSpeech(GoogleMap.this, null);
@@ -416,23 +517,20 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         if (list != null) {
             list.setVisibility(View.INVISIBLE);
         }
-        list.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                if (arg2 == 0) {
-                    setHome();
-                    mFirebaseAnalytics.logEvent("SetPosition_after_Longpress", null);
-                    list.setVisibility(View.INVISIBLE);
-                    listVisible = false;
-                    longPressMarker.remove();
-                    positionUpdate();
-                } else {
-                    fingerDestination(longpressLocation);
-                    mFirebaseAnalytics.logEvent("SetDestination_after_Longpress", null);
-                    list.setVisibility(View.INVISIBLE);
-                    listVisible = false;
-                    longPressMarker.remove();
-                }
+        list.setOnItemClickListener((arg0, arg1, arg2, arg3) -> {
+            if (arg2 == 0) {
+                setHome();
+                mFirebaseAnalytics.logEvent("SetPosition_after_Longpress", null);
+                list.setVisibility(View.INVISIBLE);
+                listVisible = false;
+                longPressMarker.remove();
+                positionUpdate();
+            } else {
+                fingerDestination(longpressLocation);
+                mFirebaseAnalytics.logEvent("SetDestination_after_Longpress", null);
+                list.setVisibility(View.INVISIBLE);
+                listVisible = false;
+                longPressMarker.remove();
             }
         });
         // Rate App show for debugging
@@ -446,54 +544,49 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             setFollowOff();
     }
 
-    @SuppressLint("HandlerLeak")
-    public void startHandler() {
-        listHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                if (msg.what == 1) {
-                    followMe = true;
-                } else if (msg.what == 2) {
-                    list.setVisibility(View.VISIBLE);
-                    //Set this variable after some time has passed
-                    // so that the LongclickList will not be removed by random
-                    // minimal Touch gestures. So the list has a guaranteed short life time
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            listVisible = true;
-                        }
-                    }, 1200);
-                } else if (msg.what == 6) {
-                    // initialize Autocorrect oder restart new
-                    // after activity_settings changed if necessary
-                    if (mCore != null)
-                        mCore.enableAutocorrect();
-                } else if (msg.what == 7) {
-                    if (mCore != null)
-                        mCore.disableAutocorrect();
-                    mLocationer.stopAutocorrect();
-                } else if (msg.what == 9) {
-                    //not used anymore
-                } else if (msg.what == 10) {
-                    //BackgroundService is created, so dont stop sensors
-                    if (mCore != null)
-                        mCore.reactivateSensors();
-                    if (BuildConfig.DEBUG)
-                        Log.i("SmartNavi", "Reactivate Sensors because Background service is running.");
-                } else if (msg.what == 11) {
-                    setFollowOn();
-                    startLatLng = new LatLng(Core.startLat, Core.startLon);
-                    // Turn Camera towards North
-                    CameraPosition currentPlace = new CameraPosition.Builder().target(startLatLng).bearing(0.0F).tilt(0.0F).zoom(19).build();
-                    map.animateCamera(CameraUpdateFactory.newCameraPosition(currentPlace));
-                    // Restart FollowMe
-                    listHandler.sendEmptyMessageDelayed(1, 1500);
-                } else if (msg.what == 15) {
-                    onMapTouch();
-                }
-                super.handleMessage(msg);
-            }
-        };
+    // --- Public methods replacing the old listHandler message bus ---
+
+    /** Show the long-press context list (was msg 2) */
+    public void showLongPressList() {
+        list.setVisibility(View.VISIBLE);
+        mainHandler.postDelayed(() -> listVisible = true, 1200);
+    }
+
+    /** Enable autocorrect (was msg 6). Safe to call from other activities with a delay. */
+    public static void enableAutocorrectDelayed(long delayMs) {
+        mainHandler.postDelayed(() -> {
+            if (mCore != null) mCore.enableAutocorrect();
+        }, delayMs);
+    }
+
+    /** Disable autocorrect (was msg 7) */
+    public static void disableAutocorrect() {
+        mainHandler.post(() -> {
+            if (mCore != null) mCore.disableAutocorrect();
+        });
+    }
+
+    /** Reactivate sensors for background service (was msg 10) */
+    public static void reactivateSensorsForBackgroundService() {
+        if (mCore != null) {
+            mCore.reactivateSensors();
+            if (BuildConfig.DEBUG)
+                Log.i("SmartNavi", "Reactivate Sensors because Background service is running.");
+        }
+    }
+
+    /** Reset camera north and restart follow mode after route animation (was msg 11) */
+    private void resetCameraAndFollow() {
+        setFollowOn();
+        startLatLng = new LatLng(Core.startLat, Core.startLon);
+        CameraPosition currentPlace = new CameraPosition.Builder().target(startLatLng).bearing(0.0F).tilt(0.0F).zoom(19).build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(currentPlace));
+        mainHandler.postDelayed(() -> followMe = true, 1500);
+    }
+
+    /** Cancel all pending handler callbacks */
+    public static void cancelPendingCallbacks() {
+        mainHandler.removeCallbacksAndMessages(null);
     }
 
 
@@ -506,7 +599,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 setFirstPosition();
                 foreignIntent();
                 // start Autocorrect if user wants it
-                listHandler.sendEmptyMessage(6);
+                enableAutocorrectDelayed(0);
                 mProgressBar = findViewById(R.id.progressBar1);
                 if (mProgressBar != null) {
                     mProgressBar.setVisibility(View.VISIBLE);
@@ -624,13 +717,13 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                     destLon = Float.parseFloat(requestArray1[1]);
                 }
                 destLatLng = new LatLng(destLat, destLon);
-                listHandler.removeCallbacksAndMessages(null);
+                cancelPendingCallbacks();
                 map.stopAnimation();
                 setPosition(false);
                 drawableDest = BitmapFactory.decodeResource(getResources(), R.drawable.finish2);
                 setDestPosition(destLatLng);
                 showRouteInfo();
-                new routeTask().execute();
+                fetchRouteAsync();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -722,6 +815,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
 
     public void setFirstPosition() {
         startLatLng = new LatLng(Core.startLat, Core.startLon);
+        // Hide the previous marker before showing the new one to avoid duplicates
+        if (actualMarker[0] != null && actualMarker[0] != currentPosition) {
+            actualMarker[0].setVisible(false);
+        }
         currentPosition.setPosition(startLatLng);
         currentPosition.setVisible(true);
         actualMarker[0] = currentPosition;
@@ -738,14 +835,13 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 14.0F)));
         } else if (Core.lastErrorGPS == 9999999) {
             map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 4.0F)));
-            View viewLine = findViewById(R.id.view156);
-            if (viewLine != null) {
-                viewLine.setVisibility(View.VISIBLE);
-            }
             TextView mapText = findViewById(R.id.mapText);
             if (mapText != null) {
-                mapText.setVisibility(View.VISIBLE);
                 mapText.setText(getResources().getString(R.string.tx_06));
+            }
+            View mapContainer = findViewById(R.id.mapTextContainer);
+            if (mapContainer != null) {
+                mapContainer.setVisibility(View.VISIBLE);
             }
         } else {
             map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(startLatLng, 13.0F)));
@@ -758,33 +854,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     }
 
     private List<LatLng> decodePoly(String encoded) {
-
-        List<LatLng> poly = new ArrayList<>();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
-
-        while (index < len) {
-            int b, shift = 0, result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
-
-            shift = 0;
-            result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            LatLng p = new LatLng(((double) lat / 1E5), ((double) lng / 1E5));
-            poly.add(p);
+        List<double[]> decoded = PolylineDecoder.decode(encoded);
+        List<LatLng> poly = new ArrayList<>(decoded.size());
+        for (double[] coord : decoded) {
+            poly.add(new LatLng(coord[0], coord[1]));
         }
         return poly;
     }
@@ -826,49 +899,38 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             if (vibration) {
                 v.vibrate(300);
             }
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    finishedTalking = true;
-                }
-            }, 10000);
+            mainHandler.postDelayed(() -> finishedTalking = true, 10000);
         }
     }
 
     public void showRouteInfo() {
         TextView mapText = findViewById(R.id.mapText);
-        View viewLine = findViewById(R.id.view156);
-        if (mapText != null && viewLine != null) {
+        View mapContainer = findViewById(R.id.mapTextContainer);
+        if (mapText != null && mapContainer != null) {
             mapText.setText(getApplicationContext().getResources().getString(R.string.tx_04));
-            mapText.setVisibility(View.VISIBLE);
-            viewLine.setVisibility(View.VISIBLE);
+            mapContainer.setVisibility(View.VISIBLE);
         }
     }
 
     public void makeInfo(String endAddress, String firstDistance) {
         TextView mapText = findViewById(R.id.mapText);
-        View viewLine = findViewById(R.id.view156);
-        if (firstDistance != null && mapText != null && viewLine != null) {
+        View mapContainer = findViewById(R.id.mapTextContainer);
+        if (firstDistance != null && mapText != null && mapContainer != null) {
             mapText.setText(endAddress + "\n\n" + firstDistance);
-            viewLine.setVisibility(View.VISIBLE);
-            mapText.setVisibility(View.VISIBLE);
+            mapContainer.setVisibility(View.VISIBLE);
             if (speechOutput) {
                 firstDistance = firstDistance.replace("-", " ").replace("\n", " ").replace("/", " ");
                 mTts.speak(firstDistance, TextToSpeech.QUEUE_FLUSH, null, null);
             }
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    finishedTalking = true;
-                    waitedAtStart = true;
-                }
+            mainHandler.postDelayed(() -> {
+                finishedTalking = true;
+                waitedAtStart = true;
             }, 8500);
             uTaskIsOn = true;
         } else {
             Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_30), Toast.LENGTH_LONG).show();
-            if (viewLine != null && mapText != null) {
-                viewLine.setVisibility(View.INVISIBLE);
-                mapText.setVisibility(View.INVISIBLE);
+            if (mapContainer != null) {
+                mapContainer.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -880,7 +942,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         int status = api.isGooglePlayServicesAvailable(this);
 
         if (status != ConnectionResult.SUCCESS) {
-            new changeSettings("MapSource", "MapQuestOSM").execute();
+            com.ilm.sandwich.tools.PreferencesHelper.putString(this, "MapSource", "MapQuestOSM");
         } else if (!userSwitchedGps) {
             if (mCore != null) {
                 mCore.reactivateSensors();
@@ -907,17 +969,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 boolean export = settings.getBoolean("export", false);
                 mCore.writeLog(export);
             }
-            // MapView change
-            satelliteView = settings.getBoolean("view", false);
-            if (satelliteView && map != null) {
-                map.setMapType(com.google.android.gms.maps.GoogleMap.MAP_TYPE_HYBRID);
-            } else if (map != null) {
-                map.setMapType(com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL);
-            }
-            // Speech Output
-            speechOutput = settings.getBoolean("language", false);
-            // Vibration
-            vibration = settings.getBoolean("vibration", true);
+            // Reload preferences into ViewModel — observers handle the rest
+            viewModel.setSatelliteView(settings.getBoolean("view", false));
+            viewModel.setSpeechOutput(settings.getBoolean("language", false));
+            viewModel.setVibration(settings.getBoolean("vibration", true));
             stepCounterOld = Core.stepCounter - 1;
         } else {
             if (mLocationer != null) {
@@ -936,8 +991,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         if (mProgressBar != null) {
             mProgressBar.setVisibility(View.GONE);
         }
-        if (mCore != null)
+        // Keep sensors alive when background service is active — it needs step detection
+        if (mCore != null && !Config.backgroundServiceActive) {
             mCore.pauseSensors();
+        }
         super.onPause();
     }
 
@@ -945,7 +1002,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
     protected void onDestroy() {
         routeHasBeenDrawn = false;
         try {
-            listHandler.removeCallbacksAndMessages(null);
+            cancelPendingCallbacks();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -959,7 +1016,9 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 waitedAtStart = true;
                 uTaskIsOn = false;
             }
-            if (mCore != null) {
+            // Only shutdown Core if background service is NOT active.
+            // If it is active, ForegroundService.onDestroy handles cleanup.
+            if (mCore != null && !Config.backgroundServiceActive) {
                 mCore.shutdown(this);
             }
             try {
@@ -976,14 +1035,9 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                 e.printStackTrace();
             }
         }
+        routeExecutor.shutdownNow();
+        com.ilm.sandwich.tools.DebugLogHelper.dumpAndNotify(this);
         super.onDestroy();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.options_menu, menu);
-        mainMenu = menu;
-        return true;
     }
 
     @Override
@@ -999,113 +1053,38 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         return super.onKeyUp(keyCode, event);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // if off, longPressMenu will be made invisible
-        list = findViewById(R.id.liste);
-        if (list != null) {
-            list.setVisibility(View.INVISIBLE);
-        }
-
-        switch (item.getItemId()) {
-            case R.id.menu_bgservice:
-                // activity_backgroundservice
-                knownReasonForBreak = true;
-                Intent myIntent = new Intent(GoogleMap.this, BackgroundService.class);
-                startActivity(myIntent);
-                return true;
-            case R.id.menu_settings:
-                // Go to Settings
-                knownReasonForBreak = true;
-                startActivity(new Intent(this, Settings.class));
-                return true;
-            case R.id.menu_offlinemaps:
-                startActivity(new Intent(GoogleMap.this, Webview.class));
-                return true;
-            case R.id.menu_tutorial:
-                // TutorialFragment
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                map.getUiSettings().setAllGesturesEnabled(false);
-                tutorialFragment = new TutorialFragment();
-                fragmentTransaction.add(R.id.googlemap_actvity_layout, tutorialFragment).commit();
-                return true;
-            case R.id.menu_info:
-                // About Page
-                knownReasonForBreak = true;
-                startActivity(new Intent(this, Info.class));
-                return true;
-            case android.R.id.home:
-                finish();
-                return (true);
-            case R.id.menu_search:
-                autoCompleteSearch();
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     private void autoCompleteSearch() {
         //Initialize Places API
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), Config.PLACES_SDK_API_KEY);
+            Places.initialize(getApplicationContext(), BuildConfig.MAPS_API_KEY);
         }
         // Set the fields to specify which types of place data to return.
-        List<Place.Field> fields = Arrays.asList(Place.Field.LAT_LNG, Place.Field.NAME);
-        //Define Reactangular Search Box for 3km
-        double lowerLeftLatitude;
-        double lowerLeftLongitude;
-        double upperRightLatitude;
-        double upperRightLongitude;
-
-        lowerLeftLatitude = Core.startLat - 0.03;
-        upperRightLatitude = Core.startLat + 0.03;
-
-        lowerLeftLongitude = Core.startLon - 0.04;
-        upperRightLongitude = Core.startLon + 0.04;
-
-        //SoutWest , NothEast
+        List<Place.Field> fields = Arrays.asList(Place.Field.LAT_LNG, Place.Field.NAME, Place.Field.ADDRESS);
+        // Bias results towards ~50km around current position, but allow results anywhere
+        double latOffset = 0.45; // ~50km
+        double lonOffset = 0.6;  // ~50km (adjusted for longitude convergence)
         RectangularBounds bounds = RectangularBounds.newInstance(
-                new LatLng(lowerLeftLatitude, lowerLeftLongitude),
-                new LatLng(upperRightLatitude, upperRightLongitude));
-        Log.i("AutoComplete Bounds", "SouthWest: " + bounds.getSouthwest().latitude + " " + bounds.getSouthwest().longitude + "  " + " NorthEast: " + bounds.getNortheast().latitude + " " + bounds.getNortheast().longitude);
-        // Start the autocomplete intent.
+                new LatLng(Core.startLat - latOffset, Core.startLon - lonOffset),
+                new LatLng(Core.startLat + latOffset, Core.startLon + lonOffset));
         Intent intent = new Autocomplete.IntentBuilder(
-                AutocompleteActivityMode.OVERLAY, fields).setLocationBias(bounds)
+                AutocompleteActivityMode.OVERLAY, fields)
+                .setLocationBias(bounds)
                 .build(this);
 
-        startActivityForResult(intent, 6767);
-    }
-
-    @SuppressLint("MissingSuperCall")
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 6767) {
-            if (resultCode == RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i("SmartNavi Autocomplete", "Place: " + place.getName() + ", " + place.getLatLng());
-                destLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
-                setDestPosition(destLatLng);
-                new routeTask().execute();
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i("SmartNavi Autocomplete", status.getStatusMessage());
-                Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_103), Toast.LENGTH_LONG).show();
-            }
-        }
+        searchLauncher.launch(intent);
     }
 
     public void fingerDestination(LatLng g) {
         destLat = g.latitude;// getLatitudeE6() / 1E6;
         destLon = g.longitude;// getLongitudeE6() / 1E6;
         destLatLng = g;
-        listHandler.removeCallbacksAndMessages(null);
+        cancelPendingCallbacks();
         showRouteInfo();
         map.stopAnimation();
         setPosition(false);
         drawableDest = BitmapFactory.decodeResource(getResources(), R.drawable.finish2);
         setDestPosition(destLatLng);
-        new routeTask().execute();
+        fetchRouteAsync();
     }
 
     public void setDestPosition(LatLng z) {
@@ -1117,7 +1096,7 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         mFirebaseAnalytics.logEvent("Route_Created_Successfully", null);
         LatLngBounds grenzen = new LatLngBounds(southwest, northeast);
         map.animateCamera(CameraUpdateFactory.newLatLngBounds(grenzen, 100));
-        listHandler.sendEmptyMessageDelayed(11, 3000);
+        mainHandler.postDelayed(() -> resetCameraAndFollow(), 3000);
     }
 
     private void appRateDialog() {
@@ -1152,14 +1131,10 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
                     e.printStackTrace();
                 }
                 ratingFragment = new RatingFragment();
-                fragmentTransaction.add(R.id.googlemap_actvity_layout, ratingFragment).commitAllowingStateLoss();
+                fragmentTransaction.add(R.id.coordinatorRoot, ratingFragment).commitAllowingStateLoss();
             }
         }
         editor.apply();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult arg0) {
     }
 
     // at Touch on ProgressBar
@@ -1187,64 +1162,44 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
             dialogGPS.show();
             mFirebaseAnalytics.logEvent("GPS_Dialog_shown", null);
             Button cancel = dialogGPS.findViewById(R.id.dialogCancelgps);
-            cancel.setOnClickListener(new OnClickListener() {
-                public void onClick(View arg0) {
-                    mFirebaseAnalytics.logEvent("GPS_Dialog_canceled", null);
-                    dialogGPS.dismiss();
-                }
+            cancel.setOnClickListener(v -> {
+                mFirebaseAnalytics.logEvent("GPS_Dialog_canceled", null);
+                dialogGPS.dismiss();
             });
 
             Button settingsGPS = dialogGPS.findViewById(R.id.dialogSettingsgps);
-            settingsGPS.setOnClickListener(new OnClickListener() {
-                public void onClick(View arg0) {
-                    try {
-                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                        userSwitchedGps = true;
-                    } catch (android.content.ActivityNotFoundException ae) {
-                        startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
-                        userSwitchedGps = true;
-                    }
-                    mFirebaseAnalytics.logEvent("GPS_Dialog_JumpToSettings", null);
-                    dialogGPS.dismiss();
+            settingsGPS.setOnClickListener(v -> {
+                try {
+                    startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    userSwitchedGps = true;
+                } catch (android.content.ActivityNotFoundException ae) {
+                    startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
+                    userSwitchedGps = true;
                 }
+                mFirebaseAnalytics.logEvent("GPS_Dialog_JumpToSettings", null);
+                dialogGPS.dismiss();
             });
         }
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (routeHasBeenDrawn) {
-            //Remove Route if drawn
-            if (destMarker != null) {
-                if (destMarker.isVisible()) {
-                    destMarker.setVisible(false);
-                }
-            }
-            for (int a = 0; a <= routeParts; a++) {
-                completeRoute[a].remove();
-            }
-            routeHasBeenDrawn = false;
-            setFollowOn();
-            View viewLine = findViewById(R.id.view156);
-            if (viewLine != null) {
-                viewLine.setVisibility(View.INVISIBLE);
-            }
-            TextView mapText = findViewById(R.id.mapText);
-            if (mapText != null) {
-                mapText.setVisibility(View.INVISIBLE);
-            }
-        } else {
-            super.onBackPressed();
+    private void clearRoute() {
+        if (destMarker != null && destMarker.isVisible()) {
+            destMarker.setVisible(false);
+        }
+        for (int a = 0; a <= routeParts; a++) {
+            completeRoute[a].remove();
+        }
+        routeHasBeenDrawn = false;
+        setFollowOn();
+        View mapContainer = findViewById(R.id.mapTextContainer);
+        if (mapContainer != null) {
+            mapContainer.setVisibility(View.INVISIBLE);
+        }
+        // Reset search bar text back to placeholder
+        TextView searchText = findViewById(R.id.searchBarText);
+        if (searchText != null) {
+            searchText.setText(getResources().getString(R.string.tx_search_here));
+            searchText.setTextColor(0xFF666666);
         }
     }
 
@@ -1254,6 +1209,9 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.remove(tutorialFragment).commit();
+        // Show search bar again
+        CardView sb = findViewById(R.id.searchBarCard);
+        if (sb != null) sb.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -1275,184 +1233,72 @@ public class GoogleMap extends AppCompatActivity implements Locationer.onLocatio
         fragmentTransaction.remove(ratingFragment).commit();
     }
 
-    private class routeTask extends AsyncTask<Void, Void, Void> {
-
-        private String endAddress;
-        private JSONArray stepsArray;
-        private LatLng northeastLatLng;
-        private LatLng southwestLatLng;
-        private boolean getPathSuccess;
-        private String firstDistance;
-
-
-        private void getPath(LatLng src, LatLng dest) {
-            waitedAtStart = false;
-            counterRouteComplexity = phases = segmentCounter = 0;
-
-            HttpRequests httpJSON = new HttpRequests();
-            httpJSON.setURL("https://maps.googleapis.com/maps/api/directions/json");
-            httpJSON.setMethod("GET");
-            httpJSON.addValue("origin", src.latitude + "," + src.longitude);
-            httpJSON.addValue("destination", dest.latitude + "," + dest.longitude);
-            httpJSON.addValue("sensor", "true");
-            httpJSON.addValue("key", Config.DIRECTIONS_API_KEY);
-            httpJSON.addValue("mode", "walking");
-            httpJSON.addValue("language", language);
-            String response = httpJSON.doRequest();
-            Log.i("routeTask Response", response);
+    private void fetchRouteAsync() {
+        final LatLng src = GoogleMap.startLatLng;
+        final LatLng dest = GoogleMap.destLatLng;
+        final String lang = language;
+        routeExecutor.execute(() -> {
+            RouteManager.RouteResult result;
             try {
-                getPathSuccess = true;
-                JSONObject json = new JSONObject(response);
-                JSONArray routesArray = json.getJSONArray("routes");
-                JSONObject routesObject = routesArray.optJSONObject(0);
-                JSONArray legsArray = routesObject.getJSONArray("legs");
-                JSONObject legsObject = legsArray.optJSONObject(0);
-
-                JSONObject durationObject = legsObject.optJSONObject("duration");
-                String duration = durationObject.getString("text");
-                JSONObject distanceObject = legsObject.optJSONObject("distance");
-                String distance = distanceObject.getString("text");
-
-                JSONObject bounds = routesObject.getJSONObject("bounds");
-                JSONObject northeast = bounds.getJSONObject("northeast");
-                northeastLatLng = new LatLng(northeast.optDouble("lat"), northeast.optDouble("lng"));
-
-                JSONObject southwest = bounds.getJSONObject("southwest");
-                southwestLatLng = new LatLng(southwest.optDouble("lat"), southwest.optDouble("lng"));
-
-                endAddress = legsObject.getString("end_address");
-
-                String[] zielOrtArray;
-                zielOrtArray = endAddress.split(",", 3);
-                try {
-                    endAddress = zielOrtArray[0];
-                    endAddress += "\n" + zielOrtArray[1];
-                } catch (Exception e) {
-                    // thats possible if Destination Name is only 1 line
-                        e.printStackTrace();
-                }
-                if (language.equalsIgnoreCase("de")) {
-                    firstDistance = "Ziel ist " + distance + "\n" + "oder " + duration + " entfernt.";
-                } else if (language.equalsIgnoreCase("es")) {
-                    firstDistance = "Destino es de " + distance + "\n" + "o " + duration + " de distancia.";
-                } else if (language.equalsIgnoreCase("fr")) {
-                    firstDistance = "Destination est de " + distance + "\n" + "ou " + duration + ".";
-                } else if (language.equalsIgnoreCase("pl")) {
-                    firstDistance = "Docelowy jest " + distance + "\n" + "lub " + duration + ".";
-                } else if (language.equalsIgnoreCase("it")) {
-                    firstDistance = "Destination si trova a " + distance + "\n" + "o " + duration + ".";
-                } else if (language.equalsIgnoreCase("en")) {
-                    firstDistance = "Destination is " + distance + "\n" + "or " + duration + " away.";
-                } else {
-                    firstDistance = "Distance: " + distance + "\n or" + duration + ".";
-                }
-                stepsArray = legsObject.getJSONArray("steps");
-                phases = stepsArray.length();
-
+                result = RouteManager.fetchRoute(src, dest, lang);
             } catch (Exception e) {
                 e.printStackTrace();
-                getPathSuccess = false;
+                result = RouteManager.RouteResult.failure();
             }
+            final RouteManager.RouteResult finalResult = result;
+            runOnUiThread(() -> onRouteFetched(finalResult));
+        });
+    }
 
+    private void onRouteFetched(RouteManager.RouteResult result) {
+        waitedAtStart = false;
+        counterRouteComplexity = phases = segmentCounter = 0;
+
+        if (result.success) {
+            phases = result.phases;
+            drawPath(result.stepsArray);
+            followMe = false;
+            routeStartAnimation(result.northeastBound, result.southwestBound);
         }
+        makeInfo(result.endAddress, result.distanceInfo);
+    }
 
-        @Override
-        protected Void doInBackground(Void... void2) {
-            try {
-                getPath(GoogleMap.startLatLng, GoogleMap.destLatLng);
-            } catch (Exception e) {
-                e.printStackTrace();
+    private void drawPath(JSONArray stepsArray) {
+        if (routeHasBeenDrawn) {
+            for (int a = 0; a <= routeParts; a++) {
+                completeRoute[a].remove();
+                routeHasBeenDrawn = false;
             }
-            return null;
         }
+        try {
+            int color = Color.argb(200, 25, 181, 224);
+            for (int i = 0; i < phases; i++) {
+                if (counterRouteComplexity < 30) {
+                    counterRouteComplexity++;
+                    JSONObject stepObject = stepsArray.optJSONObject(i);
+                    html_instructions[i] = stepObject.getString("html_instructions");
 
-        @Override
-        protected void onPostExecute(Void void1) {
-            if (getPathSuccess) {
-                drawPath();
-                followMe = false;
-                routeStartAnimation(northeastLatLng, southwestLatLng);
-            }
-            makeInfo(endAddress, firstDistance);
-        }
+                    JSONObject endObject = stepObject.optJSONObject("end_location");
+                    int gp2Lon = (int) (Double.parseDouble(endObject.getString("lng")) * 1E6);
+                    int gp2Lat = (int) (Double.parseDouble(endObject.getString("lat")) * 1E6);
+                    gp2Lonk[i] = gp2Lon / 1E6;
+                    gp2Latk[i] = gp2Lat / 1E6;
 
-        public void drawPath() {
-            if (routeHasBeenDrawn) {
-                for (int a = 0; a <= routeParts; a++) {
-                    completeRoute[a].remove();
-                    routeHasBeenDrawn = false;
+                    JSONObject polyObject = stepObject.optJSONObject("polyline");
+                    String polyline = polyObject.getString("points");
+
+                    //Collect Polylines in String Array to draw them seperately
+                    polylineArray[i] = polyline;
+                    completeRoute[i] = map.addPolyline(new PolylineOptions().addAll(decodePoly(polylineArray[i])).width(8).color(color));
+                    routeHasBeenDrawn = true;
+                    routeParts = i;
                 }
             }
-            try {
-                int color = Color.argb(200, 25, 181, 224);
-                for (int i = 0; i < phases; i++) {
-                    if (counterRouteComplexity < 30) {
-                        counterRouteComplexity++;
-                        JSONObject stepObject = stepsArray.optJSONObject(i);
-                        html_instructions[i] = stepObject.getString("html_instructions");
 
-                        JSONObject endObject = stepObject.optJSONObject("end_location");
-                        int gp2Lon = (int) (Double.parseDouble(endObject.getString("lng")) * 1E6);
-                        int gp2Lat = (int) (Double.parseDouble(endObject.getString("lat")) * 1E6);
-                        gp2Lonk[i] = gp2Lon / 1E6;
-                        gp2Latk[i] = gp2Lat / 1E6;
-
-                        JSONObject polyObject = stepObject.optJSONObject("polyline");
-                        String polyline = polyObject.getString("points");
-
-                        //Collect Polylines in String Array to draw them seperately
-                        polylineArray[i] = polyline;
-                        completeRoute[i] = map.addPolyline(new PolylineOptions().addAll(decodePoly(polylineArray[i])).width(8).color(color));
-                        routeHasBeenDrawn = true;
-                        routeParts = i;
-                    }
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
 
-    private class changeSettings extends AsyncTask<Void, Void, Void> {
-
-        private String key;
-        private int dataType;
-        private boolean setting1;
-        private String setting2;
-        private int setting3;
-
-        private changeSettings(String key, boolean setting1) {
-            this.key = key;
-            this.setting1 = setting1;
-            dataType = 0;
-        }
-
-        private changeSettings(String key, String setting2) {
-            this.key = key;
-            this.setting2 = setting2;
-            dataType = 1;
-        }
-
-        private changeSettings(String key, int setting3) {
-            this.key = key;
-            this.setting3 = setting3;
-            dataType = 2;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-            if (dataType == 0) {
-                settings.edit().putBoolean(key, setting1).apply();
-            } else if (dataType == 1) {
-                settings.edit().putString(key, setting2).apply();
-            } else if (dataType == 2) {
-                settings.edit().putInt(key, setting3).apply();
-            }
-            return null;
-        }
-    }
 }

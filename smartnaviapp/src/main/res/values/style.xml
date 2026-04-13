@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Single app theme: NoActionBar, edge-to-edge with dark status bar icons -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <!-- Secondary screens: dark top bar extends behind status bar, so use light (white) icons -->
+    <style name="AppTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
     <style name="AudioFileInfoOverlayText">
         <item name="android:paddingLeft">0px</item>
         <item name="android:paddingBottom">0px</item>

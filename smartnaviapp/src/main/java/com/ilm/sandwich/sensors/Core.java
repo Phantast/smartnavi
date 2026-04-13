@@ -1,31 +1,20 @@
 package com.ilm.sandwich.sensors;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.opengl.Matrix;
-import android.os.Environment;
 import android.util.Log;
 
 import com.ilm.sandwich.BackgroundService;
 import com.ilm.sandwich.BuildConfig;
 import com.ilm.sandwich.GoogleMap;
+import com.ilm.sandwich.data.NavigationRepository;
 import com.ilm.sandwich.tools.Config;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 /**
  * This is the core of SmartNavis stepdetection and direction calculation
@@ -36,6 +25,15 @@ import java.util.TimeZone;
  *         https://smartnavi.app
  */
 public class Core implements SensorEventListener {
+
+    // Conversion constants
+    private static final float RAD_TO_DEG = (float) (180.0 / Math.PI);   // 57.29577951
+    private static final double DEG_TO_RAD = Math.PI / 180.0;            // 0.01745329252
+    private static final double DEG_LAT_PER_METER = 0.000008984725966;   // 1 meter in latitude degrees
+
+    // Step timing thresholds (seconds)
+    private static final float MIN_STEP_TIME = 0.24f;
+    private static final float MAX_STEP_TIME = 0.8f;
 
     public static float[] gravity = new float[3];
     public static float[] linear = new float[4];
@@ -54,8 +52,7 @@ public class Core implements SensorEventListener {
     public static String version;
     public static float lastErrorGPS;
     public static int units = 0;
-    static File posFile;
-    static File sensorFile;
+    // posFile and sensorFile moved to GpxExporter
     private static double oldAzimuth = 0;
     private static float frequency;
     private static boolean stepBegin = false;
@@ -84,11 +81,10 @@ public class Core implements SensorEventListener {
     private static double[] xm2 = new double[4];
     private static double[] ym2 = new double[4];
     private static float stepThreshold = 2.0f;
-    private static boolean sensorFileNotExisting = true;
-    private static boolean positionsFileNotExisting = true;
+    // sensorFileNotExisting and positionsFileNotExisting moved to GpxExporter
     private static float decl = 0;
     private static boolean initialStep;
-    private static boolean newStepDetected = false;
+    // newStepDetected moved to GpxExporter
     private static boolean startedToExport = false;
     private static long startTime;
     public boolean gyroExists = false;
@@ -102,6 +98,7 @@ public class Core implements SensorEventListener {
     private boolean autoCorrect;
     private SharedPreferences settings;
     private onStepUpdateListener stepUpdateListener;
+    private final GpxExporter gpxExporter;
 
 
     public Core(Context context) {
@@ -113,11 +110,9 @@ public class Core implements SensorEventListener {
                     + " must implement OnFragmentInteractionListener");
         }
 
+        gpxExporter = new GpxExporter(context);
         settings = context.getApplicationContext().getSharedPreferences(context.getApplicationContext().getPackageName() + "_preferences", Context.MODE_PRIVATE);
         autoCorrect = settings.getBoolean("autocorrect", false);
-
-        positionsFileNotExisting = true;
-        sensorFileNotExisting = true;
 
         stepCounter = 0;
         initialStep = true;
@@ -154,11 +149,16 @@ public class Core implements SensorEventListener {
         Core.altitude = (int) altitude;
         Core.lastErrorGPS = lastErrorGPS;
         trueNorth();
+        NavigationRepository repo = NavigationRepository.getInstance();
+        repo.updatePosition(startLat, startLon);
+        repo.updateAltitude((int) altitude);
+        repo.updateGpsError(lastErrorGPS);
     }
 
     public static void setLocation(double lat, double lon) {
         startLat = lat;
         startLon = lon;
+        NavigationRepository.getInstance().updatePosition(lat, lon);
     }
 
     private static void trueNorth() {
@@ -167,104 +167,7 @@ public class Core implements SensorEventListener {
         decl = geo.getDeclination();
     }
 
-    private static void positionOutput() {
-        try {
-            File folder = new File(Environment.getExternalStorageDirectory() + "/smartnavi/");
-            folder.mkdir();
-            if (folder.canWrite()) {
-                if (positionsFileNotExisting) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.GERMAN);
-                    String curentDateandTime = sdf.format(new Date());
-                    String textname = "track_" + curentDateandTime + ".gpx";
-                    posFile = new File(folder, textname);
-                    FileWriter posWriter = new FileWriter(posFile);
-                    BufferedWriter out = new BufferedWriter(posWriter);
-
-                    TimeZone tz = TimeZone.getTimeZone("UTC");
-                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ", Locale.GERMAN);
-                    df.setTimeZone(tz);
-                    String nowAsISO = df.format(new Date());
-
-                    out.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx> <trk><name>SmartNavi " + nowAsISO
-                            + "</name><number>1</number><trkseg>");
-                    out.close();
-                    positionsFileNotExisting = false;
-                } else {
-                    FileWriter posWriter = new FileWriter(posFile, true);
-                    BufferedWriter out = new BufferedWriter(posWriter);
-
-                    if (newStepDetected) {
-                        out.newLine();
-
-                        TimeZone tz = TimeZone.getTimeZone("UTC");
-                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ", Locale.GERMAN);
-                        df.setTimeZone(tz);
-                        String nowAsISO = df.format(new Date());
-
-                        out.write("<trkpt lat=\"" + startLat + "\" lon=\"" + startLon + "\"><time>" + nowAsISO + "</time></trkpt>");
-
-                        newStepDetected = false;
-                    }
-
-                    out.close();
-                }
-            }
-        } catch (IOException e) {
-            // e.printStackTrace();
-        }
-    }
-
-    public static void closeLogFile() {
-        if (export && positionsFileNotExisting == false) {
-            try {
-                FileWriter posWriter;
-                posWriter = new FileWriter(posFile, true);
-                BufferedWriter out = new BufferedWriter(posWriter);
-                out.newLine();
-                out.write("</trkseg></trk></gpx>");
-                out.close();
-            } catch (Exception e) {
-                // e.printStackTrace();
-            }
-        }
-        export = false;
-        positionsFileNotExisting = true;
-        sensorFileNotExisting = true;
-    }
-
-    private static void dataOutput() {
-        try {
-            File folder = new File(Environment.getExternalStorageDirectory() + "/smartnavi/");
-            folder.mkdir();
-            if (folder.canWrite()) {
-                if (sensorFileNotExisting) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMAN);
-                    String curentDateandTime = sdf.format(new Date());
-                    String textname = "sensoren_" + curentDateandTime + ".csv";
-                    sensorFile = new File(folder, textname);
-                    FileWriter sensorWriter = new FileWriter(sensorFile);
-                    BufferedWriter outs = new BufferedWriter(sensorWriter);
-                    outs.write(startLat + "; " + startLon + "; " + stepLength + ";" + version + "; ");
-                    outs.newLine();
-                    outs.write("origmagn0; origmagn1; origmagn2; origaccel0; origaccel1; origaccel2; "
-                            + "azimuthNeu;");
-                    outs.close();
-                    sensorFileNotExisting = false;
-                } else {
-                    FileWriter sensorWriter = new FileWriter(sensorFile, true);
-                    BufferedWriter outs = new BufferedWriter(sensorWriter);
-
-                    outs.newLine();
-
-                    outs.write(origMagn[0] + ";" + origMagn[1] + ";" + origMagn[2] + ";" + origAcl[0] + ";" + origAcl[1] + ";" + origAcl[2] + ";"
-                            + azimuth + ";");
-                    outs.close();
-                }
-            }
-        } catch (IOException e) {
-            // e.printStackTrace();
-        }
-    }
+    // File I/O has been extracted to GpxExporter (accessed via gpxExporter field)
 
     public void startSensors() {
         aclUnits = 0;
@@ -288,8 +191,8 @@ public class Core implements SensorEventListener {
     public void reactivateSensors() {
         if (mSensorManager != null) {
             mSensorManager.unregisterListener(Core.this);
-            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 1);
-            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 1);
+            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+            mSensorManager.registerListener(Core.this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME);
             if (BuildConfig.debug)
                 Log.i("Sensors", "Sensors reactivated!");
             if (gyroExists) {
@@ -302,8 +205,9 @@ public class Core implements SensorEventListener {
     public void pauseSensors() {
         try {
             mSensorManager.unregisterListener(this);
-            //new orientation provider
-            mOrientationProvider.stop();
+            if (mOrientationProvider != null) {
+                mOrientationProvider.stop();
+            }
             if (BuildConfig.debug)
                 Log.i("Sensors", "Sensors deactivated!");
         } catch (Exception e) {
@@ -335,8 +239,9 @@ public class Core implements SensorEventListener {
         if (sollich) {
             export = true;
             startedToExport = true;
-        } else if (startedToExport == true && sollich == false) {
-            closeLogFile();
+        } else if (startedToExport && !sollich) {
+            gpxExporter.closeLogFile();
+            export = false;
         }
     }
 
@@ -428,11 +333,9 @@ public class Core implements SensorEventListener {
             azimuth = mOrientationProvider.getAzimuth(decl);
         } else {
             if (orientation[0] >= 0) {
-                // Azimuth-Calculation (rad in degree)
-                azimuth = (orientation[0] * 57.29577951f + decl);
+                azimuth = (orientation[0] * RAD_TO_DEG + decl);
             } else {
-                // Azimuth-Calculation (rad in degree) +360
-                azimuth = (orientation[0] * 57.29577951f + 360 + decl);
+                azimuth = (orientation[0] * RAD_TO_DEG + 360 + decl);
             }
 
             if (azimuth >= 360) {
@@ -456,7 +359,7 @@ public class Core implements SensorEventListener {
                 oldAzimuth = azimuth;
             }
         }
-        if (stepBegin && iStep / frequency >= 0.24f && iStep / frequency <= 0.8f) {
+        if (stepBegin && iStep / frequency >= MIN_STEP_TIME && iStep / frequency <= MAX_STEP_TIME) {
             // Timeframe for step between minTime and maxTime
             // Check for negative peak
             if (value < -stepThreshold) {
@@ -466,20 +369,19 @@ public class Core implements SensorEventListener {
                 iStep = 1;
                 initialStep = true;
                 newStep();
-                newStepDetected = true;
                 //save old azimith for possibly necessary orientation change, in case no steps are detected and users orientation changes strong enough
                 oldAzimuth = azimuth;
                 if (export) {
-                    positionOutput();
+                    gpxExporter.writePosition(startLat, startLon, true);
                 }
             } else {
                 // TimeFrame correct but negative Threshold is too low
                 iStep++;
             }
-        } else if (stepBegin && iStep / frequency < 0.24f) {
+        } else if (stepBegin && iStep / frequency < MIN_STEP_TIME) {
             // TimeFrame for step too small, so wait and iStep++
             iStep++;
-        } else if (stepBegin && iStep / frequency > 0.8f) {
+        } else if (stepBegin && iStep / frequency > MAX_STEP_TIME) {
             // TimeFrame for step too long
             stepBegin = false;
             initialStep = true;
@@ -488,145 +390,35 @@ public class Core implements SensorEventListener {
     }
 
     private void newStep() {
-        double winkel = azimuth;
-        double winkel2 = winkel * 0.01745329252;
         if (BuildConfig.debug) {
             Log.i("Location-Status", "Step: " + Core.startLon);
         }
-        deltaLat = Math.cos(winkel2) * 0.000008984725966 * stepLength;
-        // 100cm for a step will be calculated according to angle on lat
-        deltaLon = Math.sin(winkel2) / (distanceLongitude * 1000) * stepLength;
-        // 100cm for a step will be calculated according to angle on lon
-
-        deltaLat = Math.abs(deltaLat);
-        deltaLon = Math.abs(deltaLon);
-        // made by Christian Henke
-        if (startLat > 0) {
-            // User is on northern hemisphere, Latitude bigger than 0
-            if (winkel > 270 || winkel < 90) { // Movement towards north
-                startLat += deltaLat;
-            } else {
-                // Movement towards south
-                startLat -= deltaLat;
-            }
-        } else if (startLat < 0) {
-            // User is on southern hemisphere, Latitude smaller than 0
-            if (winkel > 270 || winkel < 90) {
-                // Movement towards north
-                startLat += deltaLat;
-            } else {
-                // Movement towards south
-                startLat -= deltaLat;
-            }
-        }
-        if (winkel < 180) {
-            // Movement towards east
-            startLon += deltaLon;
-        } else {
-            // Movement towards west
-            startLon -= deltaLon;
-        }
+        double[] result = PositionCalculator.computeNewPosition(startLat, startLon, azimuth, stepLength, distanceLongitude);
+        startLat = result[0];
+        startLon = result[1];
+        NavigationRepository.getInstance().updateFromStep(startLat, startLon, azimuth, stepCounter);
         stepUpdateListener.onStepUpdate(0);
     }
 
     public void changeDelay(int freq, int sensor) {
-        // LowPassFilter 3. Order - Corner frequency all at 0.3 Hz
-
-        //Initializing on 50Hz
-        float ugain = 154994.3249f;
-        float tp0 = 0.9273699683f;
-        float tp1 = -2.8520278186f;
-        float tp2 = 2.9246062355f;
-
-        // Values according to actual frequency
-        if (freq >= 125) {    //130
-            ugain = 2662508.633f;
-            tp0 = 0.9714168814f;
-            tp1 = -2.9424208232f;
-            tp2 = 2.9710009372f;
-        } else if (freq <= 124 && freq >= 115) { //120
-            ugain = 2096647.970f;
-            tp0 = 0.9690721133f;
-            tp1 = -2.9376603253f;
-            tp2 = 2.9685843964f;
-        } else if (freq <= 114 && freq >= 105) { //110
-            ugain = 1617241.715f;
-            tp0 = 0.9663083052f;
-            tp1 = -2.9320417512f;
-            tp2 = 2.9657284993f;
-        } else if (freq <= 104 && freq >= 95) { //100
-            ugain = 1217122.860f;
-            tp0 = 0.9630021159f;
-            tp1 = -2.9253101348f;
-            tp2 = 2.9623014461f;
-        } else if (freq <= 94 && freq >= 85) { //90
-            ugain = 889124.3983f;
-            tp0 = 0.9589765397f;
-            tp1 = -2.9170984005f;
-            tp2 = 2.9581128632f;
-        } else if (freq <= 84 && freq >= 75) { //80
-            ugain = 626079.3215f;
-            tp0 = 0.9539681632f;
-            tp1 = -2.9068581408f;
-            tp2 = 2.9528771997f;
-        } else if (freq <= 74 && freq >= 65) { //70
-            ugain = 420820.6222f;
-            tp0 = 0.9475671238f;
-            tp1 = -2.8937318862f;
-            tp2 = 2.9461457520f;
-        } else if (freq <= 64 && freq >= 55) { //60
-            ugain = 266181.2926f;
-            tp0 = 0.9390989403f;
-            tp1 = -2.8762997235f;
-            tp2 = 2.9371707284f;
-        } else if (freq <= 54 && freq >= 45) {  //50
-            ugain = 154994.3249f;
-            tp0 = 0.9273699683f;
-            tp1 = -2.8520278186f;
-            tp2 = 2.9246062355f;
-        } else if (freq <= 44 && freq >= 35) { //40
-            ugain = 80092.71123f;
-            tp0 = 0.9100493001f;
-            tp1 = -2.8159101079f;
-            tp2 = 2.9057609235f;
-        } else if (freq <= 34 && freq >= 28) { //30
-            ugain = 34309.44333f;
-            tp0 = 0.8818931306f;
-            tp1 = -2.7564831952f;
-            tp2 = 2.8743568927f;
-        } else if (freq <= 27 && freq >= 23) { //25
-            ugain = 20097.49869f;
-            tp0 = 0.8599919781f;
-            tp1 = -2.7096291328f;
-            tp2 = 2.8492390952f;
-        } else if (freq <= 22 && freq >= 15) { //20
-            ugain = 10477.51171f;
-            tp0 = 0.8281462754f;
-            tp1 = -2.6404834928f;
-            tp2 = 2.8115736773f;
-        } else if (freq <= 14) { //10
-            ugain = 1429.899908f;
-            tp0 = 0.6855359773f;
-            tp1 = -2.3146825811f;
-            tp2 = 2.6235518066f;
-        }
+        FilterCoefficients.Coefficients c = FilterCoefficients.getCoefficients(freq);
 
         // Set values for specific sensor
         if (sensor == 0) {
             //  Accelerometer
             frequency = freq;
-            ugainA = ugain;
-            tpA[0] = tp0;
-            tpA[1] = tp1;
-            tpA[2] = tp2;
+            ugainA = c.ugain;
+            tpA[0] = c.tp0;
+            tpA[1] = c.tp1;
+            tpA[2] = c.tp2;
         } else if (sensor == 1) {
             // Magnetic Field
             // here not: frequency = freq; otherwise value is wrong for step detection
             //that value has to be specified by accelerometer
-            ugainM = ugain;
-            tpM[0] = tp0;
-            tpM[1] = tp1;
-            tpM[2] = tp2;
+            ugainM = c.ugain;
+            tpM[0] = c.tp0;
+            tpM[1] = c.tp1;
+            tpM[2] = c.tp2;
         }
     }
 
@@ -634,19 +426,9 @@ public class Core implements SensorEventListener {
         pauseSensors();
         if (BuildConfig.debug)
             Log.i("Sensors", "Sensors deactivated");
-        try {
-            //Show new files with MTP for Windows immediatly
-            mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(sensorFile)));
-        } catch (Exception e) {
-            // is always the case
-        }
-        try {
-            //Show new files with MTP for Windows immediatly
-            mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(posFile)));
-        } catch (Exception e) {
-            // is always the case
-        }
-        closeLogFile();
+        gpxExporter.closeLogFile();
+        export = false;
+        NavigationRepository.getInstance().reset();
     }
 
     @Override
@@ -686,10 +468,6 @@ public class Core implements SensorEventListener {
                 imbaLinear(event.values.clone());
 
                 calculateAzimuth();
-
-                if (export && BuildConfig.debug) {
-                    dataOutput();
-                }
 
                 stepDetection();
                 // AutoCorrect (dependent on Factor, i.e. number of steps)

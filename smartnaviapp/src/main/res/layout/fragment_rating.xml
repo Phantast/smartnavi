@@ -1,101 +1,106 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#80000000"
+    android:clickable="true"
+    android:focusable="true"
     tools:context=".fragments.RatingFragment">
 
-    <!-- AppRateDialog -->
-    <!-- AppRateDialog -->
-    <!-- AppRateDialog -->
-
-    <RelativeLayout
-        android:id="@+id/appRateDialog"
-        android:layout_width="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ratingCard"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:layout_marginTop="110dp"
-        android:background="#f54b4b4b">
+        android:layout_gravity="center"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        app:cardBackgroundColor="#FF222222"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp">
 
-        <TextView
-            android:id="@+id/appRateTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:paddingTop="10dp"
-            android:text="@string/tx_34"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#aee844" />
-
-        <View
-            android:id="@+id/appRateLine"
-            android:layout_width="fill_parent"
-            android:layout_height="2dip"
-            android:layout_below="@+id/appRateTitle"
-            android:layout_marginTop="10dp"
-            android:background="#aee844" />
-
-        <TextView
-            android:id="@+id/appRateText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/appRateLine"
-            android:layout_marginTop="10dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:text="@string/tx_31"
-            android:textSize="16sp" />
-
-        <ImageView
-            android:id="@+id/stars"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/appRateText"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
-            android:clickable="true"
-            android:contentDescription="@string/tx_34"
-            android:src="@drawable/stars" />
+            android:orientation="vertical"
+            android:paddingLeft="24dp"
+            android:paddingTop="28dp"
+            android:paddingRight="24dp"
+            android:paddingBottom="20dp">
 
-        <Button
-            android:id="@+id/rateButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/stars"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/button_dark"
-            android:minWidth="170dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="@string/tx_39" />
+            <!-- Title -->
+            <TextView
+                android:id="@+id/appRateTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/tx_34"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/rateButton2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/rateButton"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="9dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/button"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="@string/tx_40"
-            android:textColor="#F5F5F5"
-            android:textStyle="bold" />
+            <!-- Green accent divider -->
+            <View
+                android:id="@+id/appRateLine"
+                android:layout_width="60dp"
+                android:layout_height="3dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="18dp"
+                android:background="#86b530" />
 
-        <View
-            android:id="@+id/appRateLine2"
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:layout_below="@+id/rateButton2" />
-    </RelativeLayout>
+            <!-- Description -->
+            <TextView
+                android:id="@+id/appRateText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:lineSpacingExtra="3dp"
+                android:text="@string/tx_31"
+                android:textColor="#CCCCCC"
+                android:textSize="15sp" />
+
+            <!-- Stars -->
+            <ImageView
+                android:id="@+id/stars"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="24dp"
+                android:adjustViewBounds="true"
+                android:clickable="true"
+                android:contentDescription="@string/tx_34"
+                android:focusable="true"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:src="@drawable/stars" />
+
+            <!-- Rate now button (primary green) -->
+            <Button
+                android:id="@+id/rateButton2"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/button_rating_primary"
+                android:text="@string/tx_40"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- Not now button (subtle) -->
+            <Button
+                android:id="@+id/rateButton"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/button_rating_secondary"
+                android:text="@string/tx_39"
+                android:textAllCaps="false"
+                android:textColor="#999999"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </FrameLayout>

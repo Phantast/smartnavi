@@ -127,10 +127,10 @@ public class Vector4f extends Renderable implements Serializable {
      * @param t
      */
     public void lerp(Vector4f input, Vector4f output, float t) {
-        output.points[0] = (points[0] * (1.0f * t) + input.points[0] * t);
-        output.points[1] = (points[1] * (1.0f * t) + input.points[1] * t);
-        output.points[2] = (points[2] * (1.0f * t) + input.points[2] * t);
-        output.points[3] = (points[3] * (1.0f * t) + input.points[3] * t);
+        output.points[0] = (points[0] * (1.0f - t) + input.points[0] * t);
+        output.points[1] = (points[1] * (1.0f - t) + input.points[1] * t);
+        output.points[2] = (points[2] * (1.0f - t) + input.points[2] * t);
+        output.points[3] = (points[3] * (1.0f - t) + input.points[3] * t);
 
     }
 

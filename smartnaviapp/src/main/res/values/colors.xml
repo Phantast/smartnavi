@@ -3,4 +3,5 @@
 <resources>
     <color name="ColorPrimary">#66333333</color>
     <color name="ColorPrimaryDark">#66333333</color>
+    <color name="ic_launcher_background">#333333</color>
 </resources>

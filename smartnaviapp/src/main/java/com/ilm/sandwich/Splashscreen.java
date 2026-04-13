@@ -1,11 +1,11 @@
 package com.ilm.sandwich;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.Window;
+import android.view.View;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -18,10 +18,9 @@ import com.google.firebase.analytics.FirebaseAnalytics;
  * @author Christian Henke
  *         https://smartnavi.app
  */
-public class Splashscreen extends Activity {
+public class Splashscreen extends AppCompatActivity {
 
-    public static final boolean PLAYSTORE_VERSION = true; //Used to differ between free and playStoreVersion
-    public static final int REQUEST_GOOGLE_PLAY_SERVICES = 1972;
+    private static final int SPLASH_DELAY_MS = 1000;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
@@ -30,45 +29,29 @@ public class Splashscreen extends Activity {
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        //Remove title bar
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        com.ilm.sandwich.tools.DebugLogHelper.installCrashHandler(getApplicationContext());
         setContentView(R.layout.activity_splashscreen);
-
 
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
         int code = api.isGooglePlayServicesAvailable(this);
         if (code == ConnectionResult.SUCCESS) {
-            Handler waitingTimer = new Handler();
-            waitingTimer.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    startMap();
-                }
-            }, 1000);
-        } else if (api.isUserResolvableError(code) && api.showErrorDialogFragment(this, code, REQUEST_GOOGLE_PLAY_SERVICES)) {
-            // wait for onActivityResult call (see below)
+            View decorView = getWindow().getDecorView();
+            decorView.postDelayed(() -> startMap(), SPLASH_DELAY_MS);
         } else {
-            String str = GoogleApiAvailability.getInstance().getErrorString(code);
-            Toast.makeText(this, str, Toast.LENGTH_LONG).show();
+            // Prompts user to install/update Google Play Services if possible
+            api.makeGooglePlayServicesAvailable(this).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    startMap();
+                } else {
+                    Toast.makeText(this, api.getErrorString(code), Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 
     private void startMap() {
         startActivity(new Intent(Splashscreen.this, GoogleMap.class));
         finish();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch(requestCode) {
-            case REQUEST_GOOGLE_PLAY_SERVICES:
-                if (resultCode == Activity.RESULT_OK) {
-                    startMap();
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/searchBarCard"
+    android:layout_width="match_parent"
+    android:layout_height="66dp"
+    android:layout_marginLeft="24dp"
+    android:layout_marginRight="24dp"
+    android:layout_marginTop="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="33dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="20dp"
+        android:paddingRight="8dp">
+
+        <ImageView
+            android:id="@+id/searchBarIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="SmartNavi"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:id="@+id/searchBarText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingLeft="14dp"
+            android:text="@string/tx_search_here"
+            android:textColor="#666666"
+            android:textSize="18sp" />
+
+        <ImageButton
+            android:id="@+id/searchBarOverflow"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Menu"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_overflow" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
