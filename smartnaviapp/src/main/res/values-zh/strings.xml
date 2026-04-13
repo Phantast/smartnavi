@@ -5,7 +5,7 @@
 <resources>
 
     <string name="app_name">SmartNavi</string>
-    <string name="tx_01">开始步骤基于导航</string>
+    <string name="tx_01"><b>无需GPS</b>导航 — 省电</string>
     <string name="tx_03">搜索</string>
     <string name="tx_04">载入路线，请稍候&#8230;</string>
     <string name="tx_05">请将设备保持在您的身前，便于SmartNavi识别步幅和方向。</string>
@@ -102,5 +102,6 @@
         <item>确定 位置</item>
         <item>确定 目的地</item>
     </string-array>
+    <string name="tx_search_here">\u5728\u6b64\u641c\u7d22</string>
 
 </resources>

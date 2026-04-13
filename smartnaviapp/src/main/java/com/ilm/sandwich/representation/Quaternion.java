@@ -139,7 +139,7 @@ public class Quaternion extends Vector4f {
      */
     public void multiplyByScalar(float scalar) {
         this.dirty = true;
-        multiplyByScalar(scalar);
+        super.multiplyByScalar(scalar);
     }
 
     /**

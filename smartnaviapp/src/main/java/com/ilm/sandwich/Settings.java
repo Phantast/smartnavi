@@ -6,12 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -20,6 +17,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -29,6 +28,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ilm.sandwich.sensors.Core;
@@ -51,19 +53,40 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
     CheckBox checkBoxExport;
     private boolean metricUnits = true;
     private LocationManager mLocationManager;
-    private SubMenu subMenu1;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getString(R.string.tx_15));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         setContentView(R.layout.activity_settings);
+
+        // Set up custom top bar
+        View topbarRoot = findViewById(R.id.topbar_root);
+        TextView topbarTitle = findViewById(R.id.topbar_title);
+        ImageButton topbarBack = findViewById(R.id.topbar_back);
+        topbarTitle.setText(getResources().getString(R.string.tx_15));
+        topbarBack.setOnClickListener(v -> finish());
+
+        // Show overflow menu with "About" item
+        ImageButton topbarOverflow = findViewById(R.id.topbar_overflow);
+        topbarOverflow.setVisibility(View.VISIBLE);
+        topbarOverflow.setColorFilter(android.graphics.Color.WHITE);
+        topbarOverflow.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(Settings.this, v);
+            popup.getMenu().add(getResources().getString(R.string.tx_65));
+            popup.setOnMenuItemClickListener(item -> {
+                startActivity(new Intent(Settings.this, Info.class));
+                return true;
+            });
+            popup.show();
+        });
+
+        // Handle edge-to-edge insets
+        ViewCompat.setOnApplyWindowInsetsListener(topbarRoot, (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
+            v.setPadding(v.getPaddingLeft(), insets.top, v.getPaddingRight(), v.getPaddingBottom());
+            return windowInsets;
+        });
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -82,7 +105,7 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
 
         String stepLength = settings.getString("step_length", null);
         if (stepLength != null) {
-            if (stepLength.contains("'")) {
+            if (com.ilm.sandwich.tools.StepLengthCalculator.isImperial(stepLength)) {
                 metricUnits = false;
             }
             editText.setText(stepLength);
@@ -106,7 +129,7 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         int gpsTimer = settings.getInt("gpstimer", 1);
         seekBarTimer.setEnabled(autocorrect);
         if (autocorrect) {
-            seekBarTimer.setThumb(getResources().getDrawable(R.drawable.seek_thumb_normal));
+            seekBarTimer.setThumb(ContextCompat.getDrawable(this, R.drawable.seek_thumb_normal));
             if (gpsTimer == 0) {
                 seekBarTimer.setProgress(0);
                 timerText.setText(getApplicationContext().getResources().getString(R.string.tx_75));
@@ -165,17 +188,11 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                new writeSettings("gpstimer", seekBar.getProgress()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                com.ilm.sandwich.tools.PreferencesHelper.putInt(Settings.this, "gpstimer", seekBar.getProgress());
                 mFirebaseAnalytics.logEvent("Settings_Changed_Autocorrect_to_" + seekBar.getProgress(), null);
                 // start Autocorrect after 3sek
                 // because after this time the activity_settings are surely updated correctly
-                try {
-                    GoogleMap.listHandler.sendEmptyMessageDelayed(6, 3000);
-                } catch (Exception e) {
-                    //Happens if user switched MapSource BEFORE enabling AutoCorrect
-                    //Because then, the requested Activity does not exist UNTIL user leaves Settings
-                    //No Problem, just ignore this case.
-                }
+                GoogleMap.enableAutocorrectDelayed(3000);
 
             }
         });
@@ -189,29 +206,10 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
             String stepLengthString = editText.getText().toString();
             if (op != 0) {
                 try {
-                    if (stepLengthString.contains("'")) {
-                        String[] feetInchString = stepLengthString.split("'");
-                        String feetString = feetInchString[0];
-                        float feet = Float.valueOf(feetString);
-
-                        //Check if user provided inch, if so set that. If not assume 0
-                        float inch = 0;
-                        if (feetInchString.length > 1) {
-                            String inchString = feetInchString[1];
-                            inch = Float.valueOf(inchString);
-                        } else {
-                            inch = 0;
-                        }
-                        float totalInch = 12 * feet + inch;
-                        Core.stepLength = (float) (totalInch * 2.54 / 222);
-                        new writeSettings("step_length", stepLengthString).execute();
-                        mFirebaseAnalytics.logEvent("Settings_Changed_Bodyheight", null);
-                    } else {
-                        stepLengthString = stepLengthString.replace(",", ".");
-                        float number = Float.valueOf(stepLengthString);
-                        String numberString = df.format(number);
-                        Core.stepLength = (number / 222);
-                        new writeSettings("step_length", numberString).execute();
+                    float parsed = com.ilm.sandwich.tools.StepLengthCalculator.calculateStepLength(stepLengthString);
+                    if (parsed > 0) {
+                        Core.stepLength = parsed;
+                        com.ilm.sandwich.tools.PreferencesHelper.putString(Settings.this, "step_length", stepLengthString);
                         mFirebaseAnalytics.logEvent("Settings_Changed_Bodyheight", null);
                     }
                     // close Keyboard after pressing the button
@@ -245,31 +243,6 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
         return false;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        subMenu1 = menu.addSubMenu(0, 3, 3, "").setIcon(R.drawable.ic_menu_moreoverflow_normal_holo_dark);
-        subMenu1.add(0, 7, 7, getApplicationContext().getResources().getString(R.string.tx_65));
-
-        MenuItem subMenu1Item = subMenu1.getItem();
-        subMenu1Item.setIcon(R.drawable.ic_menu_moreoverflow_normal_holo_dark);
-        subMenu1Item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case 7:
-                startActivity(new Intent(this, Info.class));
-                return true;
-            case android.R.id.home:
-                // back
-                finish();
-                return (true);
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -284,8 +257,8 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
             seekBarTimer.setEnabled(isChecked);
 
             final TextView timerText = findViewById(R.id.textTimer);
-            if (isChecked == true) {
-                seekBarTimer.setThumb(getResources().getDrawable(R.drawable.seek_thumb_normal));
+            if (isChecked) {
+                seekBarTimer.setThumb(ContextCompat.getDrawable(this, R.drawable.seek_thumb_normal));
                 int gpsTimer = settings.getInt("gpstimer", 1);
                 if (gpsTimer == 0) {
                     timerText.setText(getApplicationContext().getResources().getString(R.string.tx_75));
@@ -297,7 +270,7 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
 
                 // check is GPS is allowed/enabled, if not: give a warning
                 mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) == false) {
+                if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     Toast.makeText(Settings.this, getApplicationContext().getResources().getString(R.string.tx_49), Toast.LENGTH_LONG).show();
                 }
 
@@ -307,18 +280,18 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
 
             //Here AutoCorrect is enabled/disabled, IF is has been changed in the activity_settings
             //everything else is done via GoogleMapsActivity/... . onCreate()
-            if (isChecked == false) {
+            if (!isChecked) {
                 // deactivate Autocorrect
-                GoogleMap.listHandler.sendEmptyMessage(7);
+                GoogleMap.disableAutocorrect();
             } else {
-                // start Autocorrect anwerfern after 3sek
-                // because then activity_settings are surely updated
-                GoogleMap.listHandler.sendEmptyMessageDelayed(6, 2000);
+                // start Autocorrect after 2sec
+                // because then settings are surely updated
+                GoogleMap.enableAutocorrectDelayed(2000);
             }
             key = "autocorrect";
 
         } else if (buttonView.getId() == R.id.checkBoxExport) {
-            if (isChecked == true) {
+            if (isChecked) {
                 //Check permission before starting export
                 checkWriteStoragePermission(isChecked);
                 return;
@@ -331,13 +304,15 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
             key = "vibration";
         }
         mFirebaseAnalytics.logEvent("Settings_" + key + "_changed_to_" + isChecked, null);
-        new writeSettings(key, isChecked).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        com.ilm.sandwich.tools.PreferencesHelper.putBoolean(this, key, isChecked);
     }
 
     private void checkWriteStoragePermission(boolean isChecked) {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+        // API 29+ uses MediaStore (no WRITE_EXTERNAL_STORAGE needed)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                && ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     Config.PERMISSION_WRITE_EXTERNAL_STORAGE);
@@ -346,7 +321,7 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
             if (isChecked) {
                 Toast.makeText(Settings.this, getResources().getString(R.string.tx_88), Toast.LENGTH_LONG).show();
             }
-            new writeSettings(key, isChecked).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            com.ilm.sandwich.tools.PreferencesHelper.putBoolean(this, key, isChecked);
         }
     }
 
@@ -357,46 +332,6 @@ public class Settings extends AppCompatActivity implements OnEditorActionListene
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         } else {
             Toast.makeText(this, getApplicationContext().getResources().getString(R.string.tx_101), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private class writeSettings extends AsyncTask<Void, Void, Void> {
-
-        private String key;
-        private boolean setting1;
-        private String setting2;
-        private int setting3 = 0;
-        private int dataType = 0;
-
-        private writeSettings(String key, boolean setting1) {
-            this.key = key;
-            this.setting1 = setting1;
-            dataType = 0;
-        }
-
-        private writeSettings(String key, String setting2) {
-            this.key = key;
-            this.setting2 = setting2;
-            dataType = 1;
-        }
-
-        private writeSettings(String key, int setting3) {
-            this.key = key;
-            this.setting3 = setting3;
-            dataType = 2;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            SharedPreferences settings = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
-            if (dataType == 0) {
-                settings.edit().putBoolean(key, setting1).commit();
-            } else if (dataType == 1) {
-                settings.edit().putString(key, setting2).commit();
-            } else if (dataType == 2) {
-                settings.edit().putInt(key, setting3).commit();
-            }
-            return null;
         }
     }
 

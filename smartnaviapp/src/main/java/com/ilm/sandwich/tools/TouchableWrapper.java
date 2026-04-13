@@ -10,14 +10,23 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
-import com.ilm.sandwich.GoogleMap;
-
 public class TouchableWrapper extends FrameLayout {
 
-    int touchCounter = 0;
+    private static final int TOUCH_THRESHOLD = 10;
+
+    public interface OnMapTouchListener {
+        void onMapTouched();
+    }
+
+    private OnMapTouchListener listener;
+    private int touchCounter = 0;
 
     public TouchableWrapper(Context context) {
         super(context);
+    }
+
+    public void setOnMapTouchListener(OnMapTouchListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -25,8 +34,10 @@ public class TouchableWrapper extends FrameLayout {
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
                 touchCounter++;
-                if (touchCounter >= 10) { //Count for enough motion before disabling followMe
-                    GoogleMap.listHandler.sendEmptyMessage(15); //set followMe=false
+                if (touchCounter >= TOUCH_THRESHOLD) {
+                    if (listener != null) {
+                        listener.onMapTouched();
+                    }
                     touchCounter = 0;
                 }
                 break;

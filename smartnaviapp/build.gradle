@@ -1,76 +1,92 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localProperties.load(new FileInputStream(localPropertiesFile))
+}
 
 android {
-    signingConfigs {
-        config {
-            keyAlias ''
-            keyPassword ''
-            storeFile file('')
-            storePassword ''
-        }
-        configdebug {
-            keyAlias ''
-            keyPassword ''
-            storeFile file('')
-            storePassword ''
-        }
-    }
-    compileSdkVersion 29
-    useLibrary 'org.apache.http.legacy'
+    namespace 'com.ilm.sandwich'
+
+    compileSdk 35
+
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 29
+        minSdk 21
+        targetSdk 35
         applicationId 'com.ilm.sandwich'
-        signingConfig signingConfigs.configdebug
+        versionCode 58
+        versionName '2.5.0'
+
+        def directionsKey = localProperties.getProperty('DIRECTIONS_API_KEY', '')
+        buildConfigField 'String', 'DIRECTIONS_API_KEY', "\"${directionsKey}\""
+    }
+
+    signingConfigs {
+        release {
+            def storeFilePath = localProperties.getProperty('RELEASE_STORE_FILE', '')
+            if (storeFilePath) {
+                storeFile file(storeFilePath)
+                storePassword localProperties.getProperty('RELEASE_STORE_PASSWORD', '')
+                keyAlias localProperties.getProperty('RELEASE_KEY_ALIAS', '')
+                keyPassword localProperties.getProperty('RELEASE_KEY_PASSWORD', '')
+            }
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
             buildConfigField 'Boolean', 'debug', 'false'
-            signingConfig signingConfigs.configdebug
+            signingConfig signingConfigs.release
+
+            def mapsKey = localProperties.getProperty('MAPS_API_KEY_RELEASE', '')
+            manifestPlaceholders = [MAPS_API_KEY: mapsKey]
+            buildConfigField 'String', 'MAPS_API_KEY', "\"${mapsKey}\""
         }
         debug {
             minifyEnabled false
             buildConfigField 'Boolean', 'debug', 'true'
-            signingConfig signingConfigs.configdebug
+
+            def mapsKey = localProperties.getProperty('MAPS_API_KEY', '')
+            manifestPlaceholders = [MAPS_API_KEY: mapsKey]
+            buildConfigField 'String', 'MAPS_API_KEY', "\"${mapsKey}\""
         }
     }
-    repositories {
-        maven { url "https://maven.google.com/" }
-        maven { url 'http://guardian.github.com/maven/repo-releases' }
-        mavenCentral()
-        google()
-        jcenter()
+    buildFeatures {
+        buildConfig true
     }
-    lintOptions {
+    lint {
         abortOnError false
     }
     productFlavors {
     }
 }
 
-repositories {
-    mavenCentral()
-    google()
-    jcenter()
-}
-
 dependencies {
-    implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
-    implementation 'com.google.firebase:firebase-analytics:17.5.0'
-    implementation 'com.google.firebase:firebase-core:17.5.0'
-    implementation 'com.google.firebase:firebase-config:19.2.0'
-    implementation 'com.google.android.gms:play-services-location:17.1.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
-    implementation 'com.google.android.libraries.places:places:2.4.0'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.media:media:1.2.0'
-    implementation 'androidx.core:core:1.3.2'
-    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-config'
 
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.2.0'
+    implementation 'com.google.android.libraries.places:places:3.3.0'
+
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.media:media:1.7.0'
+    implementation 'androidx.core:core:1.12.0'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.6.2'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:5.8.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

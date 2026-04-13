@@ -128,7 +128,7 @@ public class TutorialFragment extends Fragment {
         spinner.setAdapter(adapter);
         if (stepLengthString != null) {
             try {
-                if (stepLengthString.contains("'")) {
+                if (com.ilm.sandwich.tools.StepLengthCalculator.isImperial(stepLengthString)) {
                     EditText editText = view.findViewById(R.id.tutorialEditText);
                     editText.setText(stepLengthString, TextView.BufferType.EDITABLE);
                     spinner.setSelection(1);
@@ -173,15 +173,15 @@ public class TutorialFragment extends Fragment {
                 boolean tutorialDone = false;
                 final EditText heightField = fragmentView.findViewById(R.id.tutorialEditText);
                 int op = heightField.length();
-                float number;
                 if (op != 0) {
+                    String heightInput = heightField.getText().toString();
                     if (metricUnits) {
                         try {
-                            number = Float.valueOf(heightField.getText().toString());
+                            float number = Float.valueOf(heightInput);
                             if (number < 241 && number > 49) {
                                 String numberString = df0.format(number);
-                                fragmentView.getContext().getSharedPreferences(fragmentView.getContext().getPackageName() + "_preferences", Context.MODE_PRIVATE).edit().putString("step_length", numberString).commit();
-                                Core.stepLength = (number / 222);
+                                com.ilm.sandwich.tools.PreferencesHelper.putString(fragmentView.getContext(), "step_length", numberString);
+                                Core.stepLength = com.ilm.sandwich.tools.StepLengthCalculator.calculateStepLength(numberString);
                                 tutorialDone = true;
                             } else {
                                 Toast.makeText(fragmentView.getContext(), fragmentView.getContext().getResources().getString(R.string.tx_10), Toast.LENGTH_LONG).show();
@@ -191,25 +191,12 @@ public class TutorialFragment extends Fragment {
                                 Toast.makeText(fragmentView.getContext(), fragmentView.getContext().getResources().getString(R.string.tx_32), Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        try {
-                            String numberString = heightField.getText().toString();
-                            fragmentView.getContext().getSharedPreferences(TutorialFragment.this.getActivity().getPackageName() + "_preferences", Context.MODE_PRIVATE).edit().putString("step_length", numberString).apply();
-                            String[] feetInchString = numberString.split("'");
-                            String feetString = feetInchString[0];
-                            float feet = Float.valueOf(feetString);
-
-                            //Check if user provided inch, if so set that. If not assume 0
-                            float inch = 0;
-                            if (feetInchString.length > 1) {
-                                String inchString = feetInchString[1];
-                                inch = Float.valueOf(inchString);
-                            } else {
-                                inch = 0;
-                            }
-                            float totalInch = 12 * feet + inch;
-                            Core.stepLength = (float) (totalInch * 2.54 / 222);
+                        float parsed = com.ilm.sandwich.tools.StepLengthCalculator.calculateStepLength(heightInput);
+                        if (parsed > 0) {
+                            com.ilm.sandwich.tools.PreferencesHelper.putString(fragmentView.getContext(), "step_length", heightInput);
+                            Core.stepLength = parsed;
                             tutorialDone = true;
-                        } catch (NumberFormatException e) {
+                        } else {
                             if (BuildConfig.debug)
                                 Toast.makeText(fragmentView.getContext(), fragmentView.getContext().getResources().getString(R.string.tx_32), Toast.LENGTH_LONG).show();
                         }

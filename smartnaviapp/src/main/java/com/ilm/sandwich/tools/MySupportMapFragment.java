@@ -24,8 +24,4 @@ public class MySupportMapFragment extends SupportMapFragment {
         return mTouchView;
     }
 
-    @Override
-    public View getView() {
-        return mOriginalContentView;
-    }
 }

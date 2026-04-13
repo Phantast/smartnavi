@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:elevation="10dp"
     tools:context=".fragments.TutorialFragment">
 
     <!-- TutorialFragment -->
@@ -14,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="?android:attr/actionBarSize"
+        android:layout_marginTop="100dp"
         android:background="#ffffff"
         android:visibility="invisible">
 
@@ -291,7 +292,6 @@
                             android:layout_below="@+id/tutorialNumber4Text"
                             android:layout_marginTop="5dp"
                             android:background="@drawable/button"
-                            android:onClick="start"
                             android:text="@string/tx_33" />
                     </RelativeLayout>
 
@@ -321,7 +321,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="?android:attr/actionBarSize"
+        android:layout_marginTop="100dp"
         android:background="#ffffff"
         android:visibility="invisible">
 
